@@ -50,9 +50,15 @@ void TTbarBkg::Loop()
         nb = fChain->GetEntry(jentry);   nbytes += nb;
         // if (Cut(ientry) < 0) continue;
         int nW_lep=0, nW_had=0;
-
+        vector<int>     pid,status,mom1,mom2,daughter1,daughter2;
         /**** GenInfo Loop ****/
     	for (int i=0; i< nGenPar; i++){
+                pid.push_back((*genParId)[i]);
+                mom1.push_back((*genParId)[(*genMo1)[i]]);
+                mom2.push_back((*genParId)[(*genMo2)[i]]);
+                daughter1.push_back((*genParId)[(*genDa1)[i]]);
+                daughter2.push_back((*genParId)[(*genDa2)[i]]);
+                status.push_back((*genParSt)[i]);
             /**** W Info Loop ****/
     	  	if(abs((*genParId)[i]) == 24){
                 /**** select w's mother ****/
@@ -60,12 +66,31 @@ void TTbarBkg::Loop()
                     /**** select w's daughter ****/
     	  			int da1 = (*genParId)[(*genDa1)[i]];
     	  			int da2 = (*genParId)[(*genDa2)[i]];
-    	  			if(is2Jets(i,da1,da2)) nW_had++;
-    	  			if(is1lep1nu(i,da1,da2) || is1Nu1Lep(i,da1,da2)) nW_lep++;
+    	  			if(is2Jets(i,da1,da2)) {
+                        // pid.push_back((*genParId)[i]);
+                        // mom1.push_back((*genParId)[(*genMo1)[i]]);
+                        // mom2.push_back((*genParId)[(*genMo2)[i]]);
+                        // daughter1.push_back((*genParId)[(*genDa1)[i]]);
+                        // daughter2.push_back((*genParId)[(*genDa2)[i]]);
+                        nW_had++;
+                    }
+    	  			if(is1lep1nu(i,da1,da2) || is1Nu1Lep(i,da1,da2)){
+                        // pid.push_back((*genParId)[i]);
+                        // mom1.push_back((*genParId)[(*genMo1)[i]]);
+                        // mom2.push_back((*genParId)[(*genMo2)[i]]);
+                        // daughter1.push_back((*genParId)[(*genDa1)[i]]);
+                        // daughter2.push_back((*genParId)[(*genDa2)[i]]);
+                        nW_lep++;
+                    } 
     	  		}//momTop
     	  	}//W info
     	}//GenLoop
-
+        if (jentry<=10) {
+            cout<<"entry:"<<jentry<<endl;
+            for(int i=0; i< pid.size(); i++){
+                cout<<"pid: "<<pid[i]<<" status: "<<status[i]<<" mother1: "<<mom1[i]<<" mother2: "<<mom2[i]<<" da1: "<<daughter1[i]<<" da2: "<<daughter2[i]<<endl;
+            }
+        }
         /**** counting event info which contains at leatst 2 W bosons ****/
     	if (nW_lep >= 2) nEve_2Lep++;
     	if (nW_had >= 2) nEve_2Had++;
