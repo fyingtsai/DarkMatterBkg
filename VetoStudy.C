@@ -1,12 +1,12 @@
-#define VetoStudy_cxx
-#include "VetoStudy.h"
+#define DYSample_cxx
+#include "DYSample.h"
 #include <TH2.h>
 #include <TStyle.h>
 #include <TCanvas.h>
 #include "TLorentzVector.h"
 #include <iostream>
 
-void VetoStudy::Loop()
+void DYSample::Loop()
 {
     if (fChain == 0) return;
 
@@ -30,7 +30,7 @@ void VetoStudy::Loop()
     TH1F* h_dRCEleJet = new TH1F("h_dRClosetEleJet","dR with closest bjet",50,0,5);
     TH2F* h_eleL = new TH2F("h_eleL","pt ele vs pt leading bjet",100,0,500,100,0,500);
     TH2F* h_eleS = new TH2F("h_eleS","pt ele vs pt sub-leading bjet",100,0,500,100,0,300);
-    TH2F* h_eleC = new TH2F("h_eleC","pt ele vs pt Closest Jet",100,0,500,100,0,5);
+    TH2F* h_eleC = new TH2F("h_eleC","pt ele vs pt Closest Jet",100,0,500,100,0,500);
 
     Long64_t nbytes = 0, nb = 0;
     for (Long64_t jentry=0; jentry<nentries;jentry++) {
@@ -63,13 +63,13 @@ void VetoStudy::Loop()
 
         h_PtLJ->Fill(maxPt->Pt());
         h_PtSJ->Fill(secondPt->Pt());
-        h_nEle->Fill(nEle);
 
         for(Int_t i=0; i<nEle; i++){
             Double_t close = 0.0;
             TLorentzVector* thisEleP4 = (TLorentzVector*)eleP4->At(i);
-            if(thisEleP4->Pt()<10 || thisEleP4->Eta()>2.5)continue;
+            if(thisEleP4->Pt()<10 || fabs(thisEleP4->Eta())>2.5)continue;
                 if(eleIsPassVeto){
+                    h_nEle->Fill(nEle);
                     h_VetoCh->Fill((*eleChHadIso)[i]/thisEleP4->Pt());
                     h_VetoNe->Fill((*eleNeHadIso)[i]/thisEleP4->Pt());
                     h_VetoGa->Fill((*eleGamIso)[i]/thisEleP4->Pt());
@@ -79,9 +79,9 @@ void VetoStudy::Loop()
                     h_dREleLJ->Fill(maxPt->DeltaR(*thisEleP4));
                     h_dREleSJ->Fill(secondPt->DeltaR(*thisEleP4));
                     if(maxPt->DeltaR(*thisEleP4)<secondPt->DeltaR(*thisEleP4)){
-                        close = maxPt->DeltaR(*thisEleP4);
+                        close = maxPt->Pt();
                     }else{
-                        close = secondPt->DeltaR(*thisEleP4);
+                        close = secondPt->Pt();
                     }
                     h_dRCEleJet->Fill(close);
                     h_eleC->Fill(thisEleP4->Pt(),close);
