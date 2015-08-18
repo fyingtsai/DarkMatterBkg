@@ -1,17 +1,17 @@
-#define DYSample_cxx
-#include "DYSample.h"
+#define VetoStudy_cxx
+#include "VetoStudy.h"
 #include <TH2.h>
 #include <TStyle.h>
 #include <TCanvas.h>
 #include "TLorentzVector.h"
 #include <iostream>
 
-void DYSample::Loop()
+void VetoStudy::Loop()
 {
     if (fChain == 0) return;
 
     Long64_t nentries = fChain->GetEntriesFast();
-    TFile* myFile = new TFile("Veto.root", "RECREATE");
+    TFile* myFile = new TFile("HT-600toInf.root", "RECREATE");
     TH1F* h_LooseCh = new TH1F("h_LooseCh","",100,0,15);
     TH1F* h_LooseNe = new TH1F("h_LooseNe","",100,0,15);
     TH1F* h_LooseGa = new TH1F("h_LooseGa","",100,0,15);
@@ -65,7 +65,7 @@ void DYSample::Loop()
         h_PtSJ->Fill(secondPt->Pt());
 
         for(Int_t i=0; i<nEle; i++){
-            Double_t close = 0.0;
+            Double_t closePt = 0.0, closedR=0.0;
             TLorentzVector* thisEleP4 = (TLorentzVector*)eleP4->At(i);
             if(thisEleP4->Pt()<10 || fabs(thisEleP4->Eta())>2.5)continue;
                 if(eleIsPassVeto){
@@ -79,12 +79,14 @@ void DYSample::Loop()
                     h_dREleLJ->Fill(maxPt->DeltaR(*thisEleP4));
                     h_dREleSJ->Fill(secondPt->DeltaR(*thisEleP4));
                     if(maxPt->DeltaR(*thisEleP4)<secondPt->DeltaR(*thisEleP4)){
-                        close = maxPt->Pt();
+                        closePt = maxPt->Pt();
+                        closedR = maxPt->DeltaR(*thisEleP4);
                     }else{
-                        close = secondPt->Pt();
+                        closePt = secondPt->Pt();
+                        closedR = secondPt->DeltaR(*thisEleP4);
                     }
-                    h_dRCEleJet->Fill(close);
-                    h_eleC->Fill(thisEleP4->Pt(),close);
+                    h_dRCEleJet->Fill(closedR);
+                    h_eleC->Fill(thisEleP4->Pt(),closePt);
                 }
                 if(eleIsPassLoose){
                     h_LooseCh->Fill((*eleChHadIso)[i]/thisEleP4->Pt());
