@@ -85,7 +85,6 @@ void VetoStudy::Loop()
                     }
                     h_dRCEleJet->Fill(close);
                     h_eleC->Fill(thisEleP4->Pt(),close);
-                    cout<<"elePT:"<<thisEleP4->Pt()<<"JetC:"<<close<<endl;
                 }
                 if(eleIsPassLoose){
                     h_LooseCh->Fill((*eleChHadIso)[i]/thisEleP4->Pt());
