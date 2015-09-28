@@ -182,7 +182,7 @@ TreeReader data(infiles);
     if(nW_had!=1 && nW_lep!=1)continue;
 
     for(int ig=0; ig < nGenPar; ig++){
-      /******* ele Loop *********/
+      //for lepton 
       if(abs(genMomParId[ig])==6 && abs(genParId[ig])==24){
         if(genParId[genDa1[ig]]==-11 || genParId[genDa1[ig]]==-13 || genParId[genDa1[ig]]==-15){
           goodLep.push_back(genDa1[ig]);
@@ -194,19 +194,20 @@ TreeReader data(infiles);
         }else if (genParId[genDa2[ig]]==11 || genParId[genDa2[ig]]==13 || genParId[genDa2[ig]]==15){
           goodantiLep.push_back(genDa2[ig]);
         }
-      }// ele loop
+      }
 
-      /******** bjet loop *********/
+      // for bjet
       if(abs(genParId[ig])==5){
         if(genMomParId[ig]==6)goodbquark.push_back(ig);
         if(genMomParId[ig]==-6)goodantib.push_back(ig);
-      }//b quark
+      }
 
-      /****** select top ***********/
+      // for top quark
       if(genParId[ig]==6)goodtop.push_back(ig);
       if(genParId[ig]==-6)goodantitop.push_back(ig);
     
-    /********** Plot from Same Top **************/
+    /********** Plot **************/
+    //plot for coming from Same top
       for(unsigned int i=0; i< goodLep.size(); i++){
         int il = goodLep[i];
         TLorentzVector* thisEle = (TLorentzVector*)genParP4->At(il);
@@ -233,7 +234,7 @@ TreeReader data(infiles);
             h_2D_dR1->Fill(thisEle->DeltaR(*thisb),thistop->Pt());
           }
         }
-      }// plot for coming from same antitop
+      }
 
       // plot for coming from Diff top
       for(unsigned int i=0; i< goodLep.size(); i++){
@@ -248,7 +249,7 @@ TreeReader data(infiles);
             h_2D_dR2->Fill(thisEle->DeltaR(*thisb),thistop->Pt());
           }
         }
-      }// plot for coming from same antitop
+      }
       // plot for coming from Diff antitop
       for(unsigned int i=0; i< goodantiLep.size(); i++){
         int il = goodantiLep[i];
@@ -262,7 +263,7 @@ TreeReader data(infiles);
             h_2D_dR2->Fill(thisEle->DeltaR(*thisb),thistop->Pt());
           }
         }
-      }// plot for coming from same antitop
+      }
 
     }//Gen Loop 
 
