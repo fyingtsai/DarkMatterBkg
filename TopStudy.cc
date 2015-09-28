@@ -13,6 +13,17 @@
 #include <map>
 #include <TFile.h>
 
+bool TriggerStatus(string*  trigName, vector<bool> &hlt_trigResult, Int_t nsize, string TRIGNAME){
+    bool triggerstate=false;
+    for(size_t i=0; i<nsize;i++){
+        std::string thisTrig= trigName[i];
+        size_t found = thisTrig.find(TRIGNAME);
+        if(found==string::npos)continue;
+        triggerstate= hlt_trigResult[i];
+    }
+    return triggerstate;
+}
+
 bool is2Jets(int index, int d1, int d2){
   bool flag = false;
   if(abs(d1) <=6 && abs(d1)!=0) flag = true;
@@ -65,7 +76,6 @@ void TopStudy(string inputFile){
       while(fileH = (TFile*)fileIt()) {
       std::string fileN = fileH->GetName();
       std::string baseString = "NCUGlobal"; 
-      //cout <<"file:"<< fileN << endl;
         if(fileN.find("fail") != std::string::npos)continue;
         if(fileH->IsFolder()){
       std::string newDir=inputFile+fileN;
@@ -75,11 +85,9 @@ void TopStudy(string inputFile){
       TFile *fileH2 = new TFile();  
           while(fileH2 = (TFile*)fileIt2()) {
         std::string fileN2 = fileH2->GetName();
-        // cout << fileN2 << endl;
             if(fileH2->IsFolder())continue;
             if(fileN2.find("fail") != std::string::npos)continue;
             if(fileN2.find(baseString) == std::string::npos)continue;
-        // cout << fileN2.data() << endl;
             infiles.push_back(Form("%s/%s",newDir.data(),fileN2.data()));
             nfiles++;
           }
@@ -102,6 +110,10 @@ TreeReader data(infiles);
     Float_t pfMetRawPt     = data.GetFloat("pfMetRawPt");
     Float_t pfMetRawPhi    = data.GetFloat("pfMetRawPhi");
     Float_t *FATjetCISVV2  = data.GetPtrFloat("FATjetCISVV2");
+    // Int_t *hlt_trigResult  = data.GetPtrInt("hlt_trigResult");
+    vector<bool> &trigResult = *((vector<bool>*) data.GetPtr("hlt_trigResult"));
+    std::string*  trigName = data.GetPtrString("hlt_trigName");
+    const Int_t nsize = data.GetPtrStringSize();
 
     float NmaxPt = -9999.0, NsecondPt = -9999.0;
     int maxJetIndex = -1;
@@ -131,6 +143,8 @@ TreeReader data(infiles);
     if(pfMetRawPt < 200) continue;
     if(fabs(maxPt.Phi()- pfMetRawPhi)<2.5)continue;
     if(fabs(secondPt.Phi()- pfMetRawPhi )<2.5)continue;
+    if(!TriggerStatus(trigName,trigResult,nsize,"HLT_PFMET170_NoiseCleaned_v1") || 
+    !TriggerStatus(trigName,trigResult,nsize,"HLT_PFMET120_PFMHT120_IDLoose_v1")) continue;
 
     TClonesArray* genParP4 = (TClonesArray*) data.GetPtrTObject("genParP4");
     Int_t nGenPar          = data.GetInt("nGenPar");
@@ -203,7 +217,6 @@ TreeReader data(infiles);
             int kt = goodtop[k];
             TLorentzVector* thistop = (TLorentzVector*)genParP4->At(kt);
             h_2D_dR1->Fill(thisEle->DeltaR(*thisb),thistop->Pt());
-            // cout<<"dR: "<<thisEle->DeltaR(*thisb)<<" Top_PT:"<<thistop->Pt()<<endl;
           }
         }
       }
@@ -218,7 +231,6 @@ TreeReader data(infiles);
             int kt = goodantitop[k];
             TLorentzVector* thistop = (TLorentzVector*)genParP4->At(kt);
             h_2D_dR1->Fill(thisEle->DeltaR(*thisb),thistop->Pt());
-            // cout<<"dR: "<<thisEle->DeltaR(*thisb)<<" Top_PT:"<<thistop->Pt()<<endl;
           }
         }
       }// plot for coming from same antitop
@@ -234,7 +246,6 @@ TreeReader data(infiles);
             int kt = goodtop[k];
             TLorentzVector* thistop = (TLorentzVector*)genParP4->At(kt);
             h_2D_dR2->Fill(thisEle->DeltaR(*thisb),thistop->Pt());
-            // cout<<"dR: "<<thisEle->DeltaR(*thisb)<<" Top_PT:"<<thistop->Pt()<<endl;
           }
         }
       }// plot for coming from same antitop
@@ -249,7 +260,6 @@ TreeReader data(infiles);
             int kt = goodtop[k];
             TLorentzVector* thistop = (TLorentzVector*)genParP4->At(kt);
             h_2D_dR2->Fill(thisEle->DeltaR(*thisb),thistop->Pt());
-            // cout<<"dR: "<<thisEle->DeltaR(*thisb)<<" Top_PT:"<<thistop->Pt()<<endl;
           }
         }
       }// plot for coming from same antitop
