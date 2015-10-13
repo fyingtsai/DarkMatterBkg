@@ -12,6 +12,7 @@
 #include <fstream>
 #include <map>
 #include <TFile.h>
+#include "setNCUStyle.C"
 
 bool TriggerStatus(string*  trigName, vector<bool> &hlt_trigResult, Int_t nsize, string TRIGNAME){
     bool triggerstate=false;
@@ -50,7 +51,7 @@ bool is1Nu1Lep(int index, int d1, int d2){
   return false;
 }
 
-void TopStudy(string inputFile){
+void TopStudy2(string inputFile){
 
   TString outputFile;
   std::vector<string> infiles;
@@ -58,12 +59,12 @@ void TopStudy(string inputFile){
   if(inputFile.find(".root")!= std::string::npos)
     {
       TString endfix=gSystem->GetFromPipe(Form("file=%s; test=${file##*/}; echo \"${test%%.root*}\"",inputFile.data()));
-      outputFile = Form("ttbar_%s.root",endfix.Data());
+      outputFile = Form("ttbar_1test%s.root",endfix.Data());
       cout << "Output file_ = " << outputFile << endl;
     }
   else{
       TString endfix=gSystem->GetFromPipe(Form("file=%s; test=${file##*/}; echo \"${test%%.root*}\"",inputFile.data()));
-      outputFile = Form("ttbar_%s.root",endfix.Data());
+      outputFile = Form("ttbar_1test%s.root",endfix.Data());
       cout << "Output file = " << outputFile.Data() << endl;
     
     
@@ -96,55 +97,27 @@ void TopStudy(string inputFile){
      cout << "Opened " << nfiles << " files" << endl; 
   }
 TreeReader data(infiles);
+setNCUStyle();
 
-    TH2F* h_2D_dR1 = new TH2F("h_dR1","dR(lep,b) comes from the same top VS Top Pt",100,0,5,100,0,1000);
-    TH2F* h_2D_dR2 = new TH2F("h_dR2","dR(lep,b) comes from the other top VS Top Pt",100,0,5,100,0,1000);
+    TH2F* h_2D_dR1 = new TH2F("h_2D_dR1","dR(lep,b) comes from the same top VS Top Pt",100,0,1000,100,0,5);
+    TH2F* h_2D_dR2 = new TH2F("h_2D_dR2","dR(lep,b) comes from the other top VS Top Pt",100,0,1000,100,0,5);
+    TH1F* h_dR1 = new TH1F("h_dR1","dR(ele,top1)",20,0,4);
+    TH1F* h_dR2 = new TH1F("h_dR2","dR(ele,top2)",20,0,4);
+    TH1F* h_dR_Ele_genreco = new TH1F("h_dR_Ele_genreco","dR(Reco_ele,Gen_ele)",20,0,4);
+    TH1F* h_eb_dR1_gen = new TH1F("h_eb_dR1_gen","dR1(ele,bjet)",20,0,4);
+    TH1F* h_eb_dR2_gen = new TH1F("h_eb_dR2_gen","dR2(ele,bjet)",20,0,4);
+    TH1F* h_eb_dR1_reco = new TH1F("h_eb_dR1_reco","dR1(ele,bjet)",20,0,4);
+    TH1F* h_eb_dR2_reco = new TH1F("h_eb_dR2_reco","dR2(ele,bjet)",20,0,4);
+    TH1F* h_dPhi1 = new TH1F("h_dPhi1","dPhi(ele,top1)",10,0,5);
+    TH1F* h_dPhi2 = new TH1F("h_dPhi2","dPhi(ele,top2)",10,0,5);
+    TH1F* h_dEta1 = new TH1F("h_dEta1","dEta(ele,top1)",10,-5,5);
+    TH1F* h_dEta2 = new TH1F("h_dEta2","dEta(ele,top2)",10,-5,5);
 
     for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
        if (jEntry % 50000 == 0)
        fprintf(stderr, "Processing event %lli of %lli\n", jEntry + 1, data.GetEntriesFast());
 
     data.GetEntry(jEntry);
-    TClonesArray* FatJetP4 = (TClonesArray*) data.GetPtrTObject("FATjetP4");
-    Int_t nJet             = data.GetInt("FATnJet");
-    Float_t pfMetRawPt     = data.GetFloat("pfMetRawPt");
-    Float_t pfMetRawPhi    = data.GetFloat("pfMetRawPhi");
-    Float_t *FATjetCISVV2  = data.GetPtrFloat("FATjetCISVV2");
-    // Int_t *hlt_trigResult  = data.GetPtrInt("hlt_trigResult");
-    vector<bool> &trigResult = *((vector<bool>*) data.GetPtr("hlt_trigResult"));
-    std::string*  trigName = data.GetPtrString("hlt_trigName");
-    const Int_t nsize = data.GetPtrStringSize();
-
-    float NmaxPt = -9999.0, NsecondPt = -9999.0;
-    int maxJetIndex = -1;
-    TLorentzVector maxPt, secondPt;
-
-    /********* BJet Selction *************/
-    for(int ij=0; ij< nJet; ij++){
-      TLorentzVector* thisJet = (TLorentzVector*)FatJetP4->At(ij);
-      if(thisJet->Pt() < 200)continue;
-      if(fabs(thisJet->Eta()) > 2.5)continue;
-      if(FATjetCISVV2[ij] < 0.605)continue;
-
-            if(thisJet->Pt() > NmaxPt){
-                NmaxPt = thisJet->Pt();
-                maxPt = *thisJet;
-                maxJetIndex = ij;
-            }//leading Jet
-            if(thisJet->Pt() > NsecondPt){
-                if(ij == maxJetIndex) continue;
-                NsecondPt = thisJet->Pt();
-                secondPt = *thisJet;
-            }//second Jet      
-    }//AK8PFJets loop
-
-    /******* PreSelection **********/
-    if((maxPt + secondPt).M()>150 || (maxPt + secondPt).M()< 100)continue;
-    if(pfMetRawPt < 200) continue;
-    if(fabs(maxPt.Phi()- pfMetRawPhi)<2.5)continue;
-    if(fabs(secondPt.Phi()- pfMetRawPhi )<2.5)continue;
-    if(!TriggerStatus(trigName,trigResult,nsize,"HLT_PFMET170_NoiseCleaned_v1") || 
-    !TriggerStatus(trigName,trigResult,nsize,"HLT_PFMET120_PFMHT120_IDLoose_v1")) continue;
 
     TClonesArray* genParP4 = (TClonesArray*) data.GetPtrTObject("genParP4");
     Int_t nGenPar          = data.GetInt("nGenPar");
@@ -181,33 +154,167 @@ TreeReader data(infiles);
     /******* semi-leptonic selection *******/
     if(nW_had!=1 && nW_lep!=1)continue;
 
+    TLorentzVector *lorentzGenEle[10],*lorentzGenEle_anti[10];
+    TLorentzVector *lorentzGenb[10],*lorentzGenb_anti[10];
+    TLorentzVector *lorentzGent[10],*lorentzGent_anti[10];
+    int genEle=0,genEle_anti=0,genb=0,genb_anti=0,gent=0,gent_anti=0;
     for(int ig=0; ig < nGenPar; ig++){
-      //for lepton 
-      if(abs(genMomParId[ig])==6 && abs(genParId[ig])==24){
-        if(genParId[genDa1[ig]]==-11 || genParId[genDa1[ig]]==-13 || genParId[genDa1[ig]]==-15){
+      /******* Ele Gen Loop *********/
+      if(abs(genParId[ig])==24 || abs(genParId[ig])==11){
+        if(abs(genMomParId[ig])!= 6 )continue;
+        if(genParSt[genDa1[ig]]!=1)continue;
+        if(genParId[genDa1[ig]]==-11){
           goodLep.push_back(genDa1[ig]);
-        }else if (genParId[genDa2[ig]]==-11 || genParId[genDa2[ig]]==-13 || genParId[genDa2[ig]]==-15){
+          TLorentzVector* thisEleP4 = (TLorentzVector*)genParP4->At(genDa1[ig]);
+          lorentzGenEle[genEle]= thisEleP4;
+          genEle++;
+        }else if (genParId[genDa2[ig]]==-11){
           goodLep.push_back(genDa2[ig]);
+          TLorentzVector* thisEleP4 = (TLorentzVector*)genParP4->At(genDa1[ig]);
+          lorentzGenEle[genEle]= thisEleP4;
+          genEle++;
         }
-        if(genParId[genDa1[ig]]==11 || genParId[genDa1[ig]]==13 || genParId[genDa1[ig]]==15){
+        if(genParId[genDa1[ig]]==11){
           goodantiLep.push_back(genDa1[ig]);
-        }else if (genParId[genDa2[ig]]==11 || genParId[genDa2[ig]]==13 || genParId[genDa2[ig]]==15){
+          TLorentzVector* thisEleP4 = (TLorentzVector*)genParP4->At(genDa1[ig]);
+          lorentzGenEle_anti[genEle_anti]= thisEleP4;
+          genEle_anti++;
+        }else if (genParId[genDa2[ig]]==11){
           goodantiLep.push_back(genDa2[ig]);
+          TLorentzVector* thisEleP4 = (TLorentzVector*)genParP4->At(genDa1[ig]);
+          lorentzGenEle_anti[genEle_anti]= thisEleP4;
+          genEle_anti++;
+        }
+      }// ele loop     
+
+      /******** bjet loop GenLevel *********/
+      if(abs(genParId[ig])==5){
+        if(genMomParId[ig]==6){
+          TLorentzVector* thisb = (TLorentzVector*)genParP4->At(ig);
+          lorentzGenb[genb] = thisb;
+          goodbquark.push_back(ig);
+          genb++;
+        }
+        if(genMomParId[ig]==-6){
+          TLorentzVector* thisAntib = (TLorentzVector*)genParP4->At(ig);
+          lorentzGenb_anti[genb_anti] = thisAntib;
+          goodantib.push_back(ig);
+          genb_anti++;
+        }
+      }//b quark
+      /****** select top - GenLevel ***********/
+      // for top quark
+      if(genParId[ig]==6){
+        TLorentzVector* thist = (TLorentzVector*)genParP4->At(ig);
+        lorentzGent[gent] = thist;
+        goodtop.push_back(ig);
+        gent++;
+      }
+      if(genParId[ig]==-6){
+        TLorentzVector* thisAntit = (TLorentzVector*)genParP4->At(ig);
+        lorentzGent_anti[gent_anti] = thisAntit;
+        goodantitop.push_back(ig);
+        gent_anti++;
+      }
+
+    TClonesArray* FatJetP4 = (TClonesArray*) data.GetPtrTObject("FATjetP4");
+    Int_t nJet             = data.GetInt("FATnJet");
+    Float_t pfMetRawPt     = data.GetFloat("pfMetRawPt");
+    Float_t pfMetRawPhi    = data.GetFloat("pfMetRawPhi");
+    Float_t *FATjetCISVV2  = data.GetPtrFloat("FATjetCISVV2");
+    Float_t *FATjetSDmass  = data.GetPtrFloat("FATjetSDmass");
+    Float_t *FATjetPRmass  = data.GetPtrFloat("FATjetPRmass");
+    // Int_t *hlt_trigResult  = data.GetPtrInt("hlt_trigResult");
+    vector<bool> &trigResult = *((vector<bool>*) data.GetPtr("hlt_trigResult"));
+    std::string*  trigName = data.GetPtrString("hlt_trigName");
+    const Int_t nsize = data.GetPtrStringSize();
+
+    float NmaxPt = -9999.0, NsecondPt = -9999.0;
+    int maxJetIndex = -1,maxJetIndexGen = -1, maxJetIndex_anti=-1;
+    TLorentzVector maxJet, maxJetGen, maxJet_anti;
+
+    /********* BJet Selction *************/
+    for(int ij=0; ij< nJet; ij++){
+      bool match = false,match_anti = false;
+      TLorentzVector* thisJet = (TLorentzVector*)FatJetP4->At(ij);
+      if(thisJet->Pt() < 200)continue;
+      if(fabs(thisJet->Eta()) > 2.5)continue;
+      if(FATjetCISVV2[ij] < 0.605)continue;
+      if(thisJet->Pt() > NmaxPt){
+                NmaxPt = thisJet->Pt();
+                maxJet = *thisJet;
+                maxJetIndex = ij;
+            }//leading Jet
+      /****** Matching ********/
+      for(int ig=0; ig <genb; ig++ ){
+        float dR1 = thisJet->DeltaR(*lorentzGenb[ig]);
+        if(dR1 <= 0.1) match = true;
+      }
+      for(int ig=0; ig <genb_anti; ig++ ){
+        float dR2 = thisJet->DeltaR(*lorentzGenb_anti[ig]);
+        if(dR2 <= 0.1) match_anti = true;
+      }
+      if(match){
+        if(thisJet->Pt() > NmaxPt){
+                NmaxPt = thisJet->Pt();
+                maxJetGen = *thisJet;
+                maxJetIndexGen = ij;
         }
       }
-
-      // for bjet
-      if(abs(genParId[ig])==5){
-        if(genMomParId[ig]==6)goodbquark.push_back(ig);
-        if(genMomParId[ig]==-6)goodantib.push_back(ig);
+      if(match_anti){
+        if(thisJet->Pt() > NmaxPt){
+                NmaxPt = thisJet->Pt();
+                maxJet_anti = *thisJet;
+                maxJetIndex_anti = ij;
+        }
+      }      
+    }//AK8PFJets loop
+    if(maxJetIndex == -1)continue;
+    /******* PreSelection **********/
+    if(pfMetRawPt < 200) continue;
+    if(fabs(maxJet.Phi()- pfMetRawPhi)<2.5)continue;
+    if(!TriggerStatus(trigName,trigResult,nsize,"HLT_PFMET170_NoiseCleaned_v1") || 
+    !TriggerStatus(trigName,trigResult,nsize,"HLT_PFMET120_PFMHT120_IDLoose_v1")) continue;
+    /****** Plot for Reco Ele with FatJet ********/
+    TClonesArray* eleP4 = (TClonesArray*) data.GetPtrTObject("eleP4");
+    Int_t nEle          = data.GetInt("nEle");
+    vector<bool> &eleIsPassLooseNoIso = *((vector<bool>*) data.GetPtr("eleIsPassLooseNoIso"));
+    for(int ie=0; ie < nEle; ie++){
+      bool match = false,match_anti = false;
+      if(!eleIsPassLooseNoIso[ie])continue;
+      TLorentzVector* thisEle = (TLorentzVector*)eleP4->At(ie);
+      for(int ig=0; ig <genEle; ig++ ){
+        float dR1 = thisEle->DeltaR(*lorentzGenEle[ig]);
+        if(dR1 <= 0.1) match = true;
       }
+      for(int ig=0; ig <genEle_anti; ig++ ){
+        float dR2 = thisEle->DeltaR(*lorentzGenEle_anti[ig]);
+        if(dR2 <= 0.1) match_anti = true;
+      }
+       if(match){
+        h_eb_dR1_reco->Fill(thisEle->DeltaR(maxJetGen)); //from the same top
+        h_eb_dR2_reco->Fill(thisEle->DeltaR(maxJet_anti)); //from the diff top
+       }
+      if(match_anti){
+        h_eb_dR1_reco->Fill(thisEle->DeltaR(maxJet_anti)); //from the same top
+        h_eb_dR2_reco->Fill(thisEle->DeltaR(maxJetGen)); //from the diff top
+       }
+    }//reco ele loop
+    //reco-gen ele loop
+    for(int ie=0; ie < nEle; ie++){
+      if(!eleIsPassLooseNoIso[ie])continue;
+      TLorentzVector* thisEle = (TLorentzVector*)eleP4->At(ie);
+      float dR = maxJet.DeltaR(*thisEle);
+      if(dR > 0.8)continue;
+      for(int ig=0; ig <genEle; ig++ ){
+        h_dR_Ele_genreco->Fill(thisEle->DeltaR(*lorentzGenEle[ig]));
+      }
+      for(int ig=0; ig <genEle_anti; ig++ ){
+        h_dR_Ele_genreco->Fill(thisEle->DeltaR(*lorentzGenEle_anti[ig]));
+      }
+    }
 
-      // for top quark
-      if(genParId[ig]==6)goodtop.push_back(ig);
-      if(genParId[ig]==-6)goodantitop.push_back(ig);
-    
-    /********** Plot **************/
-    //plot for coming from Same top
+    /********** Plot from the Same Top - GenLevel**************/
       for(unsigned int i=0; i< goodLep.size(); i++){
         int il = goodLep[i];
         TLorentzVector* thisEle = (TLorentzVector*)genParP4->At(il);
@@ -217,11 +324,15 @@ TreeReader data(infiles);
           for(unsigned int k=0; k < goodtop.size(); k++){
             int kt = goodtop[k];
             TLorentzVector* thistop = (TLorentzVector*)genParP4->At(kt);
-            h_2D_dR1->Fill(thisEle->DeltaR(*thisb),thistop->Pt());
+            h_2D_dR1->Fill(thistop->Pt(),thisEle->DeltaR(*thisb));
+            h_dR1->Fill(thisEle->DeltaR(*thistop));
+            h_eb_dR1_gen->Fill(thisEle->DeltaR(*thisb));
+            h_dPhi1->Fill(thisEle->DeltaPhi(*thistop));
+            h_dEta1->Fill(thisEle->Eta()-thistop->Eta());
           }
         }
       }
-      // plot for coming from Same antitop
+      // plot for coming from the Same antitop
       for(unsigned int i=0; i< goodantiLep.size(); i++){
         int il = goodantiLep[i];
         TLorentzVector* thisEle = (TLorentzVector*)genParP4->At(il);
@@ -231,10 +342,14 @@ TreeReader data(infiles);
           for(unsigned int k=0; k < goodantitop.size(); k++){
             int kt = goodantitop[k];
             TLorentzVector* thistop = (TLorentzVector*)genParP4->At(kt);
-            h_2D_dR1->Fill(thisEle->DeltaR(*thisb),thistop->Pt());
+            h_2D_dR1->Fill(thistop->Pt(),thisEle->DeltaR(*thisb));
+            h_dR1->Fill(thisEle->DeltaR(*thistop));
+            h_eb_dR1_gen->Fill(thisEle->DeltaR(*thisb));
+            h_dPhi1->Fill(thisEle->DeltaPhi(*thistop));
+            h_dEta1->Fill(thisEle->Eta()-thistop->Eta());
           }
         }
-      }
+      }// plot for coming from same antitop
 
       // plot for coming from Diff top
       for(unsigned int i=0; i< goodLep.size(); i++){
@@ -246,10 +361,14 @@ TreeReader data(infiles);
           for(unsigned int k=0; k < goodtop.size(); k++){
             int kt = goodtop[k];
             TLorentzVector* thistop = (TLorentzVector*)genParP4->At(kt);
-            h_2D_dR2->Fill(thisEle->DeltaR(*thisb),thistop->Pt());
+            h_2D_dR2->Fill(thistop->Pt(),thisEle->DeltaR(*thisb));
+            h_dR2->Fill(thisEle->DeltaR(*thistop));
+            h_eb_dR2_gen->Fill(thisEle->DeltaR(*thisb));
+            h_dPhi2->Fill(thisEle->DeltaPhi(*thistop));
+            h_dEta2->Fill(thisEle->Eta()-thistop->Eta());
           }
         }
-      }
+      }// plot for coming from same antitop
       // plot for coming from Diff antitop
       for(unsigned int i=0; i< goodantiLep.size(); i++){
         int il = goodantiLep[i];
@@ -260,11 +379,14 @@ TreeReader data(infiles);
           for(unsigned int k=0; k < goodtop.size(); k++){
             int kt = goodtop[k];
             TLorentzVector* thistop = (TLorentzVector*)genParP4->At(kt);
-            h_2D_dR2->Fill(thisEle->DeltaR(*thisb),thistop->Pt());
+            h_2D_dR2->Fill(thistop->Pt(),thisEle->DeltaR(*thisb));
+            h_dR2->Fill(thisEle->DeltaR(*thistop));
+            h_eb_dR2_gen->Fill(thisEle->DeltaR(*thisb));
+            h_dPhi2->Fill(thisEle->DeltaPhi(*thistop));
+            h_dEta2->Fill(thisEle->Eta()-thistop->Eta());
           }
         }
-      }
-
+      }// plot for coming from same antitop
     }//Gen Loop 
 
     }//Entries loop
@@ -272,5 +394,16 @@ TreeReader data(infiles);
 TFile* outFile = new TFile(outputFile.Data(),"recreate");
 h_2D_dR1->Write();
 h_2D_dR2->Write();
+h_dR1->Write();
+h_dR2->Write();
+h_dR_Ele_genreco->Write();
+h_eb_dR1_gen->Write();
+h_eb_dR2_gen->Write();
+h_eb_dR1_reco->Write();
+h_eb_dR2_reco->Write();
+h_dPhi1->Write();
+h_dPhi2->Write();
+h_dEta1->Write();
+h_dEta2->Write();
 outFile->Close();
 }
