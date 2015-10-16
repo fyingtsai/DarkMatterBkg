@@ -13,6 +13,7 @@
 #include <map>
 #include <TFile.h>
 #include "setNCUStyle.C"
+#include "IndexFunction.h"
 
 bool TriggerStatus(string*  trigName, vector<bool> &hlt_trigResult, Int_t nsize, string TRIGNAME){
     bool triggerstate=false;
@@ -113,6 +114,8 @@ setNCUStyle();
     TH1F* h_dEta1 = new TH1F("h_dEta1","dEta(ele,top1)",10,-5,5);
     TH1F* h_dEta2 = new TH1F("h_dEta2","dEta(ele,top2)",10,-5,5);
 
+    IndexFunction id;
+
     for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
        if (jEntry % 50000 == 0)
        fprintf(stderr, "Processing event %lli of %lli\n", jEntry + 1, data.GetEntriesFast());
@@ -135,7 +138,10 @@ setNCUStyle();
     TLorentzVector ele, antiEle, bjet;
     std::vector<int> goodLep, goodbquark, goodtop;
     std::vector<int> goodantiLep, goodantib, goodantitop;
-
+    
+        for(int i=0; i < id.indexGenEleMomisTop(genMomParId,genParId,nGenPar,genParSt).size();i++){
+          cout<<"vector:"<<id.indexGenEleMomisTop(genMomParId,genParId,nGenPar,genParSt)[i]<<endl;
+        }
     /********** Gen Level Info **********/
     for(int ig=0; ig < nGenPar; ig++){
       // if(genParSt[ig]!=1)continue;
