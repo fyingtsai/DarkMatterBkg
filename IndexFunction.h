@@ -91,7 +91,7 @@ std::vector<int> IndexFunction::indexFatJet(Int_t nJet, Float_t *FATjetCISVV2,TC
         if(fabs(thisJet->Eta()) > 2.5)continue;
         if(FATjetCISVV2[ij] < 0.605)continue;
         if(FATjetSDmass[ij]<100 || FATjetSDmass[ij]>150)continue;
-        if(fabs(thisJet->Pt() - pfMetRawPhi) < 2.5) continue;
+        if(fabs(thisJet->Phi() - pfMetRawPhi) < 2.5) continue;
         index.push_back(ij);
     }
 
