@@ -4,10 +4,11 @@ class IndexFunction
 public:
     std::vector<TLorentzVector> getGenbMomtopLorentz(Int_t* genParId,Int_t nGenPar,TClonesArray* genParP4,Int_t* genMomParId);
     std::vector<TLorentzVector> getGenBMomBLorentz(Int_t* genParId,Int_t nGenPar,TClonesArray* genParP4,Int_t* genMomParId);
-    std::vector<int> indexGenEleMomisTop(Int_t* genMomParId,Int_t* genParId,Int_t nGenPar,Int_t* genParSt);
+    std::vector<int> indexGenEleMomisTopWEle(Int_t* genMomParId,Int_t* genParId,Int_t nGenPar,Int_t* genParSt);
     std::vector<int> indexRecoEle(Int_t nEle, vector<bool> &eleIsPassLooseNoIso);
-    std::vector<int> indexRecoBMomisTopOrB(Int_t nJet,TClonesArray* FatJetP4,Int_t* genParId,Int_t nGenPar,TClonesArray* genParP4,Int_t* genMomParId);
+    std::vector<int> indexRecoBMomisTopOrB(Int_t nJet,TClonesArray* FatJetP4,Int_t* genParId,Int_t nGenPar,TClonesArray* genParP4,Int_t* genMomParId,Float_t *FATjetCISVV2,Float_t pfMetRawPhi,Float_t *FATjetSDmass);
     std::vector<int> indexFatJet(Int_t nJet, Float_t *FATjetCISVV2,TClonesArray* FatJetP4, Float_t pfMetRawPhi,Float_t *FATjetSDmass);
+    std::vector<int> indexRecoEleMatch(Int_t nEle, vector<bool> &eleIsPassLooseNoIso, TClonesArray* eleP4,Int_t* genMomParId,Int_t* genParId,Int_t nGenPar,Int_t* genParSt,TClonesArray* genParP4);
 };
 
 std::vector<TLorentzVector> IndexFunction::getGenbMomtopLorentz(Int_t* genParId,Int_t nGenPar,TClonesArray* genParP4,Int_t* genMomParId)
@@ -36,13 +37,13 @@ std::vector<TLorentzVector> IndexFunction::getGenBMomBLorentz(Int_t* genParId,In
     return blorentz;
 }
 
-std::vector<int> IndexFunction::indexGenEleMomisTop(Int_t* genMomParId,Int_t* genParId,Int_t nGenPar,Int_t* genParSt)
+std::vector<int> IndexFunction::indexGenEleMomisTopWEle(Int_t* genMomParId,Int_t* genParId,Int_t nGenPar,Int_t* genParSt)
 {
     std::vector<int> index;
     for (int i=0;i < nGenPar; i++){
         if(genParSt[i]!=1)continue;
         if(abs(genParId[i]) !=11)continue;
-        if(abs(genMomParId[i]) == 6){
+        if(abs(genMomParId[i]) == 6 || abs(genMomParId[i]) == 11 || abs(genMomParId[i]) == 24){
             index.push_back(i);
         }
     }
@@ -59,26 +60,20 @@ std::vector<int> IndexFunction::indexRecoEle(Int_t nEle, vector<bool> &eleIsPass
     return index;
 }
 
-std::vector<int> IndexFunction::indexRecoBMomisTopOrB(Int_t nJet,TClonesArray* FatJetP4,Int_t* genParId,Int_t nGenPar,TClonesArray* genParP4,Int_t* genMomParId)
+std::vector<int> IndexFunction::indexRecoEleMatch(Int_t nEle, vector<bool> &eleIsPassLooseNoIso, TClonesArray* eleP4,Int_t* genMomParId,Int_t* genParId,Int_t nGenPar,Int_t* genParSt,TClonesArray* genParP4)
 {
     std::vector<int> index;
-    IndexFunction gen;
-    TLorentzVector maxJet;
-    bool match_top = false, match_b = false;
-    float NmaxPt = -9999.0;
-    for (int ij=0;ij < nJet; ij++){
-        TLorentzVector* thisJet = (TLorentzVector*)FatJetP4->At(ij);     
-        for(int i=0; i < gen.getGenbMomtopLorentz(genParId,nGenPar,genParP4,genMomParId).size();i++){
-            float dR = thisJet->DeltaR(gen.getGenbMomtopLorentz(genParId,nGenPar,genParP4,genMomParId)[i]);
-            if(dR <= 0.2) match_top = true;
+    IndexFunction d;
+    bool match = false;
+    for (int i=0;i < d.indexRecoEle(nEle,eleIsPassLooseNoIso).size(); i++){
+        TLorentzVector* thisEle = (TLorentzVector*)eleP4->At(d.indexRecoEle(nEle,eleIsPassLooseNoIso)[i]);
+        for(int ie=0; ie<d.indexGenEleMomisTopWEle(genMomParId,genParId,nGenPar,genParSt).size();ie++){
+        TLorentzVector* thisGenEle = (TLorentzVector*)genParP4->At(d.indexGenEleMomisTopWEle(genMomParId,genParId,nGenPar,genParSt)[ie]);
+        float dR = thisEle->DeltaR(*thisGenEle);
+            if (dR <= 0.2) match = true;
         }
-        for(int i=0; i < gen.getGenBMomBLorentz(genParId,nGenPar,genParP4,genMomParId).size();i++){
-            float dR = thisJet->DeltaR(gen.getGenBMomBLorentz(genParId,nGenPar,genParP4,genMomParId)[i]);
-            if(dR <= 0.2) match_b = true;
-        }
-    if(match_top)index.push_back(ij);
-    if(match_b)index.push_back(ij);
-    }  
+    if(match) index.push_back(d.indexRecoEle(nEle,eleIsPassLooseNoIso)[i]);
+    }
     return index;
 }
 
@@ -97,3 +92,28 @@ std::vector<int> IndexFunction::indexFatJet(Int_t nJet, Float_t *FATjetCISVV2,TC
 
     return index;
 }
+
+std::vector<int> IndexFunction::indexRecoBMomisTopOrB(Int_t nJet,TClonesArray* FatJetP4,Int_t* genParId,Int_t nGenPar,TClonesArray* genParP4,Int_t* genMomParId,Float_t *FATjetCISVV2,Float_t pfMetRawPhi,Float_t *FATjetSDmass)
+{
+    std::vector<int> index;
+    IndexFunction gen;
+    TLorentzVector maxJet;
+    IndexFunction d;
+    bool match_top = false, match_b = false;
+    float NmaxPt = -9999.0;
+    for (int ij=0; ij<d.indexFatJet(nJet,FATjetCISVV2,FatJetP4,pfMetRawPhi,FATjetSDmass).size(); ij++){
+        TLorentzVector* thisJet = (TLorentzVector*)FatJetP4->At(d.indexFatJet(nJet,FATjetCISVV2,FatJetP4,pfMetRawPhi,FATjetSDmass)[ij]);     
+        for(int i=0; i < gen.getGenbMomtopLorentz(genParId,nGenPar,genParP4,genMomParId).size();i++){
+            float dR = thisJet->DeltaR(gen.getGenbMomtopLorentz(genParId,nGenPar,genParP4,genMomParId)[i]);
+            if(dR <= 0.2) match_top = true;
+        }
+        for(int i=0; i < gen.getGenBMomBLorentz(genParId,nGenPar,genParP4,genMomParId).size();i++){
+            float dR = thisJet->DeltaR(gen.getGenBMomBLorentz(genParId,nGenPar,genParP4,genMomParId)[i]);
+            if(dR <= 0.2) match_b = true;
+        }
+    if(match_top)index.push_back(ij);
+    if(match_b)index.push_back(ij);
+    }  
+    return index;
+}
+
