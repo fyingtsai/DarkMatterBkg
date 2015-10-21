@@ -9,6 +9,8 @@ public:
     std::vector<int> indexRecoBMomisTopOrB(Int_t nJet,TClonesArray* FatJetP4,Int_t* genParId,Int_t nGenPar,TClonesArray* genParP4,Int_t* genMomParId,Float_t *FATjetCISVV2,Float_t pfMetRawPhi,Float_t *FATjetSDmass);
     std::vector<int> indexFatJet(Int_t nJet, Float_t *FATjetCISVV2,TClonesArray* FatJetP4, Float_t pfMetRawPhi,Float_t *FATjetSDmass);
     std::vector<int> indexRecoEleMatch(Int_t nEle, vector<bool> &eleIsPassLooseNoIso, TClonesArray* eleP4,Int_t* genMomParId,Int_t* genParId,Int_t nGenPar,Int_t* genParSt,TClonesArray* genParP4);
+    int getNumThinJet(Int_t THINnJet, TClonesArray *THINjetP4,Int_t nJet,TClonesArray* FatJetP4);
+    int getNumThinJet2(Int_t THINnJet, TClonesArray *THINjetP4,Int_t nJet,TClonesArray* FatJetP4,Float_t *FATjetCISVV2);
 };
 
 std::vector<TLorentzVector> IndexFunction::getGenbMomtopLorentz(Int_t* genParId,Int_t nGenPar,TClonesArray* genParP4,Int_t* genMomParId)
@@ -117,3 +119,44 @@ std::vector<int> IndexFunction::indexRecoBMomisTopOrB(Int_t nJet,TClonesArray* F
     return index;
 }
 
+int IndexFunction::getNumThinJet(Int_t THINnJet, TClonesArray *THINjetP4,Int_t nJet,TClonesArray* FatJetP4)
+{
+    std::vector<int> index;
+    int count=0;
+    for (int ij=0;ij < THINnJet; ij++){
+        TLorentzVector* thisJet = (TLorentzVector*)THINjetP4->At(ij);
+        if(thisJet->Pt() < 10)continue;
+        if(fabs(thisJet->Eta()) > 2.5)continue;
+        for (int k=0;k<nJet;k++){
+           TLorentzVector* thatJet = (TLorentzVector*)FatJetP4->At(k);
+           float dPhi =  fabs(thisJet->Phi()-thatJet->Phi());
+           if (dPhi>2){
+           count++;
+           break;
+           }
+        }
+    }
+    return count;
+}
+
+int IndexFunction::getNumThinJet2(Int_t THINnJet, TClonesArray *THINjetP4,Int_t nJet,TClonesArray* FatJetP4,Float_t *FATjetCISVV2)
+{
+    std::vector<int> index;
+    int count=0;
+    for (int ij=0;ij < THINnJet; ij++){
+        TLorentzVector* thisJet = (TLorentzVector*)THINjetP4->At(ij);
+        if(thisJet->Pt() < 10)continue;
+        if(fabs(thisJet->Eta()) > 2.5)continue;
+        if(FATjetCISVV2[ij] < 0.605)continue;
+        for (int k=0;k<nJet;k++){
+           TLorentzVector* thatJet = (TLorentzVector*)FatJetP4->At(k);
+           float dPhi =  fabs(thisJet->Phi()-thatJet->Phi());
+           if (dPhi>2){
+           count++;
+           break;
+           }
+        }
+    }
+
+    return count;
+}

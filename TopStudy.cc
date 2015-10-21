@@ -110,6 +110,8 @@ setNCUStyle();
     TH1F* h_recoBEta = new TH1F("h_recoBEta","recoJet Eta",100,-5,5);
     TH1F* h_dR1_recoM = new TH1F("h_dR1_recoM","dR(ele,b) at reco with gen-matching",20,0,4);
     TH1F* h_dR2_recoM = new TH1F("h_dR2_recoM","dR(ele,b) at reco with gen-matching for diff top",20,0,4);
+    TH1F* h_numThinJet = new TH1F("h_numThinJet","number of thin jet",10,0,10);
+    TH1F* h_numThinJet2 = new TH1F("h_numThinJet2","number of thin jet (with csv)",10,0,10);
 
     IndexFunction d;
 
@@ -142,7 +144,12 @@ setNCUStyle();
     Float_t *FATjetPRmass  = data.GetPtrFloat("FATjetPRmass");
     vector<bool> &trigResult = *((vector<bool>*) data.GetPtr("hlt_trigResult"));
     std::string*  trigName = data.GetPtrString("hlt_trigName");
+
+    TClonesArray* THINjetP4 = (TClonesArray*) data.GetPtrTObject("THINjetP4");
+    Int_t THINnJet             = data.GetInt("THINnJet");
     const Int_t nsize = data.GetPtrStringSize();
+
+
 
     int nW_lep=0, nW_had=0;
 
@@ -210,7 +217,7 @@ setNCUStyle();
       h_recoBPt->Fill(thisb->Pt());
       h_recoBEta->Fill(thisb->Eta());
     }
-    
+
     for(int i=0; i< d.indexRecoEleMatch(nEle, eleIsPassLooseNoIso, eleP4, genMomParId, genParId, nGenPar, genParSt, genParP4).size(); i++){
       TLorentzVector* thisEle = (TLorentzVector*)eleP4->At(d.indexRecoEleMatch(nEle, eleIsPassLooseNoIso, eleP4, genMomParId, genParId, nGenPar, genParSt, genParP4)[i]);
       for (int j=0; j< d.indexRecoBMomisTopOrB(nJet,FatJetP4,genParId,nGenPar,genParP4,genMomParId,FATjetCISVV2,pfMetRawPhi,FATjetSDmass).size();j++){
@@ -220,7 +227,8 @@ setNCUStyle();
         // if(thisEle->charge()*thisb->charge()>0)h_dR2_recoM->Fill(thisEle->DeltaR(*thisb));
       }
     }
-
+    h_numThinJet->Fill(d.getNumThinJet(THINnJet, THINjetP4,nJet,FatJetP4));
+    h_numThinJet2->Fill(d.getNumThinJet2(THINnJet, THINjetP4,nJet,FatJetP4,FATjetCISVV2));
 
     }//Entries loop
 
@@ -236,5 +244,7 @@ h_recoBPt->Write();
 h_recoBEta->Write();
 h_dR1_recoM->Write();
 // h_dR2_recoM->Write();
+h_numThinJet->Write();
+h_numThinJet2->Write();
 outFile->Close();
 }
