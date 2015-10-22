@@ -9,8 +9,8 @@ public:
     std::vector<int> indexRecoBMomisTopOrB(Int_t nJet,TClonesArray* FatJetP4,Int_t* genParId,Int_t nGenPar,TClonesArray* genParP4,Int_t* genMomParId,Float_t *FATjetCISVV2,Float_t pfMetRawPhi,Float_t *FATjetSDmass);
     std::vector<int> indexFatJet(Int_t nJet, Float_t *FATjetCISVV2,TClonesArray* FatJetP4, Float_t pfMetRawPhi,Float_t *FATjetSDmass);
     std::vector<int> indexRecoEleMatch(Int_t nEle, vector<bool> &eleIsPassLooseNoIso, TClonesArray* eleP4,Int_t* genMomParId,Int_t* genParId,Int_t nGenPar,Int_t* genParSt,TClonesArray* genParP4);
-    int getNumThinJet(Int_t THINnJet, TClonesArray *THINjetP4,Int_t nJet,TClonesArray* FatJetP4);
-    int getNumThinJet2(Int_t THINnJet, TClonesArray *THINjetP4,Int_t nJet,TClonesArray* FatJetP4,Float_t *FATjetCISVV2);
+    int getNumThinJet(Int_t THINnJet, TClonesArray *THINjetP4,Int_t nJet,TClonesArray* FatJetP4, Int_t* genParId,Int_t nGenPar,TClonesArray* genParP4,Int_t* genMomParId);
+    int getNumThinJet2(Int_t THINnJet, TClonesArray *THINjetP4,Int_t nJet,TClonesArray* FatJetP4,Float_t *FATjetCISVV2,Int_t* genParId,Int_t nGenPar,TClonesArray* genParP4,Int_t* genMomParId);
 };
 
 std::vector<TLorentzVector> IndexFunction::getGenbMomtopLorentz(Int_t* genParId,Int_t nGenPar,TClonesArray* genParP4,Int_t* genMomParId)
@@ -66,8 +66,8 @@ std::vector<int> IndexFunction::indexRecoEleMatch(Int_t nEle, vector<bool> &eleI
 {
     std::vector<int> index;
     IndexFunction d;
-    bool match = false;
     for (int i=0;i < d.indexRecoEle(nEle,eleIsPassLooseNoIso).size(); i++){
+        bool match = false;
         TLorentzVector* thisEle = (TLorentzVector*)eleP4->At(d.indexRecoEle(nEle,eleIsPassLooseNoIso)[i]);
         for(int ie=0; ie<d.indexGenEleMomisTopWEle(genMomParId,genParId,nGenPar,genParSt).size();ie++){
         TLorentzVector* thisGenEle = (TLorentzVector*)genParP4->At(d.indexGenEleMomisTopWEle(genMomParId,genParId,nGenPar,genParSt)[ie]);
@@ -101,9 +101,9 @@ std::vector<int> IndexFunction::indexRecoBMomisTopOrB(Int_t nJet,TClonesArray* F
     IndexFunction gen;
     TLorentzVector maxJet;
     IndexFunction d;
-    bool match_top = false, match_b = false;
     float NmaxPt = -9999.0;
     for (int ij=0; ij<d.indexFatJet(nJet,FATjetCISVV2,FatJetP4,pfMetRawPhi,FATjetSDmass).size(); ij++){
+        bool match_top = false, match_b = false;
         TLorentzVector* thisJet = (TLorentzVector*)FatJetP4->At(d.indexFatJet(nJet,FATjetCISVV2,FatJetP4,pfMetRawPhi,FATjetSDmass)[ij]);     
         for(int i=0; i < gen.getGenbMomtopLorentz(genParId,nGenPar,genParP4,genMomParId).size();i++){
             float dR = thisJet->DeltaR(gen.getGenbMomtopLorentz(genParId,nGenPar,genParP4,genMomParId)[i]);
@@ -119,14 +119,22 @@ std::vector<int> IndexFunction::indexRecoBMomisTopOrB(Int_t nJet,TClonesArray* F
     return index;
 }
 
-int IndexFunction::getNumThinJet(Int_t THINnJet, TClonesArray *THINjetP4,Int_t nJet,TClonesArray* FatJetP4)
+int IndexFunction::getNumThinJet(Int_t THINnJet, TClonesArray *THINjetP4,Int_t nJet,TClonesArray* FatJetP4,Int_t* genParId,Int_t nGenPar,TClonesArray* genParP4,Int_t* genMomParId)
 {
     std::vector<int> index;
+    IndexFunction gen;
     int count=0;
+
     for (int ij=0;ij < THINnJet; ij++){
+        bool match_top = false;
         TLorentzVector* thisJet = (TLorentzVector*)THINjetP4->At(ij);
         if(thisJet->Pt() < 10)continue;
         if(fabs(thisJet->Eta()) > 2.5)continue;
+        for (int i=0; i < gen.getGenbMomtopLorentz(genParId,nGenPar,genParP4,genMomParId).size();i++){
+            float dR = thisJet->DeltaR(gen.getGenbMomtopLorentz(genParId,nGenPar,genParP4,genMomParId)[i]);
+            if(dR <= 0.2) match_top = true;
+        }
+        if(!match_top)continue;
         for (int k=0;k<nJet;k++){
            TLorentzVector* thatJet = (TLorentzVector*)FatJetP4->At(k);
            float dPhi =  fabs(thisJet->Phi()-thatJet->Phi());
@@ -139,15 +147,22 @@ int IndexFunction::getNumThinJet(Int_t THINnJet, TClonesArray *THINjetP4,Int_t n
     return count;
 }
 
-int IndexFunction::getNumThinJet2(Int_t THINnJet, TClonesArray *THINjetP4,Int_t nJet,TClonesArray* FatJetP4,Float_t *FATjetCISVV2)
+int IndexFunction::getNumThinJet2(Int_t THINnJet, TClonesArray *THINjetP4,Int_t nJet,TClonesArray* FatJetP4,Float_t *FATjetCISVV2,Int_t* genParId,Int_t nGenPar,TClonesArray* genParP4,Int_t* genMomParId)
 {
     std::vector<int> index;
+    IndexFunction gen;
     int count=0;
     for (int ij=0;ij < THINnJet; ij++){
+        bool match_top = false;
         TLorentzVector* thisJet = (TLorentzVector*)THINjetP4->At(ij);
         if(thisJet->Pt() < 10)continue;
         if(fabs(thisJet->Eta()) > 2.5)continue;
         if(FATjetCISVV2[ij] < 0.605)continue;
+        for (int i=0; i < gen.getGenbMomtopLorentz(genParId,nGenPar,genParP4,genMomParId).size();i++){
+            float dR = thisJet->DeltaR(gen.getGenbMomtopLorentz(genParId,nGenPar,genParP4,genMomParId)[i]);
+            if(dR <= 0.2) match_top = true;
+        }
+        if(!match_top)continue;
         for (int k=0;k<nJet;k++){
            TLorentzVector* thatJet = (TLorentzVector*)FatJetP4->At(k);
            float dPhi =  fabs(thisJet->Phi()-thatJet->Phi());
@@ -157,6 +172,5 @@ int IndexFunction::getNumThinJet2(Int_t THINnJet, TClonesArray *THINjetP4,Int_t 
            }
         }
     }
-
     return count;
 }
