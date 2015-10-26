@@ -60,12 +60,12 @@ void TopStudy(string inputFile){
   if(inputFile.find(".root")!= std::string::npos)
     {
       TString endfix=gSystem->GetFromPipe(Form("file=%s; test=${file##*/}; echo \"${test%%.root*}\"",inputFile.data()));
-      outputFile = Form("ttbar_%s.root",endfix.Data());
+      outputFile = Form("ttbar_2%s.root",endfix.Data());
       cout << "Output file_ = " << outputFile << endl;
     }
   else{
       TString endfix=gSystem->GetFromPipe(Form("file=%s; test=${file##*/}; echo \"${test%%.root*}\"",inputFile.data()));
-      outputFile = Form("ttbar_%s.root",endfix.Data());
+      outputFile = Form("ttbar_2%s.root",endfix.Data());
       cout << "Output file = " << outputFile.Data() << endl;
     
     
@@ -97,6 +97,7 @@ void TopStudy(string inputFile){
       }
      cout << "Opened " << nfiles << " files" << endl; 
   }
+
 TreeReader data(infiles);
 setNCUStyle();
 
@@ -104,11 +105,16 @@ setNCUStyle();
     TH1F* h_genEleEta = new TH1F("h_genEleEta","genEle Eta",100,-5,5);
     TH1F* h_recoElePt = new TH1F("h_recoElePt","recoEle Pt",100,0,1000);
     TH1F* h_recoEleEta = new TH1F("h_recoEleEta","recoEle Eta",100,-5,5);
+    TH1F* h_recoElePt_match = new TH1F("h_recoElePt_match","recoEle_match Pt",100,0,1000);
+    TH1F* h_recoEleEta_match = new TH1F("h_recoEleEta_match","recoEle_match Eta",100,-5,5);
     TH1F* h_fatjetPt = new TH1F("h_fatjetPt","fatJet Pt",100,0,1000);
     TH1F* h_fatjetEta = new TH1F("h_fatjetEta","fatJet Eta",100,-5,5);
     TH1F* h_recoBPt = new TH1F("h_recoBPt","recoJet Pt",100,0,1000);
     TH1F* h_recoBEta = new TH1F("h_recoBEta","recoJet Eta",100,-5,5);
-    TH1F* h_dR1_recoM = new TH1F("h_dR1_recoM","dR(ele,b) at reco with gen-matching",20,0,4);
+    TH1F* h_dR_recoM = new TH1F("h_dR_recoM","dR(ele,b) at reco with gen-matching",20,0,4);
+    TH1F* h_dR1_reco = new TH1F("h_dR1_reco","dR(ele,b) at reco for same top",20,0,4);
+    TH1F* h_dR2_reco = new TH1F("h_dR2_reco","dR(ele,b) at reco for diff top",20,0,4);
+    TH1F* h_dR1_recoM = new TH1F("h_dR1_recoM","dR(ele,b) at reco with gen-matching for same top",20,0,4);
     TH1F* h_dR2_recoM = new TH1F("h_dR2_recoM","dR(ele,b) at reco with gen-matching for diff top",20,0,4);
     TH1F* h_numThinJet = new TH1F("h_numThinJet","number of thin jet",10,0,10);
     TH1F* h_numThinJet2 = new TH1F("h_numThinJet2","number of thin jet (with csv)",10,0,10);
@@ -133,6 +139,7 @@ setNCUStyle();
 
     TClonesArray* eleP4 = (TClonesArray*) data.GetPtrTObject("eleP4");
     Int_t nEle          = data.GetInt("nEle");
+    Int_t* eleCharge    = data.GetPtrInt("eleCharge");
     vector<bool> &eleIsPassLooseNoIso = *((vector<bool>*) data.GetPtr("eleIsPassLooseNoIso"));
 
     TClonesArray* FatJetP4 = (TClonesArray*) data.GetPtrTObject("FATjetP4");
@@ -142,6 +149,7 @@ setNCUStyle();
     Float_t *FATjetCISVV2  = data.GetPtrFloat("FATjetCISVV2");
     Float_t *FATjetSDmass  = data.GetPtrFloat("FATjetSDmass");
     Float_t *FATjetPRmass  = data.GetPtrFloat("FATjetPRmass");
+    Int_t* FATjetCharge    = data.GetPtrInt("FATjetCharge");
     vector<bool> &trigResult = *((vector<bool>*) data.GetPtr("hlt_trigResult"));
     std::string*  trigName = data.GetPtrString("hlt_trigName");
 
@@ -171,9 +179,9 @@ setNCUStyle();
     /******* semi-leptonic selection *******/
     if(nW_had!=1 && nW_lep!=1)continue;
 
-    float NmaxPt = -9999.0, NsecondPt = -9999.0;
-    int maxJetIndex = -1,maxJetIndexGen = -1, maxJetIndex_anti=-1;
-    TLorentzVector maxJet, maxJetGen, maxJet_anti;
+    float NmaxPt = -9999.0;
+    int maxJetIndex = -1;
+    TLorentzVector maxJet;
 
     /********* BJet Selction *************/
     for(int ij=0; ij< nJet; ij++){
@@ -188,6 +196,7 @@ setNCUStyle();
                 maxJetIndex = ij;
             }//leading Jet     
     }//AK8PFJets loop
+    
     if(maxJetIndex == -1)continue;
     /******* PreSelection **********/
     if(pfMetRawPt < 200) continue;
@@ -195,40 +204,65 @@ setNCUStyle();
     if(!TriggerStatus(trigName,trigResult,nsize,"HLT_PFMET170_NoiseCleaned_v1") || 
     !TriggerStatus(trigName,trigResult,nsize,"HLT_PFMET120_PFMHT120_IDLoose_v1")) continue;
 
-    for(int i=0; i< d.indexGenEleMomisTopWEle(genMomParId,genParId,nGenPar,genParSt).size();i++){
-      TLorentzVector* thisEle = (TLorentzVector*)genParP4->At(d.indexGenEleMomisTopWEle(genMomParId,genParId,nGenPar,genParSt)[i]);
+    vector<int> indexGenEleMomisTopWEle = d.indexGenEleMomisTopWEle(genMomParId,genParId,nGenPar,genParSt);
+    vector<int> indexRecoEle = d.indexRecoEle(nEle,eleIsPassLooseNoIso);
+    vector<int> indexFatJet = d.indexFatJet(nJet,FATjetCISVV2,FatJetP4,pfMetRawPhi,FATjetSDmass);
+    vector<int> indexRecoBMomisTopOrB = d.indexRecoBMomisTopOrB(nJet,FatJetP4,genParId,nGenPar,genParP4,genMomParId,FATjetCISVV2,pfMetRawPhi,FATjetSDmass);
+    vector<int> indexRecoEleMatch = d.indexRecoEleMatch(nEle, eleIsPassLooseNoIso, eleP4, genMomParId, genParId, nGenPar, genParSt, genParP4);
+    int getNumThinJet = d.getNumThinJet(THINnJet, THINjetP4,nJet,FatJetP4,genParId,nGenPar,genParP4,genMomParId);
+    int getNumThinJet2 = d.getNumThinJet2(THINnJet, THINjetP4,nJet,FatJetP4,FATjetCISVV2,genParId,nGenPar,genParP4,genMomParId);
+
+    /********** Plot ******************/
+
+    for(int i=0; i< indexGenEleMomisTopWEle.size();i++){
+      TLorentzVector* thisEle = (TLorentzVector*)genParP4->At(indexGenEleMomisTopWEle[i]);
       h_genElePt->Fill(thisEle->Pt());
       h_genEleEta->Fill(thisEle->Eta());
     }
-    for(int i=0; i< d.indexRecoEle(nEle,eleIsPassLooseNoIso).size();i++){
-      TLorentzVector* thisEle = (TLorentzVector*)eleP4->At(d.indexRecoEle(nEle,eleIsPassLooseNoIso)[i]);
+    for(int i=0; i< indexRecoEle.size();i++){
+      TLorentzVector* thisEle = (TLorentzVector*)eleP4->At(indexRecoEle[i]);
       h_recoElePt->Fill(thisEle->Pt());
       h_recoEleEta->Fill(thisEle->Eta());
     }
 
-    for(int i=0; i< d.indexFatJet(nJet,FATjetCISVV2,FatJetP4,pfMetRawPhi,FATjetSDmass).size();i++){
-      TLorentzVector* fatJet = (TLorentzVector*)FatJetP4->At(d.indexFatJet(nJet,FATjetCISVV2,FatJetP4,pfMetRawPhi,FATjetSDmass)[i]);
+    for(int i=0; i< indexFatJet.size();i++){
+      TLorentzVector* fatJet = (TLorentzVector*)FatJetP4->At(indexFatJet[i]);
       h_fatjetPt->Fill(fatJet->Pt());
       h_fatjetEta->Fill(fatJet->Eta());
     }
 
-    for(int i=0; i< d.indexRecoBMomisTopOrB(nJet,FatJetP4,genParId,nGenPar,genParP4,genMomParId,FATjetCISVV2,pfMetRawPhi,FATjetSDmass).size();i++){
-      TLorentzVector* thisb = (TLorentzVector*)FatJetP4->At(d.indexRecoBMomisTopOrB(nJet,FatJetP4,genParId,nGenPar,genParP4,genMomParId,FATjetCISVV2,pfMetRawPhi,FATjetSDmass)[i]);
+    for(int i=0; i< indexRecoBMomisTopOrB.size();i++){
+      TLorentzVector* thisb = (TLorentzVector*)FatJetP4->At(indexRecoBMomisTopOrB[i]);
       h_recoBPt->Fill(thisb->Pt());
       h_recoBEta->Fill(thisb->Eta());
     }
 
-    for(int i=0; i< d.indexRecoEleMatch(nEle, eleIsPassLooseNoIso, eleP4, genMomParId, genParId, nGenPar, genParSt, genParP4).size(); i++){
-      TLorentzVector* thisEle = (TLorentzVector*)eleP4->At(d.indexRecoEleMatch(nEle, eleIsPassLooseNoIso, eleP4, genMomParId, genParId, nGenPar, genParSt, genParP4)[i]);
-      for (int j=0; j< d.indexRecoBMomisTopOrB(nJet,FatJetP4,genParId,nGenPar,genParP4,genMomParId,FATjetCISVV2,pfMetRawPhi,FATjetSDmass).size();j++){
-        TLorentzVector* thisb = (TLorentzVector*)FatJetP4->At(d.indexRecoBMomisTopOrB(nJet,FatJetP4,genParId,nGenPar,genParP4,genMomParId,FATjetCISVV2,pfMetRawPhi,FATjetSDmass)[j]);
-        h_dR1_recoM->Fill(thisEle->DeltaR(*thisb));
-        // if(thisEle->charge()*thisb->charge()<0)h_dR1_recoM->Fill(thisEle->DeltaR(*thisb));
-        // if(thisEle->charge()*thisb->charge()>0)h_dR2_recoM->Fill(thisEle->DeltaR(*thisb));
+    for(int i=0; i< indexRecoEleMatch.size(); i++){
+      TLorentzVector* thisEle = (TLorentzVector*)eleP4->At(indexRecoEleMatch[i]);
+      h_recoElePt_match->Fill(thisEle->Pt());
+      h_recoEleEta_match->Fill(thisEle->Eta());
+      for (int j=0; j< indexRecoBMomisTopOrB.size();j++){
+        TLorentzVector* thisb = (TLorentzVector*)FatJetP4->At(indexRecoBMomisTopOrB[j]);
+        h_dR_recoM->Fill(thisEle->DeltaR(*thisb));
+        h_numThinJet->Fill(getNumThinJet);
+        h_numThinJet2->Fill(getNumThinJet2);
+        int charge_ele = eleCharge[i];
+        int charge_jet = FATjetCharge[j];
+        if(charge_ele*charge_jet<0)h_dR1_recoM->Fill(thisEle->DeltaR(*thisb));
+        if(charge_ele*charge_jet>0)h_dR2_recoM->Fill(thisEle->DeltaR(*thisb));
       }
     }
-    h_numThinJet->Fill(d.getNumThinJet(THINnJet, THINjetP4,nJet,FatJetP4));
-    h_numThinJet2->Fill(d.getNumThinJet2(THINnJet, THINjetP4,nJet,FatJetP4,FATjetCISVV2));
+
+      for(int i=0; i< indexRecoEle.size(); i++){
+      TLorentzVector* thisEle = (TLorentzVector*)eleP4->At(indexRecoEle[i]);
+      for (int j=0; j< indexFatJet.size();j++){
+        TLorentzVector* thisb = (TLorentzVector*)FatJetP4->At(indexFatJet[j]);
+        int charge_ele = eleCharge[i];
+        int charge_jet = FATjetCharge[j];
+        if(charge_ele*charge_jet<0)h_dR1_reco->Fill(thisEle->DeltaR(*thisb));
+        if(charge_ele*charge_jet>0)h_dR2_reco->Fill(thisEle->DeltaR(*thisb));
+      }
+    }
 
     }//Entries loop
 
@@ -238,12 +272,17 @@ h_genElePt->Write();
 h_genEleEta->Write();
 h_recoElePt->Write();
 h_recoEleEta->Write();
+h_recoElePt_match->Write();
+h_recoEleEta_match->Write();
 h_fatjetPt->Write();
 h_fatjetEta->Write();
 h_recoBPt->Write();
 h_recoBEta->Write();
+h_dR1_reco->Write();
+h_dR2_reco->Write();
+h_dR_recoM->Write();
 h_dR1_recoM->Write();
-// h_dR2_recoM->Write();
+h_dR2_recoM->Write();
 h_numThinJet->Write();
 h_numThinJet2->Write();
 outFile->Close();
