@@ -74,17 +74,17 @@ void WJetStudy(string inputFile){
 TreeReader data(infiles);
 setNCUStyle();
 
-    TH1F* h_dRWJet = new TH1F("h_dRWJet","dR(fatJet, genW)",50,0,5);
-    TH1F* h_dREleJet = new TH1F("h_dREleJet","dR(fatJet, genEle)",50,0,5);
-    TH1F* h_dRMuJet = new TH1F("h_dRMuJet","dR(fatJet, genMu)",50,0,5);
-    TH1F* h_dRTauJet = new TH1F("h_dRTauJet","dR(fatJet, genTau)",50,0,5);
-    TH1F* h_PtEle = new TH1F("h_PtEle","Pt of genEle",500,0,500);
-    TH1F* h_PtMu = new TH1F("h_PtMu","Pt of genMu",500,0,500);
-    TH1F* h_PtTau = new TH1F("h_PtTau","Pt of genTau",500,0,500);
-    TH1F* h_EtaEle = new TH1F("h_EtaEle","Eta of genEle",50,0,5);
-    TH1F* h_EtaMu = new TH1F("h_EtaMu","Eta of genMu",50,0,5);
-    TH1F* h_EtaTau = new TH1F("h_EtaTau","Eta of genTau",50,0,5);
-    TH1F* h_puCorMass = new TH1F("h_puCorMass","PRCorMass",200,0,200);
+    TH1F* h_dRWJet = new TH1F("h_dRWJet","dR(fatJet, genW)",10,0,5);
+    TH1F* h_dREleJet = new TH1F("h_dREleJet","dR(fatJet, genEle)",10,0,5);
+    TH1F* h_dRMuJet = new TH1F("h_dRMuJet","dR(fatJet, genMu)",10,0,5);
+    TH1F* h_dRTauJet = new TH1F("h_dRTauJet","dR(fatJet, genTau)",10,0,5);
+    TH1F* h_PtEle = new TH1F("h_PtEle","Pt of genEle",50,0,200);
+    TH1F* h_PtMu = new TH1F("h_PtMu","Pt of genMu",50,0,200);
+    TH1F* h_PtTau = new TH1F("h_PtTau","Pt of genTau",50,0,200);
+    TH1F* h_EtaEle = new TH1F("h_EtaEle","Eta of genEle",10,0,5);
+    TH1F* h_EtaMu = new TH1F("h_EtaMu","Eta of genMu",10,0,5);
+    TH1F* h_EtaTau = new TH1F("h_EtaTau","Eta of genTau",10,0,5);
+    TH1F* h_puCorMass = new TH1F("h_puCorMass","PRCorMass",100,0,200);
 
     for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
        if (jEntry % 50000 == 0)
@@ -197,6 +197,7 @@ setNCUStyle();
     if((num_thin + num_Mu + num_tau + num_Ele)!=0)continue;
     h_puCorMass->Fill(FATjetPRmassL2L3Corr[maxJetIndex]);
 
+
     /****** Gen Loop ********/
     TClonesArray* genParP4 = (TClonesArray*) data.GetPtrTObject("genParP4");
     Int_t nGenPar          = data.GetInt("nGenPar");
@@ -206,13 +207,13 @@ setNCUStyle();
     TLorentzVector genW;
     for (int i=0;i < nGenPar; i++){
         if(abs(genParId[i]) == 24){
-          if(genParSt[i]!=1)continue;
+          // cout<<"status:"<<genParSt[i]<<endl;
             TLorentzVector* thisW = (TLorentzVector*)genParP4->At(i);
             h_dRWJet->Fill(thisW->DeltaR(maxJet));
         }
         if(abs(genParId[i]) == 11){
           if(genParSt[i]!=1)continue;
-          if(genMomParId[i]!=24)continue;
+          if(genMomParId[i]!=24 && genMomParId[i]!=11)continue;
             TLorentzVector* thisEle = (TLorentzVector*)genParP4->At(i);
             h_dREleJet->Fill(thisEle->DeltaR(maxJet));
             h_PtEle->Fill(thisEle->Pt());
@@ -220,7 +221,7 @@ setNCUStyle();
         }
         if(abs(genParId[i]) == 13){
           if(genParSt[i]!=1)continue;
-          if(genMomParId[i]!=24)continue;
+          if(genMomParId[i]!=24 && genMomParId[i]!=13)continue;
             TLorentzVector* thisMu = (TLorentzVector*)genParP4->At(i);
             h_dRMuJet->Fill(thisMu->DeltaR(maxJet));
             h_PtMu->Fill(thisMu->Pt());
@@ -228,7 +229,7 @@ setNCUStyle();
         }
         if(abs(genParId[i]) == 15){
           if(genParSt[i]!=1)continue;
-          if(genMomParId[i]!=24)continue;
+          if(genMomParId[i]!=24 && genMomParId[i]!=15)continue;
             TLorentzVector* thisTau = (TLorentzVector*)genParP4->At(i);
             h_dRTauJet->Fill(thisTau->DeltaR(maxJet));
             h_PtTau->Fill(thisTau->Pt());
