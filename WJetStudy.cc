@@ -81,10 +81,13 @@ setNCUStyle();
     TH1F* h_PtEle = new TH1F("h_PtEle","Pt of genEle",50,0,200);
     TH1F* h_PtMu = new TH1F("h_PtMu","Pt of genMu",50,0,200);
     TH1F* h_PtTau = new TH1F("h_PtTau","Pt of genTau",50,0,200);
-    TH1F* h_EtaEle = new TH1F("h_EtaEle","Eta of genEle",10,0,5);
-    TH1F* h_EtaMu = new TH1F("h_EtaMu","Eta of genMu",10,0,5);
-    TH1F* h_EtaTau = new TH1F("h_EtaTau","Eta of genTau",10,0,5);
+    TH1F* h_EtaEle = new TH1F("h_EtaEle","Eta of genEle",20,-5,5);
+    TH1F* h_EtaMu = new TH1F("h_EtaMu","Eta of genMu",20,-5,5);
+    TH1F* h_EtaTau = new TH1F("h_EtaTau","Eta of genTau",20,-5,5);
     TH1F* h_puCorMass = new TH1F("h_puCorMass","PRCorMass",100,0,200);
+
+    int fra_Ele=0,fra_Mu=0,fra_Tau=0,fra_dRlep=0;
+    int total_Ele=0,total_Mu=0,total_Tau=0;
 
     for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
        if (jEntry % 50000 == 0)
@@ -171,7 +174,7 @@ setNCUStyle();
     for(int it=0;it<HPSTau_n;it++){
       TLorentzVector* thisTau = (TLorentzVector*)HPSTau_4Momentum->At(it);
       if(thisTau->Pt() < 20)continue;
-      if(fabs(thisTau->Eta()) > 2.5)continue;
+      if(fabs(thisTau->Eta()) > 2.4)continue;
       if(!disc_decayModeFinding[it])continue;
       if(!disc_byLooseIsolationMVA3newDMwLT[it])continue;
       if(maxJet.DeltaR(*thisTau) < 0.8)continue;
@@ -195,8 +198,8 @@ setNCUStyle();
     if(maxJetIndex == -1)continue;
 
     if((num_thin + num_Mu + num_tau + num_Ele)!=0)continue;
+    
     h_puCorMass->Fill(FATjetPRmassL2L3Corr[maxJetIndex]);
-
 
     /****** Gen Loop ********/
     TClonesArray* genParP4 = (TClonesArray*) data.GetPtrTObject("genParP4");
@@ -204,33 +207,46 @@ setNCUStyle();
     Int_t* genParId        = data.GetPtrInt("genParId");
     Int_t* genMomParId        = data.GetPtrInt("genMomParId");
     Int_t* genParSt        = data.GetPtrInt("genParSt");
+    Int_t* genDa1        = data.GetPtrInt("genDa1");
+    Int_t* genDa2        = data.GetPtrInt("genDa2");
     TLorentzVector genW;
     for (int i=0;i < nGenPar; i++){
         if(abs(genParId[i]) == 24){
-          // cout<<"status:"<<genParSt[i]<<endl;
             TLorentzVector* thisW = (TLorentzVector*)genParP4->At(i);
             h_dRWJet->Fill(thisW->DeltaR(maxJet));
         }
         if(abs(genParId[i]) == 11){
-          if(genParSt[i]!=1)continue;
           if(genMomParId[i]!=24 && genMomParId[i]!=11)continue;
+            total_Ele++;
             TLorentzVector* thisEle = (TLorentzVector*)genParP4->At(i);
+            if(maxJet.DeltaR(*thisEle) < 0.8)fra_dRlep++;
+            if(thisEle->Pt() < 10)continue;
+            if(fabs(thisEle->Eta()) > 2.5)continue;
+            fra_Ele++;
             h_dREleJet->Fill(thisEle->DeltaR(maxJet));
             h_PtEle->Fill(thisEle->Pt());
             h_EtaEle->Fill(thisEle->Eta());
         }
         if(abs(genParId[i]) == 13){
-          if(genParSt[i]!=1)continue;
           if(genMomParId[i]!=24 && genMomParId[i]!=13)continue;
+          total_Mu++;
             TLorentzVector* thisMu = (TLorentzVector*)genParP4->At(i);
+            if(maxJet.DeltaR(*thisMu) < 0.8)fra_dRlep++;
+            if(thisMu->Pt() < 10)continue;
+            if(fabs(thisMu->Eta()) > 2.5)continue;
+            fra_Mu++;
             h_dRMuJet->Fill(thisMu->DeltaR(maxJet));
             h_PtMu->Fill(thisMu->Pt());
             h_EtaMu->Fill(thisMu->Eta());
         }
         if(abs(genParId[i]) == 15){
-          if(genParSt[i]!=1)continue;
           if(genMomParId[i]!=24 && genMomParId[i]!=15)continue;
+          total_Tau++;
             TLorentzVector* thisTau = (TLorentzVector*)genParP4->At(i);
+            if(maxJet.DeltaR(*thisTau) < 0.8)fra_dRlep++;
+            if(thisTau->Pt() < 10)continue;
+            if(fabs(thisTau->Eta()) > 2.5)continue;
+            fra_Tau++;
             h_dRTauJet->Fill(thisTau->DeltaR(maxJet));
             h_PtTau->Fill(thisTau->Pt());
             h_EtaTau->Fill(thisTau->Eta());
@@ -238,7 +254,8 @@ setNCUStyle();
     }
 
     }//Entries loop
-
+cout<<"fration of Ele:"<<(float)fra_Ele/(float)total_Ele<<"   fration of Muon:"<<(float)fra_Mu/(float)total_Mu<<"   fration of Tau:"<<(float)fra_Tau/(float)total_Tau<<endl;
+cout<<"fration of leptons are within dR < 0.8:  "<<(float)fra_dRlep/(float)(total_Ele+total_Mu+total_Tau)<<endl;
 TFile* outFile = new TFile(outputFile.Data(),"recreate");
 h_dRWJet->Write();
 h_dREleJet->Write();
