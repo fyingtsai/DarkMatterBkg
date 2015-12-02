@@ -33,12 +33,12 @@ void WJetStudy(string inputFile){
   if(inputFile.find(".root")!= std::string::npos)
     {
       TString endfix=gSystem->GetFromPipe(Form("file=%s; test=${file##*/}; echo \"${test%%.root*}\"",inputFile.data()));
-      outputFile = Form("WJet%s.root",endfix.Data());
+      outputFile = Form("WJet_HT100-200%s.root",endfix.Data());
       cout << "Output file_ = " << outputFile << endl;
     }
   else{
       TString endfix=gSystem->GetFromPipe(Form("file=%s; test=${file##*/}; echo \"${test%%.root*}\"",inputFile.data()));
-      outputFile = Form("WJet%s.root",endfix.Data());
+      outputFile = Form("WJet_HT100-200%s.root",endfix.Data());
       cout << "Output file = " << outputFile.Data() << endl;
     
     
@@ -86,8 +86,10 @@ setNCUStyle();
     TH1F* h_EtaTau = new TH1F("h_EtaTau","Eta of genTau",20,-5,5);
     TH1F* h_puCorMass = new TH1F("h_puCorMass","PRCorMass",100,0,200);
 
-    int fra_Ele=0,fra_Mu=0,fra_Tau=0,fra_dRlep=0;
+    int N1_Ele=0,N1_Mu=0,N1_Tau=0,fra_dREle=0,fra_dRMu=0,fra_dRTau=0;
+    int N2_Ele=0,N2_Mu=0,N2_Tau=0;
     int total_Ele=0,total_Mu=0,total_Tau=0;
+    int eventnum=0;
 
     for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
        if (jEntry % 50000 == 0)
@@ -101,7 +103,7 @@ setNCUStyle();
     Int_t nJet             = data.GetInt("FATnJet");
     Float_t pfMetRawPt     = data.GetFloat("pfMetRawPt");
     Float_t pfMetRawPhi    = data.GetFloat("pfMetRawPhi");
-    Float_t *FATjetCISVV2  = data.GetPtrFloat("FATjetCISVV2");
+    vector<float> *FATsubjetSDCSV  = data.GetPtrVectorFloat("FATsubjetSDCSV");
     Float_t *FATjetSDmass  = data.GetPtrFloat("FATjetSDmass");
     Float_t *FATjetPRmass  = data.GetPtrFloat("FATjetPRmass");
     Float_t *FATjetPRmassL2L3Corr  = data.GetPtrFloat("FATjetPRmassL2L3Corr");
@@ -112,7 +114,6 @@ setNCUStyle();
 
     if(!TriggerStatus(trigName,trigResult,nsize,"HLT_PFMET170_NoiseCleaned_v1")) continue;
     if(pfMetRawPt < 200) continue;
-
     float NmaxPt = -9999.0;
     int maxJetIndex = -1;
     TLorentzVector maxJet;
@@ -121,31 +122,34 @@ setNCUStyle();
       TLorentzVector* thisJet = (TLorentzVector*)FatJetP4->At(ij);
       if(thisJet->Pt() < 200)continue;
       if(fabs(thisJet->Eta()) > 2.4)continue;
-      if(FATjetCISVV2[ij] < 0.605)continue;
+      // if(FATsubjetSDCSV[ij] < 0.605)continue;
       if(FATjetSDmass[ij]<100 || FATjetSDmass[ij]>150)continue;
       if(fabs(thisJet->Phi()- pfMetRawPhi)<2.5)continue;
+      if(FATsubjetSDCSV->size()<2)continue;
+      if(FATsubjetSDCSV[ij][0] < 0.605)continue;
+      if(FATsubjetSDCSV[ij][1] < 0.605)continue;
           if(thisJet->Pt() > NmaxPt){
-                   NmaxPt = thisJet->Pt();
-                   maxJet = *thisJet;
-                   maxJetIndex = ij;
+            NmaxPt = thisJet->Pt();
+            maxJet = *thisJet;
+            maxJetIndex = ij;
           }
     }
-    if(maxJetIndex == -1)continue;
-
     /******** Ele Loop ************/
     TClonesArray* eleP4 = (TClonesArray*) data.GetPtrTObject("eleP4");
     Int_t nEle             = data.GetInt("nEle");
     vector<bool> &eleIsPassLoose = *((vector<bool>*) data.GetPtr("eleIsPassLoose"));
     int num_Ele=0;
+    vector<TLorentzVector> EleVector;
     for(int ie=0;ie<nEle;ie++){
       TLorentzVector* thisEle = (TLorentzVector*)eleP4->At(ie);
       if(thisEle->Pt() < 10)continue;
       if(fabs(thisEle->Eta()) > 2.5)continue;
+      EleVector.push_back(*thisEle);
+
       if(!eleIsPassLoose[ie])continue;
       if(maxJet.DeltaR(*thisEle) < 0.8)continue;
       num_Ele++;
     }//Ele loop
-
     /******** Muon Loop ************/
     TClonesArray* muP4 = (TClonesArray*) data.GetPtrTObject("muP4");
     Int_t nMu             = data.GetInt("nMu");
@@ -153,12 +157,15 @@ setNCUStyle();
     Float_t *muChHadIso  = data.GetPtrFloat("muChHadIso");
     Float_t *muNeHadIso  = data.GetPtrFloat("muNeHadIso");
     Float_t *muGamIso  = data.GetPtrFloat("muGamIso");
+    vector<TLorentzVector> MuVector;
     int num_Mu=0;
     for(int im=0;im<nMu;im++){
       TLorentzVector* thisMu = (TLorentzVector*)muP4->At(im);
       bool iso = (muChHadIso[im]+muNeHadIso[im]+muGamIso[im])/thisMu->Pt();
       if(thisMu->Pt() < 10)continue;
       if(fabs(thisMu->Eta()) > 2.4)continue;
+      MuVector.push_back(*thisMu);
+
       if(!isTightMuon[im])continue;
       if(iso > 0.4)continue;
       if(maxJet.DeltaR(*thisMu) < 0.8)continue;
@@ -171,10 +178,13 @@ setNCUStyle();
     vector<bool> &disc_decayModeFinding = *((vector<bool>*) data.GetPtr("disc_decayModeFinding"));
     vector<bool> &disc_byLooseIsolationMVA3newDMwLT = *((vector<bool>*) data.GetPtr("disc_byLooseIsolationMVA3newDMwLT"));
     int num_tau=0;
+    vector<TLorentzVector> TauVector;
     for(int it=0;it<HPSTau_n;it++){
       TLorentzVector* thisTau = (TLorentzVector*)HPSTau_4Momentum->At(it);
       if(thisTau->Pt() < 20)continue;
       if(fabs(thisTau->Eta()) > 2.4)continue;
+      TauVector.push_back(*thisTau);
+
       if(!disc_decayModeFinding[it])continue;
       if(!disc_byLooseIsolationMVA3newDMwLT[it])continue;
       if(maxJet.DeltaR(*thisTau) < 0.8)continue;
@@ -198,9 +208,13 @@ setNCUStyle();
     if(maxJetIndex == -1)continue;
 
     if((num_thin + num_Mu + num_tau + num_Ele)!=0)continue;
+    eventnum++;
     
     h_puCorMass->Fill(FATjetPRmassL2L3Corr[maxJetIndex]);
 
+    N2_Ele = N2_Ele + EleVector.size();
+    N2_Mu = N2_Mu + MuVector.size();
+    N2_Tau = N2_Tau + TauVector.size();
     /****** Gen Loop ********/
     TClonesArray* genParP4 = (TClonesArray*) data.GetPtrTObject("genParP4");
     Int_t nGenPar          = data.GetInt("nGenPar");
@@ -219,10 +233,10 @@ setNCUStyle();
           if(genMomParId[i]!=24 && genMomParId[i]!=11)continue;
             total_Ele++;
             TLorentzVector* thisEle = (TLorentzVector*)genParP4->At(i);
-            if(maxJet.DeltaR(*thisEle) < 0.8)fra_dRlep++;
-            if(thisEle->Pt() < 10)continue;
-            if(fabs(thisEle->Eta()) > 2.5)continue;
-            fra_Ele++;
+            if(maxJet.DeltaR(*thisEle) < 0.8){
+              fra_dREle++; 
+            }
+            if(thisEle->Pt() > 10 && fabs(thisEle->Eta()) < 2.5)N1_Ele++;
             h_dREleJet->Fill(thisEle->DeltaR(maxJet));
             h_PtEle->Fill(thisEle->Pt());
             h_EtaEle->Fill(thisEle->Eta());
@@ -231,10 +245,10 @@ setNCUStyle();
           if(genMomParId[i]!=24 && genMomParId[i]!=13)continue;
           total_Mu++;
             TLorentzVector* thisMu = (TLorentzVector*)genParP4->At(i);
-            if(maxJet.DeltaR(*thisMu) < 0.8)fra_dRlep++;
-            if(thisMu->Pt() < 10)continue;
-            if(fabs(thisMu->Eta()) > 2.5)continue;
-            fra_Mu++;
+            if(maxJet.DeltaR(*thisMu) < 0.8){
+              fra_dRMu++;
+            }
+            if(thisMu->Pt() > 10 && fabs(thisMu->Eta()) < 2.5)N1_Mu++;
             h_dRMuJet->Fill(thisMu->DeltaR(maxJet));
             h_PtMu->Fill(thisMu->Pt());
             h_EtaMu->Fill(thisMu->Eta());
@@ -243,10 +257,10 @@ setNCUStyle();
           if(genMomParId[i]!=24 && genMomParId[i]!=15)continue;
           total_Tau++;
             TLorentzVector* thisTau = (TLorentzVector*)genParP4->At(i);
-            if(maxJet.DeltaR(*thisTau) < 0.8)fra_dRlep++;
-            if(thisTau->Pt() < 10)continue;
-            if(fabs(thisTau->Eta()) > 2.5)continue;
-            fra_Tau++;
+            if(maxJet.DeltaR(*thisTau) < 0.8){
+              fra_dRTau++;
+            }
+            if(thisTau->Pt() > 10 && fabs(thisTau->Eta()) < 2.5)N1_Tau++;
             h_dRTauJet->Fill(thisTau->DeltaR(maxJet));
             h_PtTau->Fill(thisTau->Pt());
             h_EtaTau->Fill(thisTau->Eta());
@@ -254,8 +268,10 @@ setNCUStyle();
     }
 
     }//Entries loop
-cout<<"fration of Ele:"<<(float)fra_Ele/(float)total_Ele<<"   fration of Muon:"<<(float)fra_Mu/(float)total_Mu<<"   fration of Tau:"<<(float)fra_Tau/(float)total_Tau<<endl;
-cout<<"fration of leptons are within dR < 0.8:  "<<(float)fra_dRlep/(float)(total_Ele+total_Mu+total_Tau)<<endl;
+
+cout<<"N1_Ele:"<<N1_Ele<<" N1_Mu:"<<N1_Mu<<" N1_Tau:"<<N1_Tau<<endl;
+cout<<"N2_Ele:"<<N2_Ele<<"N2_Mu:"<<N2_Mu<<"N2_Tau:"<<N2_Tau<<endl;
+
 TFile* outFile = new TFile(outputFile.Data(),"recreate");
 h_dRWJet->Write();
 h_dREleJet->Write();

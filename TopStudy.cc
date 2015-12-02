@@ -60,12 +60,12 @@ void TopStudy(string inputFile){
   if(inputFile.find(".root")!= std::string::npos)
     {
       TString endfix=gSystem->GetFromPipe(Form("file=%s; test=${file##*/}; echo \"${test%%.root*}\"",inputFile.data()));
-      outputFile = Form("ttbar_2%s.root",endfix.Data());
+      outputFile = Form("ttbar_1%s.root",endfix.Data());
       cout << "Output file_ = " << outputFile << endl;
     }
   else{
       TString endfix=gSystem->GetFromPipe(Form("file=%s; test=${file##*/}; echo \"${test%%.root*}\"",inputFile.data()));
-      outputFile = Form("ttbar_2%s.root",endfix.Data());
+      outputFile = Form("ttbar_1%s.root",endfix.Data());
       cout << "Output file = " << outputFile.Data() << endl;
     
     
@@ -116,8 +116,17 @@ setNCUStyle();
     TH1F* h_dR2_reco = new TH1F("h_dR2_reco","dR(ele,b) at reco for diff top",20,0,4);
     TH1F* h_dR1_recoM = new TH1F("h_dR1_recoM","dR(ele,b) at reco with gen-matching for same top",20,0,4);
     TH1F* h_dR2_recoM = new TH1F("h_dR2_recoM","dR(ele,b) at reco with gen-matching for diff top",20,0,4);
+    TH1F* h_dPhi1_recoM = new TH1F("h_dPhi1_recoM","dPhi(ele,b) at reco with gen-matching for same top",20,0,4);
+    TH1F* h_dPhi2_recoM = new TH1F("h_dPhi2_recoM","dPhi(ele,b) at reco with gen-matching for diff top",20,0,4);
+    TH1F* h_dR3_recoM = new TH1F("h_dR3_recoM","TEST",5,-2,2);
     TH1F* h_numThinJet = new TH1F("h_numThinJet","number of thin jet",10,0,10);
     TH1F* h_numThinJet2 = new TH1F("h_numThinJet2","number of thin jet (with csv)",10,0,10);
+    TH1F* h_numThinJet_ele = new TH1F("h_numThinJet_ele","number of thin jet after dR(ele,fatJet) > 0.8",10,0,10);
+    TH1F* h_numThinJet2_ele = new TH1F("h_numThinJet2_ele","number of thin jet (with csv) after dR(ele,fatJet) > 0.8",10,0,10);
+    TH1F* h_numThinJet_ele2 = new TH1F("h_numThinJet_ele2","number of thin jet after dR(ele,fatJet) > 1.2",10,0,10);
+    TH1F* h_numThinJet2_ele2 = new TH1F("h_numThinJet2_ele2","number of thin jet (with csv) after dR(ele,fatJet) > 1.2",10,0,10);
+    TH1F* h_charge1 = new TH1F("h_charge1","charge same",5,-2,2);
+    TH1F* h_charge2 = new TH1F("h_charge2","charge diff",5,-2,2);
 
     IndexFunction d;
 
@@ -188,7 +197,7 @@ setNCUStyle();
       bool match = false,match_anti = false;
       TLorentzVector* thisJet = (TLorentzVector*)FatJetP4->At(ij);
       if(thisJet->Pt() < 200)continue;
-      if(fabs(thisJet->Eta()) > 2.5)continue;
+      if(fabs(thisJet->Eta()) > 2.4)continue;
       if(FATjetCISVV2[ij] < 0.605)continue;
       if(thisJet->Pt() > NmaxPt){
                 NmaxPt = thisJet->Pt();
@@ -208,9 +217,15 @@ setNCUStyle();
     vector<int> indexRecoEle = d.indexRecoEle(nEle,eleIsPassLooseNoIso);
     vector<int> indexFatJet = d.indexFatJet(nJet,FATjetCISVV2,FatJetP4,pfMetRawPhi,FATjetSDmass);
     vector<int> indexRecoBMomisTopOrB = d.indexRecoBMomisTopOrB(nJet,FatJetP4,genParId,nGenPar,genParP4,genMomParId,FATjetCISVV2,pfMetRawPhi,FATjetSDmass);
+    vector<int> indexRecoAntiBMomisTopOrB = d.indexRecoAntiBMomisTopOrB(nJet,FatJetP4,genParId,nGenPar,genParP4,genMomParId,FATjetCISVV2,pfMetRawPhi,FATjetSDmass);
     vector<int> indexRecoEleMatch = d.indexRecoEleMatch(nEle, eleIsPassLooseNoIso, eleP4, genMomParId, genParId, nGenPar, genParSt, genParP4);
+    vector<int> indexRecoAntiEleMatch = d.indexRecoAntiEleMatch(nEle, eleIsPassLooseNoIso, eleP4, genMomParId, genParId, nGenPar, genParSt, genParP4);
     int getNumThinJet = d.getNumThinJet(THINnJet, THINjetP4,nJet,FatJetP4,genParId,nGenPar,genParP4,genMomParId);
     int getNumThinJet2 = d.getNumThinJet2(THINnJet, THINjetP4,nJet,FatJetP4,FATjetCISVV2,genParId,nGenPar,genParP4,genMomParId);
+    int getNumThinJet_eleFat = d.getNumThinJet_eleFat(THINnJet, THINjetP4,nJet,FatJetP4,nEle,eleP4, eleIsPassLooseNoIso);
+    int getNumThinJet2_eleFat = d.getNumThinJet2_eleFat(THINnJet, THINjetP4,nJet,FatJetP4,FATjetCISVV2, nEle,eleP4, eleIsPassLooseNoIso);
+    int getNumThinJet_eleFat2 = d.getNumThinJet_eleFat(THINnJet, THINjetP4,nJet,FatJetP4,nEle,eleP4, eleIsPassLooseNoIso);
+    int getNumThinJet2_eleFat2 = d.getNumThinJet2_eleFat(THINnJet, THINjetP4,nJet,FatJetP4,FATjetCISVV2, nEle,eleP4, eleIsPassLooseNoIso);
 
     /********** Plot ******************/
 
@@ -237,19 +252,112 @@ setNCUStyle();
       h_recoBEta->Fill(thisb->Eta());
     }
 
-    for(int i=0; i< indexRecoEleMatch.size(); i++){
+    //same top
+      for(int i=0; i< indexRecoEleMatch.size(); i++){
       TLorentzVector* thisEle = (TLorentzVector*)eleP4->At(indexRecoEleMatch[i]);
       h_recoElePt_match->Fill(thisEle->Pt());
       h_recoEleEta_match->Fill(thisEle->Eta());
       for (int j=0; j< indexRecoBMomisTopOrB.size();j++){
+        // int charge_ele = 0,charge_jet=0;
         TLorentzVector* thisb = (TLorentzVector*)FatJetP4->At(indexRecoBMomisTopOrB[j]);
         h_dR_recoM->Fill(thisEle->DeltaR(*thisb));
         h_numThinJet->Fill(getNumThinJet);
         h_numThinJet2->Fill(getNumThinJet2);
-        int charge_ele = eleCharge[i];
-        int charge_jet = FATjetCharge[j];
-        if(charge_ele*charge_jet<0)h_dR1_recoM->Fill(thisEle->DeltaR(*thisb));
-        if(charge_ele*charge_jet>0)h_dR2_recoM->Fill(thisEle->DeltaR(*thisb));
+        h_numThinJet_ele->Fill(getNumThinJet_eleFat);
+        h_numThinJet2_ele->Fill(getNumThinJet2_eleFat);
+        h_numThinJet_ele2->Fill(getNumThinJet_eleFat2);
+        h_numThinJet2_ele2->Fill(getNumThinJet2_eleFat2);
+        if(FATjetCharge[indexRecoBMomisTopOrB[j]]>0)h_charge1->Fill(FATjetCharge[indexRecoBMomisTopOrB[j]]);
+        if(FATjetCharge[indexRecoBMomisTopOrB[j]]<0 || FATjetCharge[indexRecoBMomisTopOrB[j]]==0) h_charge2->Fill(FATjetCharge[indexRecoBMomisTopOrB[j]]);
+        // int charge_ele = eleCharge[i];
+        // int charge_jet = FATjetCharge[j];
+        // if(charge_ele*charge_jet<0)h_dR1_recoM->Fill(thisEle->DeltaR(*thisb));
+        // if(charge_ele*charge_jet>0)h_dR2_recoM->Fill(thisEle->DeltaR(*thisb));
+        h_dR1_recoM->Fill(thisEle->DeltaR(*thisb));
+        h_dPhi1_recoM->Fill(fabs(thisEle->Phi()-thisb->Phi()));
+        // else cout<<"ele charge:"<<eleCharge[indexRecoEleMatch[i]]<<" fat charge:"<<FATjetCharge[indexRecoBMomisTopOrB[j]]<<endl;
+        // else h_dR3_recoM->Fill(eleCharge[indexRecoEleMatch[i]]*FATjetCharge[indexRecoBMomisTopOrB[j]]);
+      }
+    }
+      //same top
+      for(int i=0; i< indexRecoAntiEleMatch.size(); i++){
+      TLorentzVector* thisEle = (TLorentzVector*)eleP4->At(indexRecoAntiEleMatch[i]);
+      h_recoElePt_match->Fill(thisEle->Pt());
+      h_recoEleEta_match->Fill(thisEle->Eta());
+      for (int j=0; j< indexRecoAntiBMomisTopOrB.size();j++){
+        // int charge_ele = 0,charge_jet=0;
+        TLorentzVector* thisb = (TLorentzVector*)FatJetP4->At(indexRecoAntiBMomisTopOrB[j]);
+        h_dR_recoM->Fill(thisEle->DeltaR(*thisb));
+        h_numThinJet->Fill(getNumThinJet);
+        h_numThinJet2->Fill(getNumThinJet2);
+        h_numThinJet_ele->Fill(getNumThinJet_eleFat);
+        h_numThinJet2_ele->Fill(getNumThinJet2_eleFat);
+        h_numThinJet_ele2->Fill(getNumThinJet_eleFat2);
+        h_numThinJet2_ele2->Fill(getNumThinJet2_eleFat2);
+        if(FATjetCharge[indexRecoAntiBMomisTopOrB[j]]<0)h_charge1->Fill(FATjetCharge[indexRecoAntiBMomisTopOrB[j]]);
+        if(FATjetCharge[indexRecoAntiBMomisTopOrB[j]]>0 || FATjetCharge[indexRecoAntiBMomisTopOrB[j]]==0) h_charge2->Fill(FATjetCharge[indexRecoAntiBMomisTopOrB[j]]);
+        // int charge_ele = eleCharge[i];
+        // int charge_jet = FATjetCharge[j];
+        // if(charge_ele*charge_jet<0)h_dR1_recoM->Fill(thisEle->DeltaR(*thisb));
+        // if(charge_ele*charge_jet>0)h_dR2_recoM->Fill(thisEle->DeltaR(*thisb));
+        h_dR1_recoM->Fill(thisEle->DeltaR(*thisb));
+        h_dPhi1_recoM->Fill(fabs(thisEle->Phi()-thisb->Phi()));
+        // else cout<<"ele charge:"<<eleCharge[indexRecoEleMatch[i]]<<" fat charge:"<<FATjetCharge[indexRecoBMomisTopOrB[j]]<<endl;
+        // else h_dR3_recoM->Fill(eleCharge[indexRecoEleMatch[i]]*FATjetCharge[indexRecoBMomisTopOrB[j]]);
+      }
+    }
+      //diff top
+      for(int i=0; i< indexRecoAntiEleMatch.size(); i++){
+      TLorentzVector* thisEle = (TLorentzVector*)eleP4->At(indexRecoAntiEleMatch[i]);
+      h_recoElePt_match->Fill(thisEle->Pt());
+      h_recoEleEta_match->Fill(thisEle->Eta());
+      for (int j=0; j< indexRecoBMomisTopOrB.size();j++){
+        // int charge_ele = 0,charge_jet=0;
+        TLorentzVector* thisb = (TLorentzVector*)FatJetP4->At(indexRecoBMomisTopOrB[j]);
+        h_dR_recoM->Fill(thisEle->DeltaR(*thisb));
+        h_numThinJet->Fill(getNumThinJet);
+        h_numThinJet2->Fill(getNumThinJet2);
+        h_numThinJet_ele->Fill(getNumThinJet_eleFat);
+        h_numThinJet2_ele->Fill(getNumThinJet2_eleFat);
+        h_numThinJet_ele2->Fill(getNumThinJet_eleFat2);
+        h_numThinJet2_ele2->Fill(getNumThinJet2_eleFat2);
+        if(FATjetCharge[indexRecoBMomisTopOrB[j]]<0)h_charge1->Fill(FATjetCharge[indexRecoBMomisTopOrB[j]]);
+        if(FATjetCharge[indexRecoBMomisTopOrB[j]]>0 || FATjetCharge[indexRecoBMomisTopOrB[j]]==0) h_charge2->Fill(FATjetCharge[indexRecoBMomisTopOrB[j]]);
+        // int charge_ele = eleCharge[i];
+        // int charge_jet = FATjetCharge[j];
+        // if(charge_ele*charge_jet<0)h_dR1_recoM->Fill(thisEle->DeltaR(*thisb));
+        // if(charge_ele*charge_jet>0)h_dR2_recoM->Fill(thisEle->DeltaR(*thisb));
+        h_dR2_recoM->Fill(thisEle->DeltaR(*thisb));
+        h_dPhi2_recoM->Fill(fabs(thisEle->Phi()-thisb->Phi()));
+        // else cout<<"ele charge:"<<eleCharge[indexRecoEleMatch[i]]<<" fat charge:"<<FATjetCharge[indexRecoBMomisTopOrB[j]]<<endl;
+        // else h_dR3_recoM->Fill(eleCharge[indexRecoEleMatch[i]]*FATjetCharge[indexRecoBMomisTopOrB[j]]);
+      }
+    }
+    //same top
+      for(int i=0; i< indexRecoEleMatch.size(); i++){
+      TLorentzVector* thisEle = (TLorentzVector*)eleP4->At(indexRecoEleMatch[i]);
+      h_recoElePt_match->Fill(thisEle->Pt());
+      h_recoEleEta_match->Fill(thisEle->Eta());
+      for (int j=0; j< indexRecoAntiBMomisTopOrB.size();j++){
+        // int charge_ele = 0,charge_jet=0;
+        TLorentzVector* thisb = (TLorentzVector*)FatJetP4->At(indexRecoAntiBMomisTopOrB[j]);
+        h_dR_recoM->Fill(thisEle->DeltaR(*thisb));
+        h_numThinJet->Fill(getNumThinJet);
+        h_numThinJet2->Fill(getNumThinJet2);
+        h_numThinJet_ele->Fill(getNumThinJet_eleFat);
+        h_numThinJet2_ele->Fill(getNumThinJet2_eleFat);
+        h_numThinJet_ele2->Fill(getNumThinJet_eleFat2);
+        h_numThinJet2_ele2->Fill(getNumThinJet2_eleFat2);
+        if(FATjetCharge[indexRecoAntiBMomisTopOrB[j]]<0)h_charge1->Fill(FATjetCharge[indexRecoAntiBMomisTopOrB[j]]);
+        if(FATjetCharge[indexRecoAntiBMomisTopOrB[j]]>0 || FATjetCharge[indexRecoAntiBMomisTopOrB[j]]==0) h_charge2->Fill(FATjetCharge[indexRecoAntiBMomisTopOrB[j]]);
+        // int charge_ele = eleCharge[i];
+        // int charge_jet = FATjetCharge[j];
+        // if(charge_ele*charge_jet<0)h_dR1_recoM->Fill(thisEle->DeltaR(*thisb));
+        // if(charge_ele*charge_jet>0)h_dR2_recoM->Fill(thisEle->DeltaR(*thisb));
+        h_dR2_recoM->Fill(thisEle->DeltaR(*thisb));
+        h_dPhi2_recoM->Fill(fabs(thisEle->Phi()-thisb->Phi()));
+        // else cout<<"ele charge:"<<eleCharge[indexRecoEleMatch[i]]<<" fat charge:"<<FATjetCharge[indexRecoBMomisTopOrB[j]]<<endl;
+        // else h_dR3_recoM->Fill(eleCharge[indexRecoEleMatch[i]]*FATjetCharge[indexRecoBMomisTopOrB[j]]);
       }
     }
 
@@ -257,10 +365,12 @@ setNCUStyle();
       TLorentzVector* thisEle = (TLorentzVector*)eleP4->At(indexRecoEle[i]);
       for (int j=0; j< indexFatJet.size();j++){
         TLorentzVector* thisb = (TLorentzVector*)FatJetP4->At(indexFatJet[j]);
-        int charge_ele = eleCharge[i];
-        int charge_jet = FATjetCharge[j];
-        if(charge_ele*charge_jet<0)h_dR1_reco->Fill(thisEle->DeltaR(*thisb));
-        if(charge_ele*charge_jet>0)h_dR2_reco->Fill(thisEle->DeltaR(*thisb));
+        // int charge_ele = eleCharge[i];
+        // int charge_jet = FATjetCharge[j];
+        // if(charge_ele*charge_jet<0)h_dR1_reco->Fill(thisEle->DeltaR(*thisb));
+        // if(charge_ele*charge_jet>0)h_dR2_reco->Fill(thisEle->DeltaR(*thisb));
+        if(eleCharge[indexRecoEle[i]]*FATjetCharge[indexFatJet[j]]<0)h_dR1_reco->Fill(thisEle->DeltaR(*thisb));
+        if(eleCharge[indexRecoEle[i]]*FATjetCharge[indexFatJet[j]]>0)h_dR2_reco->Fill(thisEle->DeltaR(*thisb));
       }
     }
 
@@ -283,7 +393,16 @@ h_dR2_reco->Write();
 h_dR_recoM->Write();
 h_dR1_recoM->Write();
 h_dR2_recoM->Write();
+h_dR3_recoM->Write();
+h_dPhi1_recoM->Write();
+h_dPhi2_recoM->Write();
 h_numThinJet->Write();
 h_numThinJet2->Write();
+h_numThinJet_ele->Write();
+h_numThinJet2_ele->Write();
+h_numThinJet_ele2->Write();
+h_numThinJet2_ele2->Write();
+h_charge1->Write();
+h_charge2->Write();
 outFile->Close();
 }
