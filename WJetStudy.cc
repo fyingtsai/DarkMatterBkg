@@ -14,6 +14,14 @@
 #include <TFile.h>
 #include "setNCUStyle.C"
 
+const char* const file[7]={"/data7/khurana/NCUGlobalTuples/SPRING15_ReMiniAODSIM/WJetsHTBinSampleReMiniAOD/crab_WJetsToLNu_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_MC25ns_ReMiniAOD_20151026/151025_235712/0000/",
+"/data7/khurana/NCUGlobalTuples/SPRING15_ReMiniAODSIM/WJetsHTBinSampleReMiniAOD/crab_WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_MC25ns_ReMiniAOD_20151026/151025_235758/0000/",
+"/data7/khurana/NCUGlobalTuples/SPRING15_ReMiniAODSIM/WJetsHTBinSampleReMiniAOD/crab_WJetsToLNu_HT-400To600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_MC25ns_ReMiniAOD_20151026/151025_235853/0000/",
+"/data7/khurana/NCUGlobalTuples/SPRING15_ReMiniAODSIM/WJetsHTBinSampleReMiniAOD/crab_WJetsToLNu_HT-600To800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_MC25ns_ReMiniAOD_20151026/151025_235938/0000/",
+"/data7/khurana/NCUGlobalTuples/SPRING15_ReMiniAODSIM/WJetsHTBinSampleReMiniAOD/crab_WJetsToLNu_HT-800To1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_MC25ns_ReMiniAOD_20151026/151026_000033/0000/",
+"/data7/khurana/NCUGlobalTuples/SPRING15_ReMiniAODSIM/WJetsHTBinSampleReMiniAOD/crab_WJetsToLNu_HT-1200To2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_MC25ns_ReMiniAOD_20151026/151026_000152/0000/",
+"/data7/khurana/NCUGlobalTuples/SPRING15_ReMiniAODSIM/WJetsHTBinSampleReMiniAOD/crab_WJetsToLNu_HT-2500ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_MC25ns_ReMiniAOD_20151026/151026_000238/0000/"};
+
 bool TriggerStatus(string*  trigName, vector<bool> &hlt_trigResult, Int_t nsize, string TRIGNAME){
     bool triggerstate=false;
     for(size_t i=0; i<nsize;i++){
@@ -25,20 +33,21 @@ bool TriggerStatus(string*  trigName, vector<bool> &hlt_trigResult, Int_t nsize,
     return triggerstate;
 }
 
-void WJetStudy(string inputFile){
-
+void WJetStudy(){
+  for(int i=0; i<7; i++){
+  string inputFile = file[i];
   TString outputFile;
   std::vector<string> infiles;
 
   if(inputFile.find(".root")!= std::string::npos)
     {
       TString endfix=gSystem->GetFromPipe(Form("file=%s; test=${file##*/}; echo \"${test%%.root*}\"",inputFile.data()));
-      outputFile = Form("WJet_HT100-200%s.root",endfix.Data());
+      outputFile = Form("WJet_HT_%d.root",i);
       cout << "Output file_ = " << outputFile << endl;
     }
   else{
       TString endfix=gSystem->GetFromPipe(Form("file=%s; test=${file##*/}; echo \"${test%%.root*}\"",inputFile.data()));
-      outputFile = Form("WJet_HT100-200%s.root",endfix.Data());
+      outputFile = Form("WJet_HT_%d.root",i);
       cout << "Output file = " << outputFile.Data() << endl;
     
     
@@ -85,10 +94,15 @@ setNCUStyle();
     TH1F* h_EtaMu = new TH1F("h_EtaMu","Eta of genMu",20,-5,5);
     TH1F* h_EtaTau = new TH1F("h_EtaTau","Eta of genTau",20,-5,5);
     TH1F* h_puCorMass = new TH1F("h_puCorMass","PRCorMass",100,0,200);
+    TH1F* h_Nele = new TH1F("h_Nele","number of ele",10,0,10);
+    TH1F* h_Nmu = new TH1F("h_Nmu","number of muon",10,0,10);
+    TH1F* h_Ntau = new TH1F("h_Ntau","number of tau",10,0,10);
 
     int N1_Ele=0,N1_Mu=0,N1_Tau=0,fra_dREle=0,fra_dRMu=0,fra_dRTau=0;
     int N2_Ele=0,N2_Mu=0,N2_Tau=0;
+    int totalN2_Ele=0,totalN2_Mu=0,totalN2_Tau=0;
     int total_Ele=0,total_Mu=0,total_Tau=0;
+
     int eventnum=0;
 
     for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
@@ -209,9 +223,12 @@ setNCUStyle();
 
     if((num_thin + num_Mu + num_tau + num_Ele)!=0)continue;
     eventnum++;
-    
+
     h_puCorMass->Fill(FATjetPRmassL2L3Corr[maxJetIndex]);
 
+    totalN2_Ele = totalN2_Ele + nEle;
+    totalN2_Mu = totalN2_Mu + nMu;
+    totalN2_Tau = totalN2_Tau + HPSTau_n;
     N2_Ele = N2_Ele + EleVector.size();
     N2_Mu = N2_Mu + MuVector.size();
     N2_Tau = N2_Tau + TauVector.size();
@@ -224,13 +241,16 @@ setNCUStyle();
     Int_t* genDa1        = data.GetPtrInt("genDa1");
     Int_t* genDa2        = data.GetPtrInt("genDa2");
     TLorentzVector genW;
+    int count_ele=0, count_mu=0, count_tau=0;
     for (int i=0;i < nGenPar; i++){
         if(abs(genParId[i]) == 24){
             TLorentzVector* thisW = (TLorentzVector*)genParP4->At(i);
             h_dRWJet->Fill(thisW->DeltaR(maxJet));
         }
         if(abs(genParId[i]) == 11){
+          if(genParSt[i]!=1)continue;
           if(genMomParId[i]!=24 && genMomParId[i]!=11)continue;
+            count_ele++;
             total_Ele++;
             TLorentzVector* thisEle = (TLorentzVector*)genParP4->At(i);
             if(maxJet.DeltaR(*thisEle) < 0.8){
@@ -242,35 +262,42 @@ setNCUStyle();
             h_EtaEle->Fill(thisEle->Eta());
         }
         if(abs(genParId[i]) == 13){
+          if(genParSt[i]!=1)continue;
           if(genMomParId[i]!=24 && genMomParId[i]!=13)continue;
+          count_mu++;
           total_Mu++;
             TLorentzVector* thisMu = (TLorentzVector*)genParP4->At(i);
             if(maxJet.DeltaR(*thisMu) < 0.8){
               fra_dRMu++;
             }
-            if(thisMu->Pt() > 10 && fabs(thisMu->Eta()) < 2.5)N1_Mu++;
+            if(thisMu->Pt() > 10 && fabs(thisMu->Eta()) < 2.4)N1_Mu++;
             h_dRMuJet->Fill(thisMu->DeltaR(maxJet));
             h_PtMu->Fill(thisMu->Pt());
             h_EtaMu->Fill(thisMu->Eta());
         }
         if(abs(genParId[i]) == 15){
           if(genMomParId[i]!=24 && genMomParId[i]!=15)continue;
+          count_tau++;
           total_Tau++;
             TLorentzVector* thisTau = (TLorentzVector*)genParP4->At(i);
             if(maxJet.DeltaR(*thisTau) < 0.8){
               fra_dRTau++;
             }
-            if(thisTau->Pt() > 10 && fabs(thisTau->Eta()) < 2.5)N1_Tau++;
+            if(thisTau->Pt() > 20 && fabs(thisTau->Eta()) < 2.4)N1_Tau++;
             h_dRTauJet->Fill(thisTau->DeltaR(maxJet));
             h_PtTau->Fill(thisTau->Pt());
             h_EtaTau->Fill(thisTau->Eta());
         }
     }
-
+h_Nele->Fill(count_ele);
+h_Nmu->Fill(count_mu);
+h_Ntau->Fill(count_tau);
     }//Entries loop
 
 cout<<"N1_Ele:"<<N1_Ele<<" N1_Mu:"<<N1_Mu<<" N1_Tau:"<<N1_Tau<<endl;
-cout<<"N2_Ele:"<<N2_Ele<<"N2_Mu:"<<N2_Mu<<"N2_Tau:"<<N2_Tau<<endl;
+cout<<"N2_Ele:"<<N2_Ele<<" N2_Mu:"<<N2_Mu<<" N2_Tau:"<<N2_Tau<<endl;
+cout<<"totalN2_Ele: "<<totalN2_Ele<<" totalN2_Mu:"<<totalN2_Mu<<" totalN2_Tau:"<<totalN2_Tau<<endl;
+cout<<"_totalN2_Ele:"<<totalN2_Ele - N2_Ele <<" _totalN2_Mu:"<<totalN2_Mu - N2_Mu<<" _totalN2_Tau:"<<totalN2_Tau - N2_Tau<<endl;
 
 TFile* outFile = new TFile(outputFile.Data(),"recreate");
 h_dRWJet->Write();
@@ -284,5 +311,9 @@ h_EtaMu->Write();
 h_PtTau->Write();
 h_EtaTau->Write();
 h_puCorMass->Write();
+h_Nele->Write();
+h_Nmu->Write();
+h_Ntau->Write();
 outFile->Close();
+}
 }
