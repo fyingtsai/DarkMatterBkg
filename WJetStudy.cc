@@ -107,7 +107,7 @@ setNCUStyle();
 
     int EleVectordR_PassID=0, MuVectordR_PassID=0, TauVectordR_PassID=0;
     int EleVectordR=0, MuVectordR=0, TauVectordR=0;
-    int EleVector_FaileddR=0, MuVector_FaileddR=0, TauVector_FaileddR=0;
+    int EleVector_FaileddRID=0, MuVector_FaileddRID=0, TauVector_FaileddRID=0;
 
     int eventnum=0;
 
@@ -253,22 +253,22 @@ setNCUStyle();
         if(maxJet.DeltaR(EleVector[i])<0.8){
           if(eleIsPassLoose[i])EleVectordR_PassID++; //pass pt,eta and dR<0.8 and pass ID
           else EleVectordR ++; //pass pt,eta and dR<0.8 but failed ID
-        }else EleVector_FaileddR ++; //pass pt, eta but dR > 0.8
+        }else if(!eleIsPassLoose[i])EleVector_FaileddRID ++; //pass pt, eta but dR > 0.8 and failed ID
     }
 
       for(int i=0; i<MuPassIndex.size();i++){
+        bool iso = (muChHadIso[i]+muNeHadIso[i]+muGamIso[i])/MuVector[i].Pt(); 
         if(maxJet.DeltaR(MuVector[i])<0.8){
-          bool iso = (muChHadIso[i]+muNeHadIso[i]+muGamIso[i])/MuVector[i].Pt();
-          if(isTightMuon[i] && iso < 0.4)EleVectordR_PassID++;
-          else MuVectordR ++;
-      }else MuVector_FaileddR ++;
+          if(isTightMuon[i] && iso < 0.4)EleVectordR_PassID++; //pass pt,eta and dR<0.8 and pass ID
+          else MuVectordR ++;  //pass pt,eta and dR<0.8 but failed ID
+      }else if (!isTightMuon[i] || iso > 0.4)MuVector_FaileddRID ++;  //pass pt, eta but dR > 0.8 and failed ID
     }
 
       for(int i=0; i<TauPassIndex.size();i++){
         if(maxJet.DeltaR(TauVector[i])<0.8){
           if(disc_decayModeFinding[i] && disc_byLooseIsolationMVA3newDMwLT[i])TauVectordR_PassID++;
           else TauVectordR ++;
-      }else TauVector_FaileddR ++;
+      }else if(!disc_decayModeFinding[i] || !disc_byLooseIsolationMVA3newDMwLT[i])TauVector_FaileddRID ++;
     }
 
     /****** Gen Loop ********/
@@ -344,7 +344,7 @@ cout<<"totalN2_Ele: "<<totalN2_Ele<<" totalN2_Mu:"<<totalN2_Mu<<" totalN2_Tau:"<
 cout<<"failed_ele:"<<failed_ele<<" failed_mu:"<<failed_mu<<" failed_tau:"<<failed_tau<<endl;
 cout<<" Pass_Ele_dRID:"<<EleVectordR_PassID<<" Pass_Mu_dRID:"<<MuVectordR_PassID<<" Pass_Tau_dRID:"<<TauVectordR_PassID<<endl;
 cout<<" Pass_Ele_dRFailID:"<<EleVectordR<<" Pass_Mu_dRFailID:"<<MuVectordR<<" Pass_Tau_dRFailID:"<<TauVectordR<<endl;
-cout<<" Pass_Ele_FaildR:"<<EleVector_FaileddR<<" Pass_Mu_FaildR:"<<MuVector_FaileddR<<" Pass_Tau_FaildR:"<<TauVector_FaileddR<<endl;
+cout<<" Pass_Ele_FaildRID:"<<EleVector_FaileddRID<<" Pass_Mu_FaildRID:"<<MuVector_FaileddRID<<" Pass_Tau_FaildRID:"<<TauVector_FaileddRID<<endl;
 
 
 TFile* outFile = new TFile(outputFile.Data(),"recreate");
