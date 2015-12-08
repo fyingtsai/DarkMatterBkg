@@ -99,9 +99,15 @@ setNCUStyle();
     TH1F* h_Ntau = new TH1F("h_Ntau","number of tau",10,0,10);
 
     int N1_Ele=0,N1_Mu=0,N1_Tau=0,fra_dREle=0,fra_dRMu=0,fra_dRTau=0;
-    int N2_Ele=0,N2_Mu=0,N2_Tau=0;
+    int Pass_Ele=0,Pass_Mu=0,Pass_Tau=0;
+    int PassdR_Ele=0,PassdR_Mu=0,PassdR_Tau=0;
+    int failed_ele=0,failed_mu=0,failed_tau=0;
     int totalN2_Ele=0,totalN2_Mu=0,totalN2_Tau=0;
     int total_Ele=0,total_Mu=0,total_Tau=0;
+
+    int EleVectordR_PassID=0, MuVectordR_PassID=0, TauVectordR_PassID=0;
+    int EleVectordR=0, MuVectordR=0, TauVectordR=0;
+    int EleVector_FaileddR=0, MuVector_FaileddR=0, TauVector_FaileddR=0;
 
     int eventnum=0;
 
@@ -153,13 +159,15 @@ setNCUStyle();
     Int_t nEle             = data.GetInt("nEle");
     vector<bool> &eleIsPassLoose = *((vector<bool>*) data.GetPtr("eleIsPassLoose"));
     int num_Ele=0;
-    vector<TLorentzVector> EleVector;
+    vector<TLorentzVector> EleVector,EleVector_failed;
+    vector<int> ElePassIndex;
     for(int ie=0;ie<nEle;ie++){
       TLorentzVector* thisEle = (TLorentzVector*)eleP4->At(ie);
+      if(thisEle->Pt() < 10 || fabs(thisEle->Eta()) > 2.5)EleVector_failed.push_back(*thisEle);
       if(thisEle->Pt() < 10)continue;
       if(fabs(thisEle->Eta()) > 2.5)continue;
       EleVector.push_back(*thisEle);
-
+      ElePassIndex.push_back(ie);
       if(!eleIsPassLoose[ie])continue;
       if(maxJet.DeltaR(*thisEle) < 0.8)continue;
       num_Ele++;
@@ -171,15 +179,17 @@ setNCUStyle();
     Float_t *muChHadIso  = data.GetPtrFloat("muChHadIso");
     Float_t *muNeHadIso  = data.GetPtrFloat("muNeHadIso");
     Float_t *muGamIso  = data.GetPtrFloat("muGamIso");
-    vector<TLorentzVector> MuVector;
+    vector<TLorentzVector> MuVector,MuVector_failed;
+    vector<int> MuPassIndex;
     int num_Mu=0;
     for(int im=0;im<nMu;im++){
       TLorentzVector* thisMu = (TLorentzVector*)muP4->At(im);
       bool iso = (muChHadIso[im]+muNeHadIso[im]+muGamIso[im])/thisMu->Pt();
+      if(thisMu->Pt() < 10 || fabs(thisMu->Eta()) > 2.4)MuVector_failed.push_back(*thisMu);
       if(thisMu->Pt() < 10)continue;
       if(fabs(thisMu->Eta()) > 2.4)continue;
       MuVector.push_back(*thisMu);
-
+      MuPassIndex.push_back(im);
       if(!isTightMuon[im])continue;
       if(iso > 0.4)continue;
       if(maxJet.DeltaR(*thisMu) < 0.8)continue;
@@ -192,13 +202,15 @@ setNCUStyle();
     vector<bool> &disc_decayModeFinding = *((vector<bool>*) data.GetPtr("disc_decayModeFinding"));
     vector<bool> &disc_byLooseIsolationMVA3newDMwLT = *((vector<bool>*) data.GetPtr("disc_byLooseIsolationMVA3newDMwLT"));
     int num_tau=0;
-    vector<TLorentzVector> TauVector;
+    vector<TLorentzVector> TauVector,TauVector_failed;
+    vector<int> TauPassIndex;
     for(int it=0;it<HPSTau_n;it++){
       TLorentzVector* thisTau = (TLorentzVector*)HPSTau_4Momentum->At(it);
+      if(thisTau->Pt() < 20 || fabs(thisTau->Eta()) > 2.4)TauVector_failed.push_back(*thisTau);
       if(thisTau->Pt() < 20)continue;
       if(fabs(thisTau->Eta()) > 2.4)continue;
       TauVector.push_back(*thisTau);
-
+      TauPassIndex.push_back(it);
       if(!disc_decayModeFinding[it])continue;
       if(!disc_byLooseIsolationMVA3newDMwLT[it])continue;
       if(maxJet.DeltaR(*thisTau) < 0.8)continue;
@@ -229,9 +241,36 @@ setNCUStyle();
     totalN2_Ele = totalN2_Ele + nEle;
     totalN2_Mu = totalN2_Mu + nMu;
     totalN2_Tau = totalN2_Tau + HPSTau_n;
-    N2_Ele = N2_Ele + EleVector.size();
-    N2_Mu = N2_Mu + MuVector.size();
-    N2_Tau = N2_Tau + TauVector.size();
+
+    Pass_Ele = Pass_Ele + EleVector.size(); //pass pt,eta
+    Pass_Mu = Pass_Mu + MuVector.size();
+    Pass_Tau = Pass_Tau + TauVector.size();
+    failed_ele = failed_ele + EleVector_failed.size();
+    failed_mu = failed_mu + MuVector_failed.size();
+    failed_tau = failed_tau + TauVector_failed.size();
+
+      for(int i=0; i<ElePassIndex.size();i++){
+        if(maxJet.DeltaR(EleVector[i])<0.8){
+          if(eleIsPassLoose[i])EleVectordR_PassID++; //pass pt,eta and dR<0.8 and pass ID
+          else EleVectordR ++; //pass pt,eta and dR<0.8 but failed ID
+        }else EleVector_FaileddR ++; //pass pt, eta but dR > 0.8
+    }
+
+      for(int i=0; i<MuPassIndex.size();i++){
+        if(maxJet.DeltaR(MuVector[i])<0.8){
+          bool iso = (muChHadIso[i]+muNeHadIso[i]+muGamIso[i])/MuVector[i].Pt();
+          if(isTightMuon[i] && iso < 0.4)EleVectordR_PassID++;
+          else MuVectordR ++;
+      }else MuVector_FaileddR ++;
+    }
+
+      for(int i=0; i<TauPassIndex.size();i++){
+        if(maxJet.DeltaR(TauVector[i])<0.8){
+          if(disc_decayModeFinding[i] && disc_byLooseIsolationMVA3newDMwLT[i])TauVectordR_PassID++;
+          else TauVectordR ++;
+      }else TauVector_FaileddR ++;
+    }
+
     /****** Gen Loop ********/
     TClonesArray* genParP4 = (TClonesArray*) data.GetPtrTObject("genParP4");
     Int_t nGenPar          = data.GetInt("nGenPar");
@@ -249,7 +288,7 @@ setNCUStyle();
         }
         if(abs(genParId[i]) == 11){
           if(genParSt[i]!=1)continue;
-          if(genMomParId[i]!=24 && genMomParId[i]!=11)continue;
+          if(abs(genMomParId[i])!=24 && abs(genMomParId[i])!=11)continue;
             count_ele++;
             total_Ele++;
             TLorentzVector* thisEle = (TLorentzVector*)genParP4->At(i);
@@ -263,7 +302,7 @@ setNCUStyle();
         }
         if(abs(genParId[i]) == 13){
           if(genParSt[i]!=1)continue;
-          if(genMomParId[i]!=24 && genMomParId[i]!=13)continue;
+          if(abs(genMomParId[i])!=24 && abs(genMomParId[i])!=13)continue;
           count_mu++;
           total_Mu++;
             TLorentzVector* thisMu = (TLorentzVector*)genParP4->At(i);
@@ -276,7 +315,7 @@ setNCUStyle();
             h_EtaMu->Fill(thisMu->Eta());
         }
         if(abs(genParId[i]) == 15){
-          if(genMomParId[i]!=24 && genMomParId[i]!=15)continue;
+          if(abs(genMomParId[i])!=24 && abs(genMomParId[i])!=15)continue;
           count_tau++;
           total_Tau++;
             TLorentzVector* thisTau = (TLorentzVector*)genParP4->At(i);
@@ -294,10 +333,19 @@ h_Nmu->Fill(count_mu);
 h_Ntau->Fill(count_tau);
     }//Entries loop
 
+//gen-level
 cout<<"N1_Ele:"<<N1_Ele<<" N1_Mu:"<<N1_Mu<<" N1_Tau:"<<N1_Tau<<endl;
-cout<<"N2_Ele:"<<N2_Ele<<" N2_Mu:"<<N2_Mu<<" N2_Tau:"<<N2_Tau<<endl;
+cout<<"fradR_ele:"<<fra_dREle<<" fra_dRMu:"<<fra_dRMu<<" fra_dRTau:"<<fra_dRTau<<endl;
+cout<<"total_ele:"<<total_Ele<<" total_Mu:"<<total_Mu<<" total_Tau:"<<total_Tau<<endl;
+//reco-level
+cout<<"Pass_Ele:"<<Pass_Ele<<" Pass_Mu:"<<Pass_Mu<<" Pass_Tau:"<<Pass_Tau<<endl;
 cout<<"totalN2_Ele: "<<totalN2_Ele<<" totalN2_Mu:"<<totalN2_Mu<<" totalN2_Tau:"<<totalN2_Tau<<endl;
-cout<<"_totalN2_Ele:"<<totalN2_Ele - N2_Ele <<" _totalN2_Mu:"<<totalN2_Mu - N2_Mu<<" _totalN2_Tau:"<<totalN2_Tau - N2_Tau<<endl;
+// cout<<"_totalN2_Ele:"<<totalN2_Ele - N2_Ele <<" _totalN2_Mu:"<<totalN2_Mu - N2_Mu<<" _totalN2_Tau:"<<totalN2_Tau - N2_Tau<<endl;
+cout<<"failed_ele:"<<failed_ele<<" failed_mu:"<<failed_mu<<" failed_tau:"<<failed_tau<<endl;
+cout<<" Pass_Ele_dRID:"<<EleVectordR_PassID<<" Pass_Mu_dRID:"<<MuVectordR_PassID<<" Pass_Tau_dRID:"<<TauVectordR_PassID<<endl;
+cout<<" Pass_Ele_dRFailID:"<<EleVectordR<<" Pass_Mu_dRFailID:"<<MuVectordR<<" Pass_Tau_dRFailID:"<<TauVectordR<<endl;
+cout<<" Pass_Ele_FaildR:"<<EleVector_FaileddR<<" Pass_Mu_FaildR:"<<MuVector_FaileddR<<" Pass_Tau_FaildR:"<<TauVector_FaileddR<<endl;
+
 
 TFile* outFile = new TFile(outputFile.Data(),"recreate");
 h_dRWJet->Write();
