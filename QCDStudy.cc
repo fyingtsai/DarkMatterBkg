@@ -87,6 +87,11 @@ void QCDStudy(){
 TreeReader data(infiles);
 setNCUStyle();
 int count_Pho=0;
+
+    TH1F* h_PtPho = new TH1F("h_PtPho","Pt of photon",50,0,200);
+    TH1F* h_PtLeadingPho = new TH1F("h_PtLeadingPho","Pt of leading photon",50,0,200);
+
+
     for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
        if (jEntry % 50000 == 0)
        fprintf(stderr, "Processing event %lli of %lli\n", jEntry + 1, data.GetEntriesFast());
@@ -112,6 +117,7 @@ int count_Pho=0;
             maxPho = *thisPho;
           }
     }
+    h_PtLeadingPho->Fill(NmaxPhoPt);
     float gammapx = maxPho.Px();
     float gammapy = maxPho.Py();
     float llmet = sqrt( pow(metx+gammapx,2) + 
@@ -224,8 +230,10 @@ int count_Pho=0;
     if((num_thin + num_Mu + num_tau + num_Ele)!=0)continue;
 
     for(int ig=0; ig<nPho; ig++){
-      if(!phoIsPassTight[ig])continue;
-      count_Pho++;
+        TLorentzVector* thisPho = (TLorentzVector*)phoP4->At(ig);
+        if(!phoIsPassTight[ig])continue;
+        h_PtPho->Fill(thisPho->Pt());
+        count_Pho++;
     }
 
     }//entries
@@ -233,5 +241,9 @@ int count_Pho=0;
 
 
 cout<<"QCD_Pho:"<<count_Pho<<endl;
+TFile* outFile = new TFile(outputFile.Data(),"recreate");
+h_PtPho->Write();
+h_PtLeadingPho->Write();
+outFile->Close();
 }//files
 }//.cc
