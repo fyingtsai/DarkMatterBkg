@@ -82,12 +82,14 @@ void PhoJetStudy(){
 
 TreeReader data(infiles);
 setNCUStyle();
-
 int count_Pho=0;
+
     TH1F* h_PtPho = new TH1F("h_PtPho","Pt of photon",50,0,500);
     TH1F* h_PtPho2 = new TH1F("h_PtPho2","Pt of photon",50,0,500);
     TH1F* h_PtPho3 = new TH1F("h_PtPho3","Pt of photon",50,0,500);
+    TH1F* h_PtPho4 = new TH1F("h_PtPho4","Pt of photon",50,0,500);
     TH1F* h_PtGenPho = new TH1F("h_PtGenPho","Pt of gen-photon",50,0,500);
+    TH1F* h_PtGenPho2 = new TH1F("h_PtGenPho2","Pt of gen-photon",50,0,500);
     TH1F* h_PtLeadingPho = new TH1F("h_PtLeadingPho","Pt of leading photon",50,0,500);
 
     for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
@@ -100,33 +102,54 @@ int count_Pho=0;
     vector<bool> &phoIsPassTight = *((vector<bool>*) data.GetPtr("phoIsPassTight"));
     Int_t nPho             = data.GetInt("nPho");
     TClonesArray* phoP4 = (TClonesArray*) data.GetPtrTObject("phoP4");
+    Float_t *eleHoverE  = data.GetPtrFloat("eleHoverE");
+    Float_t *eleSigmaIEtaIEta  = data.GetPtrFloat("eleSigmaIEtaIEta");
+    Float_t *eleChHadIso  = data.GetPtrFloat("eleChHadIso");
+    Float_t *eleNeHadIso  = data.GetPtrFloat("eleNeHadIso");
+    Float_t *eleGamIso  = data.GetPtrFloat("eleGamIso");
     
     float met        = data.GetFloat("pfMetRawPt");
     float metphi     = data.GetFloat("pfMetRawPhi");    
     float metx = met*TMath::Cos(metphi);
     float mety = met*TMath::Sin(metphi);
 
-    float NmaxPhoPt = -9999.0;
-    TLorentzVector maxPho;
+    float NmaxPhoPt = -9999.0,NmaxPhoPt_ID = -9999.0;
+    int maxPhoIndex = -1, maxPhoIndex_ID = -1;
+    TLorentzVector maxPho,maxPho_ID;
+
     for(int p=0; p< nPho; p++){
       TLorentzVector* thisPho = (TLorentzVector*)phoP4->At(p);
       if(thisPho->Pt() > NmaxPhoPt){
             NmaxPhoPt = thisPho->Pt();
             maxPho = *thisPho;
+            maxPhoIndex = p;
+          }
+      if(thisPho->Pt() > NmaxPhoPt_ID){
+          if(!phoIsPassTight[p])continue;
+        // if(eleHoverE[p]>0.05)continue;
+        // if(eleSigmaIEtaIEta[p]>0.01)continue;
+        // if(eleChHadIso[p]>0.91)continue;
+        // if(eleNeHadIso[p]>0.33+(exp(0.0044*thisPho->Pt()+0.5809)))continue;
+        // if(eleGamIso[p] > 0.61+(0.0043*thisPho->Pt()))continue;
+            NmaxPhoPt_ID = thisPho->Pt();
+            maxPho_ID = *thisPho;
+            maxPhoIndex_ID = p;
           }
     }
+    h_PtPho->Fill(NmaxPhoPt_ID);
     h_PtLeadingPho->Fill(NmaxPhoPt);
+
     float gammapx = maxPho.Px();
     float gammapy = maxPho.Py();
     float llmet = sqrt( pow(metx+gammapx,2) + 
                         pow(mety+gammapy,2));
 
+
     // MET & Trigger
     vector<bool> &trigResult = *((vector<bool>*) data.GetPtr("hlt_trigResult"));
     std::string*  trigName = data.GetPtrString("hlt_trigName");
     const Int_t nsize = data.GetPtrStringSize();
-    if(!TriggerStatus(trigName,trigResult,nsize,"HLT_PFMET170_NoiseCleaned_v1")) continue;
-    if(llmet < 120) continue;
+    // if(!TriggerStatus(trigName,trigResult,nsize,"HLT_PFMET170_NoiseCleaned_v1")) continue;
         /********* FatJet Loop *************/
     TClonesArray* FatJetP4 = (TClonesArray*) data.GetPtrTObject("FATjetP4");
     Int_t nJet             = data.GetInt("FATnJet");
@@ -224,18 +247,6 @@ int count_Pho=0;
     }
     if(maxJetIndex == -1)continue;
 
-    /******* Pho Loop *********/
-    for(int ig=0; ig<nPho; ig++){
-        TLorentzVector* thisPho = (TLorentzVector*)phoP4->At(ig);
-        if(!phoIsPassTight[ig])continue;
-        h_PtPho->Fill(thisPho->Pt());
-        count_Pho++;
-
-    }
-
-
-    if((num_thin + num_Mu + num_tau + num_Ele)!=0)continue;
-
     /****** Gen Loop ********/
     TClonesArray* genParP4 = (TClonesArray*) data.GetPtrTObject("genParP4");
     Int_t nGenPar          = data.GetInt("nGenPar");
@@ -248,28 +259,38 @@ int count_Pho=0;
         TLorentzVector* thispho = (TLorentzVector*)genParP4->At(i);
         if( genParSt[i] == 1 && ((genStFlag[i] >> 9 ) & 1) && fabs(genParId[i]) ==22){
             h_PtGenPho->Fill(thispho->Pt());
+            if(phoIsPassTight[i])h_PtGenPho2->Fill(thispho->Pt());
         }
     }
+
+    if(llmet < 120) continue;
+    if((num_thin + num_Mu + num_tau + num_Ele)!=0)continue;
+
 
     /******* Pho Loop *********/
     for(int ig=0; ig<nPho; ig++){
         TLorentzVector* thisPho = (TLorentzVector*)phoP4->At(ig);
-        h_PtPho2->Fill(thisPho->Pt());
         if(!phoIsPassTight[ig])continue;
-        h_PtPho3->Fill(thisPho->Pt());
+        // if(eleHoverE[ig]>0.05)continue;
+        // if(eleSigmaIEtaIEta[ig]>0.01)continue;
+        // if(eleChHadIso[ig]>0.91)continue;
+        // if(eleNeHadIso[ig]>0.33+(exp(0.0044*thisPho->Pt()+0.5809)))continue;
+        // if(eleGamIso[ig] > 0.61+(0.0043*thisPho->Pt()))continue;
         count_Pho++;
-
     }
+    h_PtPho2->Fill(NmaxPhoPt);
+    h_PtPho3->Fill(NmaxPhoPt_ID);
 
     }//entries
 
 cout<<"GJ_Pho:"<<count_Pho<<endl;
 TFile* outFile = new TFile(outputFile.Data(),"recreate");
+h_PtLeadingPho->Write();
 h_PtPho->Write();
 h_PtPho2->Write();
 h_PtPho3->Write();
-h_PtLeadingPho->Write();
 h_PtGenPho->Write();
+h_PtGenPho2->Write();
 outFile->Close();
 }//files
 }//.cc
