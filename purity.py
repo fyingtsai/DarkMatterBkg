@@ -1,5 +1,6 @@
 import ROOT
-from ROOT import TGraph, TFile, TCanvas
+import math
+from ROOT import TGraph, TFile, TCanvas, TGraphErrors
 from array import array
 
 def main():
@@ -15,12 +16,18 @@ def main():
 
     number_GJ = []
     number_QCD = []
+    error_GJ = []
+    error_QCD = []
     ptValue = []
     purity = []
+    error = []
+    error_x = []
 
     for i in range(h_GJ.GetNbinsX()):
         number_GJ.append(h_GJ.GetBinContent(i+1))
         number_QCD.append(h_QCD.GetBinContent(i+1))
+        error_GJ.append(h_GJ.GetBinError(i+1))
+        error_QCD.append(h_QCD.GetBinError(i+1))
         ptValue.append((500/h_GJ.GetNbinsX())*i)
 
     for j in range(len(number_GJ)):
@@ -29,11 +36,22 @@ def main():
         else:
             purity.append(number_GJ[j]/(number_GJ[j]+number_QCD[j]))
 
+    for k in range(len(purity)):
+        if (number_GJ[k] and number_QCD[k]) == 0:
+            error.append(0)
+            error_x.append(0)
+        else:
+            error.append(purity[k]*math.sqrt(pow(error_GJ[k]/number_GJ[k],2)+pow(error_QCD[k]/number_QCD[k],2)))
+            error_x.append(0)
+
     x = array("d", ptValue)
     y = array("d", purity)
+    ey = array("d",error)
+    ex = array("d",error_x)
+
 
     # fout = TFile("purity.root","recreate")
-    g = TGraph(len(x),x,y)
+    g = TGraphErrors(len(x),x,y,ex,ey)
     g.GetXaxis().SetTitle("Photon Pt (GeV)")
     g.GetYaxis().SetTitle("Purity (S/S+B)")
     g.SetTitle("Photon Purity")
