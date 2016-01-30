@@ -24,7 +24,7 @@ def main():
     c1.Modified()
     c1.Update()
     c1.cd()
-    c1.Print("TGraphAsymmErrors.png") 
+    c1.Print("TGraphAsymmErrors.pdf") 
 
 if __name__ == "__main__":
    main()

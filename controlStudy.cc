@@ -101,8 +101,8 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
     std::string*  trigName = data.GetPtrString("hlt_trigName");
     const Int_t nsize = data.GetPtrStringSize();
 
-    if(!TriggerStatus(trigName,trigResult,nsize,"HLT_PFMET170_NoiseCleaned_") && 
-       !TriggerStatus(trigName,trigResult,nsize,"HLT_PFMET120_PFMHT120_IDLoose_")) continue;
+    // if(!TriggerStatus(trigName,trigResult,nsize,"HLT_PFMET170_NoiseCleaned_") && 
+       // !TriggerStatus(trigName,trigResult,nsize,"HLT_PFMET120_PFMHT120_IDLoose_")) continue;
 
     if(hlt_hbhet != 1)continue;
     if(nVtx <= 0)continue;
