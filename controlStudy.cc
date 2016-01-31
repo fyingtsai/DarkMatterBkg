@@ -84,6 +84,7 @@ void controlStudy(){
 
 TreeReader data(infiles);
 setNCUStyle();
+int countEvent=0;
 
 TH1F* h_MET = new TH1F("h_MET","MET",10,0,800);
 
@@ -131,6 +132,7 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
             maxFJetIndex = ij;
           }
     }//FatJet
+    if(maxFJetIndex == -1)continue;
 
 /******** ThinJet (QCD Jet) *********/
     TClonesArray* THINgenjetP4 = (TClonesArray*) data.GetPtrTObject("THINgenjetP4");
@@ -225,9 +227,10 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
     }//Tau loop
 if((num_Mu + num_tau + num_Ele)!=0)continue;
 h_MET->Fill(pfMetCorrPt);
+countEvent++;
 }//ENTRIES
 
-
+cout<<"Event:"<<countEvent<<endl;
 TFile* outFile = new TFile(outputFile.Data(),"recreate");
 h_MET->Write();
 outFile->Close();
