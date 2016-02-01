@@ -13,15 +13,19 @@
 #include <map>
 #include <TFile.h>
 #include "setNCUStyle.C"
+#include <math.h>
 
-const char* const file[7]={
-"/data7/khurana/NCUGlobalTuples/SPRING15_ReMiniAODSIM/WJetsHTBinSampleReMiniAOD/crab_WJetsToLNu_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_MC25ns_ReMiniAOD_20151026/151025_235712/0000/",
-"/data7/khurana/NCUGlobalTuples/SPRING15_ReMiniAODSIM/WJetsHTBinSampleReMiniAOD/crab_WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_MC25ns_ReMiniAOD_20151026/151025_235758/0000/",
-"/data7/khurana/NCUGlobalTuples/SPRING15_ReMiniAODSIM/WJetsHTBinSampleReMiniAOD/crab_WJetsToLNu_HT-400To600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_MC25ns_ReMiniAOD_20151026/151025_235853/0000/",
-"/data7/khurana/NCUGlobalTuples/SPRING15_ReMiniAODSIM/WJetsHTBinSampleReMiniAOD/crab_WJetsToLNu_HT-600To800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_MC25ns_ReMiniAOD_20151026/151025_235938/0000/",
-"/data7/khurana/NCUGlobalTuples/SPRING15_ReMiniAODSIM/WJetsHTBinSampleReMiniAOD/crab_WJetsToLNu_HT-800To1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_MC25ns_ReMiniAOD_20151026/151026_000033/0000/",
-"/data7/khurana/NCUGlobalTuples/SPRING15_ReMiniAODSIM/WJetsHTBinSampleReMiniAOD/crab_WJetsToLNu_HT-1200To2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_MC25ns_ReMiniAOD_20151026/151026_000152/0000/",
-"/data7/khurana/NCUGlobalTuples/SPRING15_ReMiniAODSIM/WJetsHTBinSampleReMiniAOD/crab_WJetsToLNu_HT-2500ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_MC25ns_ReMiniAOD_20151026/151026_000238/0000/"
+#define m_pi         3.1415 /* pi */
+
+const char* const file[1]={
+    "/data7/khurana/NCUGlobalTuples/ForFang-Ying/"
+// "/data7/khurana/NCUGlobalTuples/SPRING15_ReMiniAODSIM/WJetsHTBinSampleReMiniAOD/crab_WJetsToLNu_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_MC25ns_ReMiniAOD_20151026/151025_235712/0000/",
+// "/data7/khurana/NCUGlobalTuples/SPRING15_ReMiniAODSIM/WJetsHTBinSampleReMiniAOD/crab_WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_MC25ns_ReMiniAOD_20151026/151025_235758/0000/",
+// "/data7/khurana/NCUGlobalTuples/SPRING15_ReMiniAODSIM/WJetsHTBinSampleReMiniAOD/crab_WJetsToLNu_HT-400To600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_MC25ns_ReMiniAOD_20151026/151025_235853/0000/",
+// "/data7/khurana/NCUGlobalTuples/SPRING15_ReMiniAODSIM/WJetsHTBinSampleReMiniAOD/crab_WJetsToLNu_HT-600To800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_MC25ns_ReMiniAOD_20151026/151025_235938/0000/",
+// "/data7/khurana/NCUGlobalTuples/SPRING15_ReMiniAODSIM/WJetsHTBinSampleReMiniAOD/crab_WJetsToLNu_HT-800To1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_MC25ns_ReMiniAOD_20151026/151026_000033/0000/",
+// "/data7/khurana/NCUGlobalTuples/SPRING15_ReMiniAODSIM/WJetsHTBinSampleReMiniAOD/crab_WJetsToLNu_HT-1200To2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_MC25ns_ReMiniAOD_20151026/151026_000152/0000/",
+// "/data7/khurana/NCUGlobalTuples/SPRING15_ReMiniAODSIM/WJetsHTBinSampleReMiniAOD/crab_WJetsToLNu_HT-2500ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_MC25ns_ReMiniAOD_20151026/151026_000238/0000/"
 };
 
 bool TriggerStatus(string*  trigName, vector<bool> &hlt_trigResult, Int_t nsize, string TRIGNAME){
@@ -35,8 +39,15 @@ bool TriggerStatus(string*  trigName, vector<bool> &hlt_trigResult, Int_t nsize,
     return triggerstate;
 }
 
+static Float_t DeltaPhi(Float_t phi1, Float_t phi2){
+    double result = phi1 - phi2;
+    if(result>m_pi) result -= 2*m_pi;
+    else if (result <= -m_pi) result += 2*m_pi ;
+    else result = result;
+    return result;
+  }
 void controlStudy(){
-  for(int i=0; i<7; i++){
+  for(int i=0; i<1; i++){
   string inputFile = file[i];
   TString outputFile;
   std::vector<string> infiles;
@@ -44,12 +55,12 @@ void controlStudy(){
   if(inputFile.find(".root")!= std::string::npos)
     {
       TString endfix=gSystem->GetFromPipe(Form("file=%s; test=${file##*/}; echo \"${test%%.root*}\"",inputFile.data()));
-      outputFile = Form("CONTROL_%d.root",i);
+      outputFile = Form("CONTROLtry_%d.root",i);
       cout << "Output file_ = " << outputFile << endl;
     }
   else{
       TString endfix=gSystem->GetFromPipe(Form("file=%s; test=${file##*/}; echo \"${test%%.root*}\"",inputFile.data()));
-      outputFile = Form("CONTROL_%d.root",i);
+      outputFile = Form("CONTROLtry_%d.root",i);
       cout << "Output file = " << outputFile.Data() << endl;
     
     
@@ -61,7 +72,8 @@ void controlStudy(){
   Long64_t nfiles=0;
       while(fileH = (TFile*)fileIt()) {
       std::string fileN = fileH->GetName();
-      std::string baseString = "NCUGlobalTuples"; 
+      // std::string baseString = "NCUGlobalTuples";
+      std::string baseString = "Merged_MonoHTobb";  
         if(fileN.find("fail") != std::string::npos)continue;
         if(fileH->IsFolder()){
       std::string newDir=inputFile+fileN;
@@ -86,13 +98,13 @@ TreeReader data(infiles);
 setNCUStyle();
 int countEvent=0;
 
-TH1F* h_MET = new TH1F("h_MET","MET",10,0,800);
+TH1F* h_MET = new TH1F("h_MET","MET",20,0,2000);
 
 
 for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
        if (jEntry % 50000 == 0)
        fprintf(stderr, "Processing event %lli of %lli\n", jEntry + 1, data.GetEntriesFast());
-
+        if(jEntry>100)continue;
     data.GetEntry(jEntry);
 
 /********* Filter & Trigger **********/
@@ -104,10 +116,10 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
 
     // if(!TriggerStatus(trigName,trigResult,nsize,"HLT_PFMET170_NoiseCleaned_") && 
        // !TriggerStatus(trigName,trigResult,nsize,"HLT_PFMET120_PFMHT120_IDLoose_")) continue;
-
+cout<<"passjEntry1:"<<jEntry<<endl;
     if(hlt_hbhet != 1)continue;
     if(nVtx <= 0)continue;
-
+cout<<"passjEntry2:"<<jEntry<<endl;
 /********* FatJet **********/
     TClonesArray* FatJetP4 = (TClonesArray*) data.GetPtrTObject("FATjetP4");
     Int_t nJet             = data.GetInt("FATnJet");
@@ -133,16 +145,16 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
           }
     }//FatJet
     if(maxFJetIndex == -1)continue;
-
+cout<<"passjEntry3:"<<jEntry<<endl;
 /******** ThinJet (QCD Jet) *********/
-    TClonesArray* THINgenjetP4 = (TClonesArray*) data.GetPtrTObject("THINgenjetP4");
+    TClonesArray* THINjetP4 = (TClonesArray*) data.GetPtrTObject("THINjetP4");
     Int_t THINnJet             = data.GetInt("THINnJet");
     vector<bool> &THINjetPassIDLoose = *((vector<bool>*) data.GetPtr("THINjetPassIDLoose"));
     float maxQCDJPt = -9999.0;
     int maxQCDJetIndex = -1;
     TLorentzVector maxQCDJet;
     for(int i=0; i<THINnJet;i++){
-        TLorentzVector* thisJet = (TLorentzVector*)THINgenjetP4->At(i);
+        TLorentzVector* thisJet = (TLorentzVector*)THINjetP4->At(i);
         if(thisJet->Pt() < 30)continue;
         if(fabs(thisJet->Eta()) > 2.4)continue;
         if(!THINjetPassIDLoose[i])continue;
@@ -158,14 +170,18 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
     Float_t pfMetCorrPt     = data.GetFloat("pfMetCorrPt");
     Float_t pfMetCorrPhi    = data.GetFloat("pfMetCorrPhi");
     if(pfMetCorrPt < 200) continue;
-    if(fabs(maxFJet.Phi()- pfMetCorrPhi)<2.5)continue;
-    if(fabs(maxQCDJet.Phi()- pfMetCorrPhi)<2.5)continue;
-
+cout<<"passjEntry4:"<<jEntry<<endl;
+    if(DeltaPhi(maxFJet.Phi(),pfMetCorrPhi)<0.5)continue;
+cout<<"passjEntry5:"<<jEntry<<endl;
+    if(DeltaPhi(maxQCDJet.Phi(),pfMetCorrPhi)<0.5)continue;
+    // if(fabs(maxFJet.Phi()- pfMetCorrPhi)<2.5)continue;
+    // if(fabs(maxQCDJet.Phi()- pfMetCorrPhi)<2.5)continue;
+cout<<"passjEntry6:"<<jEntry<<endl;
 /********** ThinJet Veto ********/
     Float_t *THINjetCISVV2  = data.GetPtrFloat("THINjetCISVV2");
     int nThinJet=0;
     for(int i=0; i<THINnJet;i++){
-       TLorentzVector* thisJet = (TLorentzVector*)THINgenjetP4->At(i);
+       TLorentzVector* thisJet = (TLorentzVector*)THINjetP4->At(i);
         if(thisJet->Pt() < 30)continue;
         if(fabs(thisJet->Eta()) > 2.4)continue; 
         if(THINjetCISVV2[i] < 0.605)continue;
@@ -174,7 +190,7 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
         nThinJet++;
     }
     if(nThinJet!=0)continue;
-
+cout<<"passjEntry7:"<<jEntry<<endl;
 /******** Ele Loop ************/
     TClonesArray* eleP4 = (TClonesArray*) data.GetPtrTObject("eleP4");
     Int_t nEle             = data.GetInt("nEle");
@@ -226,7 +242,12 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
       num_tau++;
     }//Tau loop
 if((num_Mu + num_tau + num_Ele)!=0)continue;
+cout<<"passjEntry8:"<<jEntry<<endl;
 h_MET->Fill(pfMetCorrPt);
+Int_t lumiSection             = data.GetInt("lumiSection");
+Int_t runId             = data.GetInt("runId");
+Int_t eventId             = data.GetInt("eventId");
+cout<<"lumiSection:"<<lumiSection<<"  runId:"<< runId<<"   eventId:"<< eventId<<endl;
 countEvent++;
 }//ENTRIES
 
