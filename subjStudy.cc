@@ -55,7 +55,7 @@ const char* const file[34]={
 
 vector<string> split(string str, char delimiter) {
   vector<string> internal;
-  stringstream ss(str); // Turn the string into a stream.
+  stringstream ss(str); 
   string tok;
   
   while(getline(ss, tok, delimiter)) {
@@ -104,6 +104,7 @@ void subjStudy(){
   TH1F*    h_MuEF[nobjectmet];
  
   TH1F*    h_CMulti[nobjectmet];
+  TH1F*    h_event[nobjectmet];
 
   for(int i=0; i<34; i++)
     {
@@ -120,6 +121,7 @@ TreeReader data(tree);
 setNCUStyle();
 
 TString postfix;
+int countEvent=0;
 postfix.Form("%d",i);
 
     h_nMuons[i]     = new TH1F("h_nMuons"+postfix,"h_nMuons",10,0,10);
@@ -159,6 +161,7 @@ postfix.Form("%d",i);
     h_NHadEF[i]            = new TH1F("h_NHadEF"+postfix,"",20,0,1);
     h_MuEF[i]              = new TH1F("h_MuEF"+postfix,"",20,0,1);
     h_CMulti[i]            = new TH1F("h_CMulti"+postfix,"",20,0,1);
+    h_event[i]             = new TH1F("h_event"+postfix,"",100,0,100);
 
 for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
        if (jEntry % 50000 == 0)
@@ -194,6 +197,8 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
       if(JetMetDPhi_<2.5)continue;
       if(dphiMin_<0.5)continue;
       if(NAddBJet!=0)continue;
+      if(NAddMu_ + NAddEle_ + NAddTau_ !=0)continue;
+      countEvent++;
 
       h_nMuons[i] ->Fill(NAddMu_);
       h_nTaus[i] ->Fill(NAddTau_);
@@ -221,6 +226,8 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
       h_CMulti[i] ->Fill(jetCMulti_);
 
 }//ENTRIES
+h_event[i]->Fill(countEvent);
+// cout<<"Event:"<<countEvent<<endl;
 gSystem->cd("rootDirectory");
 
 TFile* outFile = new TFile(outputFile.Data(),"recreate");
@@ -249,6 +256,7 @@ TFile* outFile = new TFile(outputFile.Data(),"recreate");
       h_NHadEF[i] ->Write();
       h_MuEF[i] ->Write();
       h_CMulti[i] ->Write();
+      h_event[i]->Write();
 
 outFile->Close();
 
