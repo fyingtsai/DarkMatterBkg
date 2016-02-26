@@ -16,6 +16,8 @@
 #include <math.h>
 #include <sstream>
 
+// TString path_ =  "/afs/cern.ch/user/k/khurana/public/ForBTagUnc/AnalysisTuples_V2/";
+
 const char* const file[34]={
      "/afs/cern.ch/user/k/khurana/public/ForBTagUnc/AnalysisTuples_V2/Merged_MonoHToBBarMZp-600GeV_MA0-300GeV-runallAnalysis.root",
      "/afs/cern.ch/user/k/khurana/public/ForBTagUnc/AnalysisTuples_V2/Merged_MonoHToBBarMZp-800GeV_MA0-300GeV-runallAnalysis.root",
@@ -65,9 +67,12 @@ vector<string> split(string str, char delimiter) {
   return internal;
 }
 
-void subjStudy(){
+void subjStudy(unsigned int id){
   int nobjectmet=34;
-  gSystem->mkdir("rootDirectory"); 
+  TString num,dirName;
+  num.Form("%d",id);
+  dirName = "rootDirectory_"+num;
+  gSystem->mkdir(dirName); 
 
   TH1F*    h_nMuons[nobjectmet];
   TH1F*    h_nTaus[nobjectmet];
@@ -192,14 +197,52 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
     Float_t         jetNHadEF_  = data.GetFloat("jetNHadEF_");
     Float_t         jetMuEF_    = data.GetFloat("jetMuEF_");
     Float_t         jetCMulti_  = data.GetFloat("jetCMulti_");
-
+      bool eventControl = false;
+      if(id == 1)//signal region
+      {
       if(Mass_<100 || 150<Mass_)continue;
       if(JetMetDPhi_<2.5)continue;
       if(dphiMin_<0.5)continue;
       if(NAddBJet!=0)continue;
       if(NAddMu_ + NAddEle_ + NAddTau_ !=0)continue;
+      eventControl = true;
+      }
+      if(id == 24)//w+jet
+      {
+      if(Mass_<30 || 250<Mass_)continue;
+      if(JetMetDPhi_<2.5)continue;
+      if(dphiMin_<0.5)continue;
+      if(NAddBJet!=0)continue;
+      if(NAddMu_ + NAddEle_ + NAddTau_ !=1)continue;
+      eventControl = true;
+      }
+      if(id == 6)//ttbar
+      {
+      if(Mass_<30 || 250<Mass_)continue;
+      if(JetMetDPhi_<2.5)continue;
+      if(dphiMin_<0.5)continue;
+      if(NAddBJet<2)continue;
+      if(NAddMu_ + NAddEle_ + NAddTau_ !=1)continue;
+      eventControl = true;
+      }
+      if(id == 23)//z to nunu + jet
+      {
+      if(Mass_<100 && 30<Mass_){
+      if(JetMetDPhi_<2.5)continue;
+      if(dphiMin_<0.5)continue;
+      if(NAddBJet!=0)continue;
+      if(NAddMu_ + NAddEle_ + NAddTau_ !=0)continue;
+      eventControl = true;
+      }else if (Mass_<250 && 150<Mass_){
+        if(JetMetDPhi_<2.5)continue;
+        if(dphiMin_<0.5)continue;
+        if(NAddBJet!=0)continue;
+        if(NAddMu_ + NAddEle_ + NAddTau_ !=0)continue;
+        eventControl = true;
+      }
+      }
+      if(!eventControl)continue;
       countEvent++;
-
       h_nMuons[i] ->Fill(NAddMu_);
       h_nTaus[i] ->Fill(NAddTau_);
       h_nElectrons[i]->Fill(NAddEle_);
@@ -227,8 +270,8 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
 
 }//ENTRIES
 h_event[i]->Fill(countEvent);
-// cout<<"Event:"<<countEvent<<endl;
-gSystem->cd("rootDirectory");
+cout<<"Event:"<<countEvent<<endl;
+gSystem->cd(dirName);
 
 TFile* outFile = new TFile(outputFile.Data(),"recreate");
 
