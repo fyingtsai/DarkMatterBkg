@@ -112,7 +112,7 @@ const int nobjectmet=1;
  
   TH1F*    h_CMulti[nobjectmet];
   TH1F*    h_event[nobjectmet];
-
+  
   TString postfix;
   int pf=0;
   postfix.Form("%d",pf);
@@ -160,6 +160,9 @@ const int nobjectmet=1;
     {
         TFile *inputFile;
         inputFile = new TFile(file[i],"READ");
+        TH1F *h = (TH1F *) gDirectory->Get("nEvents_weight");
+        TH1F *h_total=(TH1F*)h->Clone();
+        h_total->SetName("h_total");
         TTree *tree = (TTree*)inputFile->Get("skimTreeMonoHFatJetsPreselection_2subj");
         TString outputFile;
         string searchFile = file[i];
@@ -278,6 +281,9 @@ cout<<"Event:"<<countEvent<<endl;
 gSystem->cd(dirName);
 
 TFile* outFile = new TFile(outputFile.Data(),"recreate");
+h_total->Write();
+outFile->mkdir("histfacFatJet_ZLight");
+outFile->cd("histfacFatJet_ZLight");
 
       h_nMuons[nobjectmet] ->Write();
       h_nTaus[nobjectmet] ->Write();
