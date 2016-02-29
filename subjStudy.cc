@@ -73,7 +73,7 @@ void subjStudy(unsigned int id){
   dirName = "rootDirectory_"+num;
   gSystem->mkdir(dirName); 
 
-const int nobjectmet=0;
+const int nobjectmet=1;
   TH1F*    h_nMuons[nobjectmet];
   TH1F*    h_nTaus[nobjectmet];
   TH1F*    h_nElectrons[nobjectmet];
@@ -112,7 +112,8 @@ const int nobjectmet=0;
   TH1F*    h_event[nobjectmet];
 
   TString postfix;
-  postfix.Form("%d",nobjectmet);
+  int pf=0;
+  postfix.Form("%d",pf);
 
     h_nMuons[nobjectmet]     = new TH1F("h_nMuons"+postfix,"h_nMuons",10,0,10);
     h_nTaus[nobjectmet]      = new TH1F("h_nTaus"+postfix,"h_nTaus",10,0,10);
