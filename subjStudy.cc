@@ -68,12 +68,12 @@ vector<string> split(string str, char delimiter) {
 }
 
 void subjStudy(unsigned int id){
-  int nobjectmet=34;
   TString num,dirName;
   num.Form("%d",id);
   dirName = "rootDirectory_"+num;
   gSystem->mkdir(dirName); 
 
+const int nobjectmet=0;
   TH1F*    h_nMuons[nobjectmet];
   TH1F*    h_nTaus[nobjectmet];
   TH1F*    h_nElectrons[nobjectmet];
@@ -111,6 +111,48 @@ void subjStudy(unsigned int id){
   TH1F*    h_CMulti[nobjectmet];
   TH1F*    h_event[nobjectmet];
 
+  TString postfix;
+  postfix.Form("%d",nobjectmet);
+
+    h_nMuons[nobjectmet]     = new TH1F("h_nMuons"+postfix,"h_nMuons",10,0,10);
+    h_nTaus[nobjectmet]      = new TH1F("h_nTaus"+postfix,"h_nTaus",10,0,10);
+    h_nElectrons[nobjectmet] = new TH1F("h_nElectrons"+postfix,"h_nElectrons",10,0,10);
+    h_nJets[nobjectmet]      = new TH1F("h_nJetss"+postfix,"h_nJetss",10,0,10);
+    h_nFJets[nobjectmet]     = new TH1F("h_nFJets"+postfix,"h_nFJets",10,0,10);
+    h_DRSJ[nobjectmet]       = new TH1F("h_DRSJ"+postfix,"h_DRSJ",100,0,5);
+    h_NThinJets[nobjectmet]  = new TH1F("h_NThinJets"+postfix,"h_NThinJets",10,0,10);
+
+    h_dPhiThinJetMET[nobjectmet] = new TH1F("h_dPhiThinJetMET"+postfix,"h_dPhiThinJetMET",70,-3.5,3.5);
+
+    h_Q1Q2[nobjectmet]       = new TH1F("h_Q1Q2"+postfix,"h_Q1Q2",21,-10,10);
+    h_MET[nobjectmet]        = new TH1F("h_MET"+postfix,"h_MET",300,0,3000);
+    h_MHT[nobjectmet]        = new TH1F("h_MHT"+postfix,"h_MHT",300,0,3000);
+    h_Mjj[nobjectmet]        = new TH1F("h_Mjj"+postfix,"",300,0,3000);
+    h_pTjj[nobjectmet]       = new TH1F("h_pTjj"+postfix,"",300,0,3000);
+    h_etajj[nobjectmet]      = new TH1F("h_etajj"+postfix,"",50,-2.5,2.5);
+    h_phijj[nobjectmet]      = new TH1F("h_phijj"+postfix,"",70,-3.5,3.5);
+    h_Tau21jj[nobjectmet]    = new TH1F("h_h_Tau21jj"+postfix,"",20,0.,1.);
+
+    h_CSVMax[nobjectmet]     = new TH1F("h_CSVMax"+postfix,"",20,0,1);
+    h_CSVMin[nobjectmet]     = new TH1F("h_CSVMin"+postfix,"",20,0,1);
+    h_CSV1[nobjectmet]       = new TH1F("h_CSV1"+postfix,"",20,0,1);
+    h_CSV2[nobjectmet]       = new TH1F("h_CSV2"+postfix,"",20,0,1);
+    h_CSVSum[nobjectmet]     = new TH1F("h_CSVSum"+postfix,"",40,0,2);
+    h_dPhi_MET_J[nobjectmet] = new TH1F("h_dPhi_MET_J"+postfix,"",70,0.,3.5);
+    h_MT_bb_MET[nobjectmet]  = new TH1F("h_MT_bb_MET"+postfix,"",1000,0,5000.);
+    h_dPhi_bb_MET[nobjectmet]= new TH1F("h_dPhi_bb_MET"+postfix,"",100,0,3.5);
+
+    h_MET_Over_SumET[nobjectmet]    = new TH1F("h_MET_Over_SumET"+postfix,"",20,0,1.);
+    h_MET_Over_pTFatJet[nobjectmet] = new TH1F("h_MET_Over_pTFatJet"+postfix,"",100,0,5);
+    h_CEmEF[nobjectmet]             = new TH1F("h_CEmEF"+postfix,"",20,0,1);
+    h_CHadEF[nobjectmet]            = new TH1F("h_CHadEF"+postfix,"",20,0,1);
+    h_PhoEF[nobjectmet]             = new TH1F("h_PhoEF"+postfix,"",20,0,1);
+    h_NEmEF[nobjectmet]             = new TH1F("h_NEmEF"+postfix,"",20,0,1);
+    h_NHadEF[nobjectmet]            = new TH1F("h_NHadEF"+postfix,"",20,0,1);
+    h_MuEF[nobjectmet]              = new TH1F("h_MuEF"+postfix,"",20,0,1);
+    h_CMulti[nobjectmet]            = new TH1F("h_CMulti"+postfix,"",20,0,1);
+    h_event[nobjectmet]             = new TH1F("h_event"+postfix,"",100,0,100);
+
   for(int i=0; i<34; i++)
     {
         TFile *inputFile;
@@ -125,48 +167,7 @@ void subjStudy(unsigned int id){
 TreeReader data(tree);
 setNCUStyle();
 
-TString postfix;
 int countEvent=0;
-postfix.Form("%d",i);
-
-    h_nMuons[i]     = new TH1F("h_nMuons"+postfix,"h_nMuons",10,0,10);
-    h_nTaus[i]      = new TH1F("h_nTaus"+postfix,"h_nTaus",10,0,10);
-    h_nElectrons[i] = new TH1F("h_nElectrons"+postfix,"h_nElectrons",10,0,10);
-    h_nJets[i]      = new TH1F("h_nJetss"+postfix,"h_nJetss",10,0,10);
-    h_nFJets[i]     = new TH1F("h_nFJets"+postfix,"h_nFJets",10,0,10);
-    h_DRSJ[i]       = new TH1F("h_DRSJ"+postfix,"h_DRSJ",100,0,5);
-    h_NThinJets[i]  = new TH1F("h_NThinJets"+postfix,"h_NThinJets",10,0,10);
-
-    h_dPhiThinJetMET[i] = new TH1F("h_dPhiThinJetMET"+postfix,"h_dPhiThinJetMET",70,-3.5,3.5);
-
-    h_Q1Q2[i]       = new TH1F("h_Q1Q2"+postfix,"h_Q1Q2",21,-10,10);
-    h_MET[i]        = new TH1F("h_MET"+postfix,"h_MET",300,0,3000);
-    h_MHT[i]        = new TH1F("h_MHT"+postfix,"h_MHT",300,0,3000);
-    h_Mjj[i]        = new TH1F("h_Mjj"+postfix,"",300,0,3000);
-    h_pTjj[i]       = new TH1F("h_pTjj"+postfix,"",300,0,3000);
-    h_etajj[i]      = new TH1F("h_etajj"+postfix,"",50,-2.5,2.5);
-    h_phijj[i]      = new TH1F("h_phijj"+postfix,"",70,-3.5,3.5);
-    h_Tau21jj[i]    = new TH1F("h_h_Tau21jj"+postfix,"",20,0.,1.);
-
-    h_CSVMax[i]     = new TH1F("h_CSVMax"+postfix,"",20,0,1);
-    h_CSVMin[i]     = new TH1F("h_CSVMin"+postfix,"",20,0,1);
-    h_CSV1[i]       = new TH1F("h_CSV1"+postfix,"",20,0,1);
-    h_CSV2[i]       = new TH1F("h_CSV2"+postfix,"",20,0,1);
-    h_CSVSum[i]     = new TH1F("h_CSVSum"+postfix,"",40,0,2);
-    h_dPhi_MET_J[i] = new TH1F("h_dPhi_MET_J"+postfix,"",70,0.,3.5);
-    h_MT_bb_MET[i]  = new TH1F("h_MT_bb_MET"+postfix,"",1000,0,5000.);
-    h_dPhi_bb_MET[i]= new TH1F("h_dPhi_bb_MET"+postfix,"",100,0,3.5);
-
-    h_MET_Over_SumET[i]    = new TH1F("h_MET_Over_SumET"+postfix,"",20,0,1.);
-    h_MET_Over_pTFatJet[i] = new TH1F("h_MET_Over_pTFatJet"+postfix,"",100,0,5);
-    h_CEmEF[i]             = new TH1F("h_CEmEF"+postfix,"",20,0,1);
-    h_CHadEF[i]            = new TH1F("h_CHadEF"+postfix,"",20,0,1);
-    h_PhoEF[i]             = new TH1F("h_PhoEF"+postfix,"",20,0,1);
-    h_NEmEF[i]             = new TH1F("h_NEmEF"+postfix,"",20,0,1);
-    h_NHadEF[i]            = new TH1F("h_NHadEF"+postfix,"",20,0,1);
-    h_MuEF[i]              = new TH1F("h_MuEF"+postfix,"",20,0,1);
-    h_CMulti[i]            = new TH1F("h_CMulti"+postfix,"",20,0,1);
-    h_event[i]             = new TH1F("h_event"+postfix,"",100,0,100);
 
 for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
        if (jEntry % 50000 == 0)
@@ -243,63 +244,63 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
       }
       if(!eventControl)continue;
       countEvent++;
-      h_nMuons[i] ->Fill(NAddMu_);
-      h_nTaus[i] ->Fill(NAddTau_);
-      h_nElectrons[i]->Fill(NAddEle_);
-      h_DRSJ[i] ->Fill(DRSJ_);
-      h_NThinJets[i] ->Fill(NAddBJet);
-      h_MET[i] ->Fill(MET_);
-      h_Mjj[i] ->Fill(Mass_);
-      h_pTjj[i] ->Fill(JetPt_);
-      h_etajj[i] ->Fill(JetEta_);
-      h_phijj[i] ->Fill(JetPhi_);
-      h_Tau21jj[i] ->Fill(Tau21_);
-      h_CSVMax[i] ->Fill(MaxCSV_);
-      h_CSVMin[i] ->Fill(MinCSV_);
-      h_CSVSum[i] ->Fill(JetCSVSum_);
-      h_dPhi_MET_J[i] ->Fill(dphiMin_);
-      h_MET_Over_SumET[i] ->Fill(MET_/SumET_);
-      h_MET_Over_pTFatJet[i] ->Fill(MET_/JetPt_);
-      h_CEmEF[i] ->Fill(jetCEmEF_);
-      h_CHadEF[i] ->Fill(jetCHadEF_);
-      h_PhoEF[i] ->Fill(jetPhoEF_);
-      h_NEmEF[i] ->Fill(jetNEmEF_);
-      h_NHadEF[i] ->Fill(jetNHadEF_);
-      h_MuEF[i] ->Fill(jetMuEF_);
-      h_CMulti[i] ->Fill(jetCMulti_);
+      h_nMuons[nobjectmet] ->Fill(NAddMu_);
+      h_nTaus[nobjectmet] ->Fill(NAddTau_);
+      h_nElectrons[nobjectmet]->Fill(NAddEle_);
+      h_DRSJ[nobjectmet] ->Fill(DRSJ_);
+      h_NThinJets[nobjectmet] ->Fill(NAddBJet);
+      h_MET[nobjectmet] ->Fill(MET_);
+      h_Mjj[nobjectmet] ->Fill(Mass_);
+      h_pTjj[nobjectmet] ->Fill(JetPt_);
+      h_etajj[nobjectmet] ->Fill(JetEta_);
+      h_phijj[nobjectmet] ->Fill(JetPhi_);
+      h_Tau21jj[nobjectmet] ->Fill(Tau21_);
+      h_CSVMax[nobjectmet] ->Fill(MaxCSV_);
+      h_CSVMin[nobjectmet] ->Fill(MinCSV_);
+      h_CSVSum[nobjectmet] ->Fill(JetCSVSum_);
+      h_dPhi_MET_J[nobjectmet] ->Fill(dphiMin_);
+      h_MET_Over_SumET[nobjectmet] ->Fill(MET_/SumET_);
+      h_MET_Over_pTFatJet[nobjectmet] ->Fill(MET_/JetPt_);
+      h_CEmEF[nobjectmet] ->Fill(jetCEmEF_);
+      h_CHadEF[nobjectmet] ->Fill(jetCHadEF_);
+      h_PhoEF[nobjectmet] ->Fill(jetPhoEF_);
+      h_NEmEF[nobjectmet] ->Fill(jetNEmEF_);
+      h_NHadEF[nobjectmet] ->Fill(jetNHadEF_);
+      h_MuEF[nobjectmet] ->Fill(jetMuEF_);
+      h_CMulti[nobjectmet] ->Fill(jetCMulti_);
 
 }//ENTRIES
-h_event[i]->Fill(countEvent);
+h_event[nobjectmet]->Fill(countEvent);
 cout<<"Event:"<<countEvent<<endl;
 gSystem->cd(dirName);
 
 TFile* outFile = new TFile(outputFile.Data(),"recreate");
 
-      h_nMuons[i] ->Write();
-      h_nTaus[i] ->Write();
-      h_nElectrons[i]->Write();
-      h_DRSJ[i] ->Write();
-      h_NThinJets[i] ->Write();
-      h_MET[i] ->Write();
-      h_Mjj[i] ->Write();
-      h_pTjj[i] ->Write();
-      h_etajj[i] ->Write();
-      h_phijj[i] ->Write();
-      h_Tau21jj[i] ->Write();
-      h_CSVMax[i] ->Write();
-      h_CSVMin[i] ->Write();
-      h_CSVSum[i] ->Write();
-      h_dPhi_MET_J[i] ->Write();
-      h_MET_Over_SumET[i] ->Write();
-      h_MET_Over_pTFatJet[i] ->Write();
-      h_CEmEF[i] ->Write();
-      h_CHadEF[i] ->Write();
-      h_PhoEF[i] ->Write();
-      h_NEmEF[i] ->Write();
-      h_NHadEF[i] ->Write();
-      h_MuEF[i] ->Write();
-      h_CMulti[i] ->Write();
-      h_event[i]->Write();
+      h_nMuons[nobjectmet] ->Write();
+      h_nTaus[nobjectmet] ->Write();
+      h_nElectrons[nobjectmet]->Write();
+      h_DRSJ[nobjectmet] ->Write();
+      h_NThinJets[nobjectmet] ->Write();
+      h_MET[nobjectmet] ->Write();
+      h_Mjj[nobjectmet] ->Write();
+      h_pTjj[nobjectmet] ->Write();
+      h_etajj[nobjectmet] ->Write();
+      h_phijj[nobjectmet] ->Write();
+      h_Tau21jj[nobjectmet] ->Write();
+      h_CSVMax[nobjectmet] ->Write();
+      h_CSVMin[nobjectmet] ->Write();
+      h_CSVSum[nobjectmet] ->Write();
+      h_dPhi_MET_J[nobjectmet] ->Write();
+      h_MET_Over_SumET[nobjectmet] ->Write();
+      h_MET_Over_pTFatJet[nobjectmet] ->Write();
+      h_CEmEF[nobjectmet] ->Write();
+      h_CHadEF[nobjectmet] ->Write();
+      h_PhoEF[nobjectmet] ->Write();
+      h_NEmEF[nobjectmet] ->Write();
+      h_NHadEF[nobjectmet] ->Write();
+      h_MuEF[nobjectmet] ->Write();
+      h_CMulti[nobjectmet] ->Write();
+      h_event[nobjectmet]->Write();
 
 outFile->Close();
 
