@@ -282,8 +282,17 @@ gSystem->cd(dirName);
 
 TFile* outFile = new TFile(outputFile.Data(),"recreate");
 h_total->Write();
-outFile->mkdir("histfacFatJet_ZLight");
-outFile->cd("histfacFatJet_ZLight");
+
+  if(id==1){outFile->mkdir("MonoHFatJetSelection_JetAndLeptonVeto");
+             outFile->cd("MonoHFatJetSelection_JetAndLeptonVeto");}  
+  if(id==6){outFile->mkdir("histfacFatJet_TTBar");
+             outFile->cd("histfacFatJet_TTBar");}  
+  if(id==23){outFile->mkdir("histfacFatJet_ZLight");
+             outFile->cd("histfacFatJet_ZLight");}
+  if(id==24){outFile->mkdir("histfacFatJet_WLight");
+             outFile->cd("histfacFatJet_WLight");}          
+// outFile->mkdir("histfacFatJet_ZLight");
+// outFile->cd("histfacFatJet_ZLight");
 
       h_nMuons[nobjectmet] ->Write();
       h_nTaus[nobjectmet] ->Write();
