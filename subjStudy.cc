@@ -69,10 +69,10 @@ vector<string> split(string str, char delimiter) {
 
 void subjStudy(unsigned int id){
   TString dirName;
-  if(id==1)dirName = "histfacFatJet_Signal";
+  if(id==1)dirName = "MonoHFatJetSelection_JetAndLeptonVeto";
   if(id==6)dirName = "histfacFatJet_TTBar";
-  if(id==23)dirName = "histfacFatJet_ZnunuJet";
-  if(id==24)dirName = "histfacFatJet_WJet";
+  if(id==23)dirName = "histfacFatJet_ZLight";
+  if(id==24)dirName = "histfacFatJet_WLight";
   gSystem->mkdir(dirName); 
 
 const int nobjectmet=1;
