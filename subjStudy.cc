@@ -15,49 +15,13 @@
 #include "setNCUStyle.C"
 #include <math.h>
 #include <sstream>
+#include <Sample.h>
 
-// TString path_ =  "/afs/cern.ch/user/k/khurana/public/ForBTagUnc/AnalysisTuples_V2/";
 
-const char* const file[34]={
-     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_MonoHToBBarMZp-600GeV_MA0-300GeV-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_MonoHToBBarMZp-800GeV_MA0-300GeV-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_MonoHToBBarMZp-1000GeV_MA0-300GeV-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_MonoHToBBarMZp-1200GeV_MA0-300GeV-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_MonoHToBBarMZp-1400GeV_MA0-300GeV-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_MonoHToBBarMZp-1700GeV_MA0-300GeV-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_MonoHToBBarMZp-2000GeV_MA0-300GeV-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_MonoHToBBarMZp-2500GeV_MA0-300GeV-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_ST_t-channel_antitop_4f_leptonDecays_13TeV-powheg-pythia8_TuneCUETP8M1-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_ST_t-channel_top_4f_leptonDecays_13TeV-powheg-pythia8_TuneCUETP8M1-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_TT_TuneCUETP8M1_13TeV-powheg-pythia8-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_WJetsToLNu_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_WJetsToLNu_HT-1200To2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_WJetsToLNu_HT-2500ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_WJetsToLNu_HT-400To600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_WJetsToLNu_HT-600To800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_WJetsToLNu_HT-800To1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_WW_TuneCUETP8M1_13TeV-pythia8-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_WZ_TuneCUETP8M1_13TeV-pythia8-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_ZH_HToBB_ZToNuNu_M120_13TeV_amcatnloFXFX_madspin_pythia8-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_ZJetsToNuNu_HT-100To200_13TeV-madgraph-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_ZJetsToNuNu_HT-200To400_13TeV-madgraph-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_ZJetsToNuNu_HT-400To600_13TeV-madgraph-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_ZJetsToNuNu_HT-600ToInf_13TeV-madgraph-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_ZZ_TuneCUETP8M1_13TeV-pythia8-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_crab_MET-Run2015C_25ns-05Oct2015V120160203_FullDataSet_2p2FB_SkipEventsOldFile29Oct-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_crab_MET-Run2015D-05Oct2015V120160203_FullDataSet_2p2FB_SkipEventsOldFile29Oct-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_crab_MET-Run2015D-PromptReco-V420160203_FullDataSet_2p2FB_SkipEventsOldFile29Oct-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_ggZH_HToBB_ZToNuNu_M120_13TeV_powheg_pythia8-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_MET.root"
-};
-
-vector<string> split(string str, char delimiter) {
+vector<string> split(TString str, char delimiter) {
   vector<string> internal;
-  stringstream ss(str); 
+  string str_ = string(str);
+  stringstream ss(str_); 
   string tok;
   
   while(getline(ss, tok, delimiter)) {
@@ -155,16 +119,18 @@ const int nobjectmet=1;
     h_CMulti[nobjectmet]            = new TH1F("h_CMulti"+postfix,"",20,0,1);
     h_event[nobjectmet]             = new TH1F("h_event"+postfix,"",100,0,100);
 
-  for(int i=0; i<34; i++)
+  for(int i=0; i<Sample::fileNameFullSample().size(); i++)
     {
         TFile *inputFile;
-        inputFile = new TFile(file[i],"READ");
+        inputFile = new TFile(Sample::fileNameFullSample()[i],"READ");
+        // inputFile = new TFile(file[i],"READ");
         TH1F *h = (TH1F *) gDirectory->Get("nEvents_weight");
         TH1F *h_total=(TH1F*)h->Clone();
         h_total->SetName("h_total");
         TTree *tree = (TTree*)inputFile->Get("skimTreeMonoHFatJetsPreselection_2subj");
         TString outputFile;
-        string searchFile = file[i];
+        TString searchFile = Sample::fileNameFullSample()[i];
+        // string searchFile = file[i];
         vector<string> fileName = split(searchFile, '/');
         outputFile = fileName[8];
         cout << "Output file = " << outputFile.Data() << endl;
@@ -325,4 +291,4 @@ h_total->Write();
 outFile->Close();
 
 }//files
-}//.cc
+ }//.cc
