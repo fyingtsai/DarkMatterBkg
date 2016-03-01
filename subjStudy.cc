@@ -192,6 +192,7 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
       else if(id == 6)//ttbar
       {
       if(CSV2_ < 0.605)continue;
+      if(CSV1_ < 0.605)continue;
       if(Mass_<30 || 250<Mass_)continue;
       if(JetMetDPhi_<2.5)continue;
       if(dphiMin_<0.5)continue;
@@ -203,6 +204,7 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
       {
       if(Mass_<100 && 30>Mass_){
         if(CSV2_ < 0.605)continue;
+        if(CSV1_ < 0.605)continue;
         if(JetMetDPhi_<2.5)continue;
         if(dphiMin_<0.5)continue;
         if(NAddBJet!=0)continue;
@@ -210,6 +212,7 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
       eventControl = true;
       }else if (Mass_<250 && 150>Mass_){
         if(CSV2_ < 0.605)continue;
+        if(CSV1_ < 0.605)continue;
         if(JetMetDPhi_<2.5)continue;
         if(dphiMin_<0.5)continue;
         if(NAddBJet!=0)continue;
