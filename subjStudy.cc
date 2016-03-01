@@ -123,14 +123,12 @@ const int nobjectmet=1;
     {
         TFile *inputFile;
         inputFile = new TFile(Sample::fileNameFullSample()[i],"READ");
-        // inputFile = new TFile(file[i],"READ");
         TH1F *h = (TH1F *) gDirectory->Get("nEvents_weight");
         TH1F *h_total=(TH1F*)h->Clone();
         h_total->SetName("h_total");
         TTree *tree = (TTree*)inputFile->Get("skimTreeMonoHFatJetsPreselection_2subj");
         TString outputFile;
         TString searchFile = Sample::fileNameFullSample()[i];
-        // string searchFile = file[i];
         vector<string> fileName = split(searchFile, '/');
         outputFile = fileName[8];
         cout << "Output file = " << outputFile.Data() << endl;
@@ -181,7 +179,7 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
       if(NAddMu_ + NAddEle_ + NAddTau_ !=0)continue;
       eventControl = true;
       }
-      if(id == 24)//w+jet
+      else if(id == 24)//w+jet
       {
       if(CSV2_ < 0.605)continue;
       if(Mass_<30 || 250<Mass_)continue;
@@ -191,7 +189,7 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
       if(NAddMu_ + NAddEle_ + NAddTau_ !=1)continue;
       eventControl = true;
       }
-      if(id == 6)//ttbar
+      else if(id == 6)//ttbar
       {
       if(CSV2_ < 0.605)continue;
       if(Mass_<30 || 250<Mass_)continue;
@@ -201,16 +199,16 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
       if(NAddMu_ + NAddEle_ + NAddTau_ !=1)continue;
       eventControl = true;
       }
-      if(id == 23)//z to nunu + jet
+      else if(id == 23)//z to nunu + jet
       {
-      if(Mass_<100 && 30<Mass_){
+      if(Mass_<100 && 30>Mass_){
         if(CSV2_ < 0.605)continue;
         if(JetMetDPhi_<2.5)continue;
         if(dphiMin_<0.5)continue;
         if(NAddBJet!=0)continue;
         if(NAddMu_ + NAddEle_ + NAddTau_ !=0)continue;
       eventControl = true;
-      }else if (Mass_<250 && 150<Mass_){
+      }else if (Mass_<250 && 150>Mass_){
         if(CSV2_ < 0.605)continue;
         if(JetMetDPhi_<2.5)continue;
         if(dphiMin_<0.5)continue;
