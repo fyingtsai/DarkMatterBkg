@@ -202,7 +202,7 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
       }
       else if(id == 23)//z to nunu + jet
       {
-      if(Mass_<100 && 30>Mass_){
+      if((Mass_<100 && 30>Mass_) || (Mass_<250 && 150<Mass_)){
         if(CSV2_ < 0.605)continue;
         if(CSV1_ < 0.605)continue;
         if(JetMetDPhi_<2.5)continue;
@@ -210,15 +210,7 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
         if(NAddBJet!=0)continue;
         if(NAddMu_ + NAddEle_ + NAddTau_ !=0)continue;
       eventControl = true;
-      }else if (Mass_<250 && 150>Mass_){
-        if(CSV2_ < 0.605)continue;
-        if(CSV1_ < 0.605)continue;
-        if(JetMetDPhi_<2.5)continue;
-        if(dphiMin_<0.5)continue;
-        if(NAddBJet!=0)continue;
-        if(NAddMu_ + NAddEle_ + NAddTau_ !=0)continue;
-        eventControl = true;
-      }
+        }
       }
       if(!eventControl)continue;
       countEvent++;
