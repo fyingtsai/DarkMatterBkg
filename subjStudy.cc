@@ -19,40 +19,40 @@
 // TString path_ =  "/afs/cern.ch/user/k/khurana/public/ForBTagUnc/AnalysisTuples_V2/";
 
 const char* const file[34]={
-     "/afs/cern.ch/user/k/khurana/public/ForBTagUnc/AnalysisTuples_V2/Merged_MonoHToBBarMZp-600GeV_MA0-300GeV-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/ForBTagUnc/AnalysisTuples_V2/Merged_MonoHToBBarMZp-800GeV_MA0-300GeV-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/ForBTagUnc/AnalysisTuples_V2/Merged_MonoHToBBarMZp-1000GeV_MA0-300GeV-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/ForBTagUnc/AnalysisTuples_V2/Merged_MonoHToBBarMZp-1200GeV_MA0-300GeV-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/ForBTagUnc/AnalysisTuples_V2/Merged_MonoHToBBarMZp-1400GeV_MA0-300GeV-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/ForBTagUnc/AnalysisTuples_V2/Merged_MonoHToBBarMZp-1700GeV_MA0-300GeV-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/ForBTagUnc/AnalysisTuples_V2/Merged_MonoHToBBarMZp-2000GeV_MA0-300GeV-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/ForBTagUnc/AnalysisTuples_V2/Merged_MonoHToBBarMZp-2500GeV_MA0-300GeV-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/ForBTagUnc/AnalysisTuples_V2/Merged_ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/ForBTagUnc/AnalysisTuples_V2/Merged_ST_t-channel_antitop_4f_leptonDecays_13TeV-powheg-pythia8_TuneCUETP8M1-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/ForBTagUnc/AnalysisTuples_V2/Merged_ST_t-channel_top_4f_leptonDecays_13TeV-powheg-pythia8_TuneCUETP8M1-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/ForBTagUnc/AnalysisTuples_V2/Merged_ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/ForBTagUnc/AnalysisTuples_V2/Merged_ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/ForBTagUnc/AnalysisTuples_V2/Merged_TT_TuneCUETP8M1_13TeV-powheg-pythia8-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/ForBTagUnc/AnalysisTuples_V2/Merged_WJetsToLNu_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/ForBTagUnc/AnalysisTuples_V2/Merged_WJetsToLNu_HT-1200To2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/ForBTagUnc/AnalysisTuples_V2/Merged_WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/ForBTagUnc/AnalysisTuples_V2/Merged_WJetsToLNu_HT-2500ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/ForBTagUnc/AnalysisTuples_V2/Merged_WJetsToLNu_HT-400To600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/ForBTagUnc/AnalysisTuples_V2/Merged_WJetsToLNu_HT-600To800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/ForBTagUnc/AnalysisTuples_V2/Merged_WJetsToLNu_HT-800To1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/ForBTagUnc/AnalysisTuples_V2/Merged_WW_TuneCUETP8M1_13TeV-pythia8-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/ForBTagUnc/AnalysisTuples_V2/Merged_WZ_TuneCUETP8M1_13TeV-pythia8-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/ForBTagUnc/AnalysisTuples_V2/Merged_ZH_HToBB_ZToNuNu_M120_13TeV_amcatnloFXFX_madspin_pythia8-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/ForBTagUnc/AnalysisTuples_V2/Merged_ZJetsToNuNu_HT-100To200_13TeV-madgraph-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/ForBTagUnc/AnalysisTuples_V2/Merged_ZJetsToNuNu_HT-200To400_13TeV-madgraph-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/ForBTagUnc/AnalysisTuples_V2/Merged_ZJetsToNuNu_HT-400To600_13TeV-madgraph-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/ForBTagUnc/AnalysisTuples_V2/Merged_ZJetsToNuNu_HT-600ToInf_13TeV-madgraph-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/ForBTagUnc/AnalysisTuples_V2/Merged_ZZ_TuneCUETP8M1_13TeV-pythia8-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/ForBTagUnc/AnalysisTuples_V2/Merged_crab_MET-Run2015C_25ns-05Oct2015V120160203_FullDataSet_2p2FB_SkipEventsOldFile29Oct-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/ForBTagUnc/AnalysisTuples_V2/Merged_crab_MET-Run2015D-05Oct2015V120160203_FullDataSet_2p2FB_SkipEventsOldFile29Oct-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/ForBTagUnc/AnalysisTuples_V2/Merged_crab_MET-Run2015D-PromptReco-V420160203_FullDataSet_2p2FB_SkipEventsOldFile29Oct-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/ForBTagUnc/AnalysisTuples_V2/Merged_ggZH_HToBB_ZToNuNu_M120_13TeV_powheg_pythia8-runallAnalysis.root",
-     "/afs/cern.ch/user/k/khurana/public/ForBTagUnc/AnalysisTuples_V2/Merged_MET.root"
+     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_MonoHToBBarMZp-600GeV_MA0-300GeV-runallAnalysis.root",
+     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_MonoHToBBarMZp-800GeV_MA0-300GeV-runallAnalysis.root",
+     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_MonoHToBBarMZp-1000GeV_MA0-300GeV-runallAnalysis.root",
+     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_MonoHToBBarMZp-1200GeV_MA0-300GeV-runallAnalysis.root",
+     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_MonoHToBBarMZp-1400GeV_MA0-300GeV-runallAnalysis.root",
+     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_MonoHToBBarMZp-1700GeV_MA0-300GeV-runallAnalysis.root",
+     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_MonoHToBBarMZp-2000GeV_MA0-300GeV-runallAnalysis.root",
+     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_MonoHToBBarMZp-2500GeV_MA0-300GeV-runallAnalysis.root",
+     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1-runallAnalysis.root",
+     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_ST_t-channel_antitop_4f_leptonDecays_13TeV-powheg-pythia8_TuneCUETP8M1-runallAnalysis.root",
+     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_ST_t-channel_top_4f_leptonDecays_13TeV-powheg-pythia8_TuneCUETP8M1-runallAnalysis.root",
+     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1-runallAnalysis.root",
+     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1-runallAnalysis.root",
+     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_TT_TuneCUETP8M1_13TeV-powheg-pythia8-runallAnalysis.root",
+     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_WJetsToLNu_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8-runallAnalysis.root",
+     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_WJetsToLNu_HT-1200To2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8-runallAnalysis.root",
+     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8-runallAnalysis.root",
+     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_WJetsToLNu_HT-2500ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8-runallAnalysis.root",
+     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_WJetsToLNu_HT-400To600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8-runallAnalysis.root",
+     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_WJetsToLNu_HT-600To800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8-runallAnalysis.root",
+     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_WJetsToLNu_HT-800To1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8-runallAnalysis.root",
+     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_WW_TuneCUETP8M1_13TeV-pythia8-runallAnalysis.root",
+     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_WZ_TuneCUETP8M1_13TeV-pythia8-runallAnalysis.root",
+     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_ZH_HToBB_ZToNuNu_M120_13TeV_amcatnloFXFX_madspin_pythia8-runallAnalysis.root",
+     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_ZJetsToNuNu_HT-100To200_13TeV-madgraph-runallAnalysis.root",
+     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_ZJetsToNuNu_HT-200To400_13TeV-madgraph-runallAnalysis.root",
+     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_ZJetsToNuNu_HT-400To600_13TeV-madgraph-runallAnalysis.root",
+     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_ZJetsToNuNu_HT-600ToInf_13TeV-madgraph-runallAnalysis.root",
+     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_ZZ_TuneCUETP8M1_13TeV-pythia8-runallAnalysis.root",
+     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_crab_MET-Run2015C_25ns-05Oct2015V120160203_FullDataSet_2p2FB_SkipEventsOldFile29Oct-runallAnalysis.root",
+     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_crab_MET-Run2015D-05Oct2015V120160203_FullDataSet_2p2FB_SkipEventsOldFile29Oct-runallAnalysis.root",
+     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_crab_MET-Run2015D-PromptReco-V420160203_FullDataSet_2p2FB_SkipEventsOldFile29Oct-runallAnalysis.root",
+     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_ggZH_HToBB_ZToNuNu_M120_13TeV_powheg_pythia8-runallAnalysis.root",
+     "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V44/Merged_MET.root"
 };
 
 vector<string> split(string str, char delimiter) {
@@ -116,7 +116,6 @@ const int nobjectmet=1;
   TString postfix;
   int pf=0;
   postfix.Form("%d",pf);
-
     h_nMuons[nobjectmet]     = new TH1F("h_nMuons"+postfix,"h_nMuons",10,0,10);
     h_nTaus[nobjectmet]      = new TH1F("h_nTaus"+postfix,"h_nTaus",10,0,10);
     h_nElectrons[nobjectmet] = new TH1F("h_nElectrons"+postfix,"h_nElectrons",10,0,10);
@@ -167,9 +166,8 @@ const int nobjectmet=1;
         TString outputFile;
         string searchFile = file[i];
         vector<string> fileName = split(searchFile, '/');
-        outputFile = fileName[9];
+        outputFile = fileName[8];
         cout << "Output file = " << outputFile.Data() << endl;
-
 TreeReader data(tree);
 setNCUStyle();
 
@@ -187,6 +185,8 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
     Int_t           NAddBJet    = data.GetInt("NAddBJet");
     Float_t         MinCSV_     = data.GetFloat("MinCSV_");
     Float_t         MaxCSV_     = data.GetFloat("MaxCSV_");
+    Float_t         CSV1_     = data.GetFloat("CSV1_");
+    Float_t         CSV2_     = data.GetFloat("CSV2_");
     Float_t         DRSJ_       = data.GetFloat("DRSJ_");
     Float_t         Mass_       = data.GetFloat("Mass_");
     Float_t         JetPhi_     = data.GetFloat("JetPhi_");
@@ -207,6 +207,7 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
       bool eventControl = false;
       if(id == 1)//signal region
       {
+      if(CSV1_ < 0.605)continue;
       if(Mass_<100 || 150<Mass_)continue;
       if(JetMetDPhi_<2.5)continue;
       if(dphiMin_<0.5)continue;
@@ -216,6 +217,7 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
       }
       if(id == 24)//w+jet
       {
+      if(CSV2_ < 0.605)continue;
       if(Mass_<30 || 250<Mass_)continue;
       if(JetMetDPhi_<2.5)continue;
       if(dphiMin_<0.5)continue;
@@ -225,6 +227,7 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
       }
       if(id == 6)//ttbar
       {
+      if(CSV2_ < 0.605)continue;
       if(Mass_<30 || 250<Mass_)continue;
       if(JetMetDPhi_<2.5)continue;
       if(dphiMin_<0.5)continue;
@@ -235,12 +238,14 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
       if(id == 23)//z to nunu + jet
       {
       if(Mass_<100 && 30<Mass_){
-      if(JetMetDPhi_<2.5)continue;
-      if(dphiMin_<0.5)continue;
-      if(NAddBJet!=0)continue;
-      if(NAddMu_ + NAddEle_ + NAddTau_ !=0)continue;
+        if(CSV2_ < 0.605)continue;
+        if(JetMetDPhi_<2.5)continue;
+        if(dphiMin_<0.5)continue;
+        if(NAddBJet!=0)continue;
+        if(NAddMu_ + NAddEle_ + NAddTau_ !=0)continue;
       eventControl = true;
       }else if (Mass_<250 && 150<Mass_){
+        if(CSV2_ < 0.605)continue;
         if(JetMetDPhi_<2.5)continue;
         if(dphiMin_<0.5)continue;
         if(NAddBJet!=0)continue;
@@ -274,7 +279,6 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
       h_NHadEF[nobjectmet] ->Fill(jetNHadEF_);
       h_MuEF[nobjectmet] ->Fill(jetMuEF_);
       h_CMulti[nobjectmet] ->Fill(jetCMulti_);
-
 }//ENTRIES
 h_event[nobjectmet]->Fill(countEvent);
 cout<<"Event:"<<countEvent<<endl;
@@ -291,8 +295,6 @@ h_total->Write();
              outFile->cd("histfacFatJet_ZLight");}
   if(id==24){outFile->mkdir("histfacFatJet_WLight");
              outFile->cd("histfacFatJet_WLight");}          
-// outFile->mkdir("histfacFatJet_ZLight");
-// outFile->cd("histfacFatJet_ZLight");
 
       h_nMuons[nobjectmet] ->Write();
       h_nTaus[nobjectmet] ->Write();
