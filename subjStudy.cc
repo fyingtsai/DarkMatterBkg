@@ -40,6 +40,7 @@ void subjStudy(unsigned int id){
   gSystem->mkdir(dirName); 
 
 const int nobjectmet=1;
+  TH1F*    h_cutFlow[nobjectmet];
   TH1F*    h_nMuons[nobjectmet];
   TH1F*    h_nTaus[nobjectmet];
   TH1F*    h_nElectrons[nobjectmet];
@@ -80,6 +81,7 @@ const int nobjectmet=1;
   TString postfix;
   int pf=0;
   postfix.Form("%d",pf);
+    h_cutFlow[nobjectmet]    = new TH1F("h_cutFlow"+postfix,"h_cutFlow",10,0,10);
     h_nMuons[nobjectmet]     = new TH1F("h_nMuons"+postfix,"h_nMuons",10,0,10);
     h_nTaus[nobjectmet]      = new TH1F("h_nTaus"+postfix,"h_nTaus",10,0,10);
     h_nElectrons[nobjectmet] = new TH1F("h_nElectrons"+postfix,"h_nElectrons",10,0,10);
@@ -174,9 +176,9 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
       if(CSV1_ < 0.605)continue;
       if(Mass_<100 || 150<Mass_)continue;
       if(JetMetDPhi_<2.5)continue;
-      if(dphiMin_<0.5)continue;
+      if(TMath::Abs(dphiMin_)<0.5)continue;
       if(NAddBJet!=0)continue;
-      if(NAddMu_ + NAddEle_ + NAddTau_ !=0)continue;
+      if((NAddMu_ + NAddEle_ + NAddTau_ )!=0)continue;
       eventControl = true;
       }
       else if(id == 24)//w+jet
@@ -184,9 +186,9 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
       if(CSV2_ < 0.605)continue;
       if(Mass_<30 || 250<Mass_)continue;
       if(JetMetDPhi_<2.5)continue;
-      if(dphiMin_<0.5)continue;
+      if(TMath::Abs(dphiMin_)<0.5)continue;
       if(NAddBJet!=0)continue;
-      if(NAddMu_ + NAddEle_ + NAddTau_ !=1)continue;
+      if((NAddMu_ + NAddEle_ + NAddTau_) !=1)continue;
       eventControl = true;
       }
       else if(id == 6)//ttbar
@@ -195,20 +197,28 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
       if(CSV1_ < 0.605)continue;
       if(Mass_<30 || 250<Mass_)continue;
       if(JetMetDPhi_<2.5)continue;
-      if(dphiMin_<0.5)continue;
+      if(TMath::Abs(dphiMin_)<0.5)continue;
       if(NAddBJet<2)continue;
-      if(NAddMu_ + NAddEle_ + NAddTau_ !=1)continue;
+      if((NAddMu_ + NAddEle_ + NAddTau_ )!=1)continue;
       eventControl = true;
       }
       else if(id == 23)//z to nunu + jet
       {
+      h_cutFlow[nobjectmet] ->Fill(0);
       if((Mass_>30 && Mass_<100) || (Mass_>150 && Mass_<250)){
+        h_cutFlow[nobjectmet] ->Fill(1);
         if(CSV2_ < 0.605)continue;
+        h_cutFlow[nobjectmet] ->Fill(2);
         if(CSV1_ < 0.605)continue;
+        h_cutFlow[nobjectmet] ->Fill(3);
         if(JetMetDPhi_<2.5)continue;
-        if(dphiMin_<0.5)continue;
+        h_cutFlow[nobjectmet] ->Fill(4);
+        if(TMath::Abs(dphiMin_)<0.5)continue;
+        h_cutFlow[nobjectmet] ->Fill(5);
         if(NAddBJet!=0)continue;
-        if(NAddMu_ + NAddEle_ + NAddTau_ !=0)continue;
+        h_cutFlow[nobjectmet] ->Fill(6);
+        if((NAddMu_ + NAddEle_ + NAddTau_ )!=0)continue;
+        h_cutFlow[nobjectmet] ->Fill(7);
       eventControl = true;
         }
       }
@@ -254,7 +264,7 @@ h_total->Write();
              outFile->cd("histfacFatJet_ZLight");}
   if(id==24){outFile->mkdir("histfacFatJet_WLight");
              outFile->cd("histfacFatJet_WLight");}          
-
+      h_cutFlow[nobjectmet] ->Write();
       h_nMuons[nobjectmet] ->Write();
       h_nTaus[nobjectmet] ->Write();
       h_nElectrons[nobjectmet]->Write();
