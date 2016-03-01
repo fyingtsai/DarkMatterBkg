@@ -126,7 +126,7 @@ const int nobjectmet=1;
         TH1F *h = (TH1F *) gDirectory->Get("nEvents_weight");
         TH1F *h_total=(TH1F*)h->Clone();
         h_total->SetName("h_total");
-        TTree *tree = (TTree*)inputFile->Get("skimTreeMonoHFatJetsPreselection_2subj");
+        TTree *tree = (TTree*)inputFile->Get("skimTreeMonoHFatJetsPreselection");
         TString outputFile;
         TString searchFile = Sample::fileNameFullSample()[i];
         vector<string> fileName = split(searchFile, '/');
@@ -202,7 +202,7 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
       }
       else if(id == 23)//z to nunu + jet
       {
-      if((Mass_<100 && 30>Mass_) || (Mass_<250 && 150<Mass_)){
+      if((Mass_>30 && Mass_<100) || (Mass_>150 && Mass_<250)){
         if(CSV2_ < 0.605)continue;
         if(CSV1_ < 0.605)continue;
         if(JetMetDPhi_<2.5)continue;
