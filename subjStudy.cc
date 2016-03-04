@@ -139,7 +139,7 @@ void subjStudy(unsigned int id){
 TreeReader data(tree);
 setNCUStyle();
 
-int countEvent=0,counter=0;
+int countEvent=0;
 
 for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
        if (jEntry % 50000 == 0)
@@ -171,6 +171,10 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
     Float_t         jetNHadEF_  = data.GetFloat("jetNHadEF_");
     Float_t         jetMuEF_    = data.GetFloat("jetMuEF_");
     Float_t         jetCMulti_  = data.GetFloat("jetCMulti_");
+    Float_t         MCweight_   = data.GetFloat("MCweight_");
+    Float_t         EWKweight_   = data.GetFloat("EWKweight_");
+    Float_t         PUweight_   = data.GetFloat("PUweight_");
+    Float_t         BTAGSF_     = data.GetFloat("BTAGSF_");
       bool eventControl = false;
       if(id == 1)//signal region
       {
@@ -206,7 +210,6 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
       if(id == 23)//z to nunu + jet
       {
       h_cutFlow[nobjectmet] ->Fill(0);
-      counter++;
       if((Mass_>30 && Mass_<100) || (Mass_>150 && Mass_<250)){
         h_cutFlow[nobjectmet] ->Fill(1); //1
         if(CSV2_ < 0.605)continue;
@@ -226,6 +229,10 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
       }
       if(!eventControl)continue;
       countEvent++;
+      float weight = 0.0;
+      weight = MCweight_ * EWKweight_ * PUweight_ * BTAGSF_;
+      const char *str = fileName[8].c_str();
+      if(strstr(str,"Run2015")){
       h_nMuons[nobjectmet] ->Fill(NAddMu_);
       h_nTaus[nobjectmet] ->Fill(NAddTau_);
       h_nElectrons[nobjectmet]->Fill(NAddEle_);
@@ -250,11 +257,36 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
       h_NHadEF[nobjectmet] ->Fill(jetNHadEF_);
       h_MuEF[nobjectmet] ->Fill(jetMuEF_);
       h_CMulti[nobjectmet] ->Fill(jetCMulti_);
+      }else {
+      h_nMuons[nobjectmet] ->Fill(NAddMu_,weight);
+      h_nTaus[nobjectmet] ->Fill(NAddTau_,weight);
+      h_nElectrons[nobjectmet]->Fill(NAddEle_,weight);
+      h_DRSJ[nobjectmet] ->Fill(DRSJ_,weight);
+      h_NThinJets[nobjectmet] ->Fill(NAddBJet,weight);
+      h_MET[nobjectmet] ->Fill(MET_,weight);
+      h_Mjj[nobjectmet] ->Fill(Mass_,weight);
+      h_pTjj[nobjectmet] ->Fill(JetPt_,weight);
+      h_etajj[nobjectmet] ->Fill(JetEta_,weight);
+      h_phijj[nobjectmet] ->Fill(JetPhi_,weight);
+      h_Tau21jj[nobjectmet] ->Fill(Tau21_,weight);
+      h_CSVMax[nobjectmet] ->Fill(MaxCSV_,weight);
+      h_CSVMin[nobjectmet] ->Fill(MinCSV_,weight);
+      h_CSVSum[nobjectmet] ->Fill(JetCSVSum_,weight);
+      h_dPhi_MET_J[nobjectmet] ->Fill(dphiMin_,weight);
+      h_MET_Over_SumET[nobjectmet] ->Fill(MET_/SumET_,weight);
+      h_MET_Over_pTFatJet[nobjectmet] ->Fill(MET_/JetPt_,weight);
+      h_CEmEF[nobjectmet] ->Fill(jetCEmEF_,weight);
+      h_CHadEF[nobjectmet] ->Fill(jetCHadEF_,weight);
+      h_PhoEF[nobjectmet] ->Fill(jetPhoEF_,weight);
+      h_NEmEF[nobjectmet] ->Fill(jetNEmEF_,weight);
+      h_NHadEF[nobjectmet] ->Fill(jetNHadEF_,weight);
+      h_MuEF[nobjectmet] ->Fill(jetMuEF_,weight);
+      h_CMulti[nobjectmet] ->Fill(jetCMulti_,weight);
+      }
+          
 }//ENTRIES
 
 h_event[nobjectmet]->Fill(countEvent);
-cout<<"Event:"<<countEvent<<endl;
-cout<<"Counter:"<<counter<<endl;
 gSystem->cd(dirName);
 
 TFile* outFile = new TFile(outputFile.Data(),"recreate");
