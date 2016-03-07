@@ -232,7 +232,7 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
       float weight = 0.0;
       weight = MCweight_ * EWKweight_ * PUweight_ * BTAGSF_;
       const char *str = fileName[8].c_str();
-      if(strstr(str,"Run2015")){
+      if(strstr(str,"Merged_MET")){
       h_nMuons[nobjectmet] ->Fill(NAddMu_);
       h_nTaus[nobjectmet] ->Fill(NAddTau_);
       h_nElectrons[nobjectmet]->Fill(NAddEle_);
@@ -285,7 +285,6 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
       }
           
 }//ENTRIES
-
 h_event[nobjectmet]->Fill(countEvent);
 gSystem->cd(dirName);
 
