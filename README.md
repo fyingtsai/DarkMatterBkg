@@ -2,7 +2,7 @@
 subjStudy.cc Usage
 -----
 MC samples are listed in the file [Sample.h](Sample.h). 
-Include Sample.h when you excute the file subjStudy.cc.
+Include [Sample.h](Sample.h) when you excute the file [subjStudy.cc](subjStudy.cc).
 ```ruby
 .x subjStudy.cc+(id)
 ```
