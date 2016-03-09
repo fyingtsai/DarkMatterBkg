@@ -31,15 +31,7 @@ vector<string> split(TString str, char delimiter) {
   return internal;
 }
 
-void subjStudy(unsigned int id){
-  TString dirName;
-  if(id==1)dirName = "MonoHFatJetSelection_JetAndLeptonVeto";
-  if(id==6)dirName = "histfacFatJet_TTBar";
-  if(id==23)dirName = "histfacFatJet_ZLight";
-  if(id==24)dirName = "histfacFatJet_WLight";
-  gSystem->mkdir(dirName); 
-  
-  
+void subjStudy(int analysisid){
   for(int i=0; i<(int) Sample::fileNameFullSample().size(); i++)
     {
       const int nobjectmet=2;
@@ -124,16 +116,47 @@ void subjStudy(unsigned int id){
       h_CMulti            = new TH1F("h_CMulti"+postfix,"",20,0,1);
       h_event             = new TH1F("h_event"+postfix,"",100,0,100);
       
-      TFile *inputFile;
+      TString dirName;
+      
+      TString outputdirName;
+      outputdirName = Form("AnalysisHistograms_V%d",analysisid);
+      gSystem->mkdir(outputdirName); 
+      
+      std::vector<unsigned int> numbers = {1, 6, 23, 24};
+      for (int idir=0; idir < (int)numbers.size(); idir++){
+	int id = numbers[idir];
+	if(id==1)dirName = "MonoHFatJetSelection_JetAndLeptonVeto";
+	if(id==6)dirName = "histfacFatJet_TTBar";
+	if(id==23)dirName = "histfacFatJet_ZLight";
+	if(id==24)dirName = "histfacFatJet_WLight";
+
+	
+	// --------------------
+	// read input file
+	// --------------------
+	TFile *inputFile;
       inputFile = new TFile(Sample::fileNameFullSample()[i],"READ");
+      
+      // --------------------
+      // clone total event histo
+      // --------------------
       TH1F *h = (TH1F *) gDirectory->Get("nEvents_weight");
       TH1F *h_total=(TH1F*)h->Clone();
       h_total->SetName("h_total");
+      
+      // --------------------
+      // get the tree
+      // --------------------
       TTree *tree = (TTree*)inputFile->Get("skimTreeMonoHFatJetsPreselection");
+      
+      // --------------------
+      // set output file name
+      // --------------------
       TString outputFile;
-      TString searchFile = Sample::fileNameFullSample()[i];
+      TString searchFile =  Sample::fileNameFullSample()[i];
       vector<string> fileName = split(searchFile, '/');
       outputFile = fileName[8];
+      
       cout << "Output file = " << outputFile.Data() << endl;
       
       TreeReader data(tree);
@@ -323,19 +346,31 @@ void subjStudy(unsigned int id){
       
       }//ENTRIES
       h_event->Fill(countEvent);
-      gSystem->cd(dirName);
+      //gSystem->cd(outputdirName);
+      TString filename_ = outputdirName +"/"+ outputFile.Data();
       
-      TFile* outFile = new TFile(outputFile.Data(),"recreate");
-      h_total->Write();
+      TFile* outFile ;
+      if( idir ==0)  {
+	outFile = new TFile(filename_,"recreate");
+	h_total->Write();
+      }
       
-      if(id==1){outFile->mkdir("MonoHFatJetSelection_JetAndLeptonVeto");
-	outFile->cd("MonoHFatJetSelection_JetAndLeptonVeto");}  
-      if(id==6){outFile->mkdir("histfacFatJet_TTBar");
-	outFile->cd("histfacFatJet_TTBar");}  
-      if(id==23){outFile->mkdir("histfacFatJet_ZLight");
-	outFile->cd("histfacFatJet_ZLight");}
-      if(id==24){outFile->mkdir("histfacFatJet_WLight");
-	outFile->cd("histfacFatJet_WLight");}          
+      if(id==1){
+	outFile->mkdir("MonoHFatJetSelection_JetAndLeptonVeto");
+	outFile->cd("MonoHFatJetSelection_JetAndLeptonVeto");
+      }
+      if(id==6){
+	outFile->mkdir("histfacFatJet_TTBar");
+	outFile->cd("histfacFatJet_TTBar");
+      }
+      if(id==23){
+	outFile->mkdir("histfacFatJet_ZLight");
+	outFile->cd("histfacFatJet_ZLight");
+      }
+      if(id==24){
+	outFile->mkdir("histfacFatJet_WLight");
+	outFile->cd("histfacFatJet_WLight");
+      }    
       
       h_cutFlow ->Write();
       h_nMuons ->Write();
@@ -364,7 +399,7 @@ void subjStudy(unsigned int id){
       h_CMulti ->Write();
       h_event->Write();
       
-      outFile->Close();
-      
+      //outFile->Close();
+      } 
     }//files
 }//.cc
