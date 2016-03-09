@@ -185,21 +185,29 @@ void subjStudy(unsigned int id){
 	// ----------------
 	// signal region
 	// ----------------
-	if(id == 1)//signal region
+	if(id == 1)
 	  {
-	    if(CSV1_ < 0.605)continue;
-	    
-	    if(Mass_<100 || 150<Mass_)continue;
-	    
-	    if(JetMetDPhi_<2.5)continue;
-	    
-	    if(TMath::Abs(dphiMin_)<0.5)continue;
-	    
-	    if(NAddBJet!=0)continue;
-	    
-	    if((NAddMu_ + NAddEle_ + NAddTau_ )!=0)continue;
-	    
-	    eventControl = true;
+	    h_cutFlow ->Fill(0);
+	    if( Mass_>100 && Mass_<150){
+	      h_cutFlow ->Fill(1); //1
+	      
+	      if(CSV2_ < 0.605)continue;
+	      h_cutFlow ->Fill(2); //2
+	      
+	      if(CSV1_ < 0.605)continue;
+	      h_cutFlow ->Fill(3); //3
+	      
+	      if(TMath::Abs(dphiMin_)<0.4)continue;
+	      h_cutFlow ->Fill(4); //4
+	      
+	      if(NAddBJet!=0)continue;
+	      h_cutFlow ->Fill(5); //5
+	      
+	      if((NAddMu_ + NAddEle_ + NAddTau_ )!=0)continue;
+	      h_cutFlow ->Fill(6); //6
+	      
+	      eventControl = true;
+	    }
 	  }
 	
 	// --------------
