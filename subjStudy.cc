@@ -222,7 +222,7 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
         h_cutFlow ->Fill(3); //3
         if(JetMetDPhi_<2.5)continue;
         h_cutFlow ->Fill(4); //4
-        if(TMath::Abs(dphiMin_)<0.5)continue;
+        if(TMath::Abs(dphiMin_)<0.4)continue;
         h_cutFlow ->Fill(5); //5
         if(NAddBJet!=0)continue;
         h_cutFlow ->Fill(6); //6
@@ -237,6 +237,7 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
       weight = MCweight_ * EWKweight_ * PUweight_ * BTAGSF_;
       const char *str = fileName[8].c_str();
       if(strstr(str,"Merged_MET")){
+	std::cout<<run_<<":"<<lumi_ <<":"<<event_<<std::endl;
       h_nMuons ->Fill(NAddMu_);
       h_nTaus ->Fill(NAddTau_);
       h_nElectrons->Fill(NAddEle_);
