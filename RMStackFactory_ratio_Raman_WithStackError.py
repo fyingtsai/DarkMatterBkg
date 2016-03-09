@@ -231,8 +231,9 @@ h_data->Rebin(REBIN);
  TLegend *legend;
  
  if(NORATIOPLOT){
- legend = new TLegend(0.73, 0.62, 0.95,0.92,NULL,"brNDC");
- legend->SetTextSize(0.05);
+ //legend = new TLegend(0.73, 0.62, 0.95,0.92,NULL,"brNDC");
+legend = new TLegend(0.56, 0.65, 0.9,0.92,NULL,"brNDC");
+ legend->SetTextSize(0.045);
  }else{
 
 legend = new TLegend(0.62, 0.65, 0.94,0.92,NULL,"brNDC"); 
@@ -277,6 +278,13 @@ TLatex *t2c;
 if(NORATIOPLOT){
  t2a = new TLatex(0.7,0.97,latexname);
  t2a->SetTextSize(0.04);
+
+ t2b = new TLatex(0.190,0.92,latexCMSname);
+ t2b->SetTextSize(0.05);
+
+ t2c = new TLatex(0.22,0.87,latexPreCMSname);
+ t2c->SetTextSize(0.047);
+
  }else{
  t2a = new TLatex(0.8,0.975,latexname);
  t2a->SetTextSize(0.047); 
@@ -289,6 +297,7 @@ if(NORATIOPLOT){
 
 
  }
+
  t2a->SetTextAlign(22);
  t2a->SetNDC(kTRUE);
  t2a->SetTextFont(42);
@@ -809,8 +818,8 @@ def makeplot(inputs):
 #dirnames=['histfacFatJet_WHeavy','MonoHFatJetSelection_JetAndLeptonVeto','histfacFatJet_ZLight']
 #'histfacFatJet_WLight','histfacFatJet_TTBar','histfacFatJet_ZLight','histfacFatJet_TTBar_Merged','histfacFatJet_WHeavy','MonoHFatJetSelection_JetAndLeptonVeto']
 #dirnames=['histfacFatJet_QCD']
-dirnames=['histfacFatJet_ZLight']
-#dirnames=['MonoHFatJetSelection_JetAndLeptonVeto']
+#dirnames=['histfacFatJet_ZLight']
+dirnames=['MonoHFatJetSelection_JetAndLeptonVeto']
 #dirnames=['MonoHFatJetsPreselection_2subj']
 #dirnames=['MonoHFatJetSelection_Jetveto','MonoHFatJetSelection_LeptonVeto','MonoHFatJetSelection_JetAndLeptonVeto']
 #dirnames=['histfacFatJet_WLight','histfacFatJet_TTBar','histfacFatJet_ZLight']
@@ -826,8 +835,8 @@ for dirname in dirnames:
     makeLinearplots=True;
     if makeLinearplots :
         #makeplot([dirname,'h_dPhi_MT_0','N_{AK04 Jets}','0','10','1','0','1'])
-        makeplot([dirname,'h_nMuons0','N_{add. #mu}','0','5','1','0','1'])
-        makeplot([dirname,'h_MET0','MET','200','700','2','0'])
+        makeplot([dirname,'h_nMuons0','N_{add. #mu}','0','5','1','0','1','','1'])
+        #makeplot([dirname,'h_MET0','MET','200','700','2','0'])
         #makeplot([dirname,'h_NThinJets0','N_{AK04 Jets}','0','10','1','0','1'])
         #makeplot([dirname,'h_pTjj0','p_{T}^{AK8Jet}','100','1000','4','0'])
         #makeplot([dirname,'h_CSV10', 'CSV_{1}', '0','1', '1','0'])
@@ -842,7 +851,7 @@ for dirname in dirnames:
         #makeplot([dirname,'h_etajj0','#eta_{AK8Jet}','-2.5','2.5','4','0'])
         #makeplot([dirname,'h_nTaus0','N_{#tau}','0','5','1','0'])
         #makeplot([dirname,'h_dPhi_bb_MET0','#Delta#phi_{AK8Jet-MET}','0.','3.5','2','0'])
-        makeplot([dirname,'h_MT_bb_MET0', 'M_{T}', '0','1500', '4','0'])
+        #makeplot([dirname,'h_MT_bb_MET0', 'M_{T}', '0','1500', '4','0'])
         #makeplot([dirname,'h_MET_Over_SumET0', 'MET/SumET', '0','5', '1','0'])
         #makeplot([dirname,'h_MET_Over_pTFatJet0', 'MET/p_{T}^{AK8-Jet}', '0','2.', '1','0'])
         #makeplot([dirname,'h_DRSJ0', '#DeltaR_{sub-jets}', '0','1', '1','0'])
