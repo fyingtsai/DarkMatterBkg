@@ -145,6 +145,10 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
        if (jEntry % 50000 == 0)
        fprintf(stderr, "Processing event %lli of %lli\n", jEntry + 1, data.GetEntriesFast());
     data.GetEntry(jEntry);
+    Int_t           run_        = data.GetInt("Run_");
+    Int_t           lumi_       = data.GetInt("Lumi_");
+    Int_t           event_      = data.GetInt("Event_");
+    
     Float_t         dphiMin_    = data.GetFloat("dphiMin_");
     Int_t           NAddMu_     = data.GetInt("NAddMu_");
     Int_t           NAddEle_    = data.GetInt("NAddEle_");
@@ -191,7 +195,7 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
       if(CSV2_ < 0.605)continue;
       if(Mass_<30 || 250<Mass_)continue;
       if(JetMetDPhi_<2.5)continue;
-      if(TMath::Abs(dphiMin_)<0.5)continue;
+      if(TMath::Abs(dphiMin_)<0.4)continue;
       if(NAddBJet!=0)continue;
       if((NAddMu_ + NAddEle_ + NAddTau_) !=1)continue;
       eventControl = true;
@@ -258,6 +262,9 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
       h_MuEF ->Fill(jetMuEF_);
       h_CMulti ->Fill(jetCMulti_);
       }else {
+	//if(strstr(str,"Merged_TT")){
+	//std::cout<<run_<<"  "<<lumi_ <<"  "<<event_<<std::endl;
+	//}
       h_nMuons ->Fill(NAddMu_,weight);
       h_nTaus ->Fill(NAddTau_,weight);
       h_nElectrons->Fill(NAddEle_,weight);
@@ -282,6 +289,7 @@ for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
       h_NHadEF ->Fill(jetNHadEF_,weight);
       h_MuEF ->Fill(jetMuEF_,weight);
       h_CMulti ->Fill(jetCMulti_,weight);
+      
       }
           
 }//ENTRIES
