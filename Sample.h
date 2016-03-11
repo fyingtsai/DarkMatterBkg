@@ -11,7 +11,7 @@ public:
 
 
 std::vector<TString> Sample::fileNameFullSample() {
-  TString path_ = "/afs/cern.ch/user/k/khurana/public/AnalysisTuples_V48/";
+  TString path_ = "/afs/hep.wisc.edu/cms/khurana/Script/AnalysisTuples_V53/";
   std::vector<TString> nameVec;
   TString name("");
 

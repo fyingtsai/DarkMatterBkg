@@ -37,9 +37,11 @@ void subjStudy(int analysisid){
   time_t start, end;
   time(&start);
   
+  std::cout<<" debug 0 "<<std::endl;
 
   for(int i=0; i<(int) Sample::fileNameFullSample().size(); i++)
     {
+      std::cout<<" debug file number  "<<i<<std::endl;
       const int nobjectmet=2;
       TH1F*    h_cutFlow;
       TH1F*    h_nMuons;
@@ -122,6 +124,8 @@ void subjStudy(int analysisid){
       h_CMulti            = new TH1F("h_CMulti"+postfix,"",20,0,1);
       h_event             = new TH1F("h_event"+postfix,"",100,0,100);
       
+      std::cout<<" debug after histo "<<std::endl;
+      
       TString dirName;
       
       TString outputdirName ;
@@ -132,31 +136,38 @@ void subjStudy(int analysisid){
       for (int idir=0; idir < (int)numbers.size(); idir++){
 	int id = numbers[idir];
 	
+	std::cout<<" idir = "<<idir<<std::endl;
+	
 	// --------------------
 	// read input file
 	// --------------------
 	TFile *inputFile;
-      inputFile = new TFile(Sample::fileNameFullSample()[i],"READ");
+	inputFile = new TFile(Sample::fileNameFullSample()[i],"READ");
       
+	std::cout<<" reading file "<<std::endl;
+	
       // --------------------
       // clone total event histo
       // --------------------
       TH1F *h = (TH1F *) gDirectory->Get("nEvents_weight");
       TH1F *h_total=(TH1F*)h->Clone();
       h_total->SetName("h_total");
+      std::cout<<" readed histo "<<std::endl;
       
       // --------------------
       // get the tree
       // --------------------
       TTree *tree = (TTree*)inputFile->Get("skimTreeMonoHFatJetsPreselection");
       
+      std::cout<<" reading tree"<<std::endl;
       // --------------------
       // set output file name
       // --------------------
       TString outputFile;
       TString searchFile =  Sample::fileNameFullSample()[i];
       vector<string> fileName = split(searchFile, '/');
-      outputFile = fileName[8];
+      std::cout<<" filename = "<<fileName[0]<<"  "<<fileName[1]<<" "<<fileName[2]<<"  "<<fileName[3]<<"  "<<fileName[4]<<"  "<<fileName[5]<<"  "<<fileName[6]<<std::endl;
+      outputFile = fileName[6];
       
       cout << "Output file = " << outputFile.Data() << endl;
       
@@ -164,7 +175,7 @@ void subjStudy(int analysisid){
       //setNCUStyle();
       
       int countEvent=0;
-      
+      std::cout<<" before loop "<<std::endl;
       for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
 	if (jEntry % 50000 == 0)
 	  fprintf(stderr, "Processing event %lli of %lli\n", jEntry + 1, data.GetEntriesFast());
@@ -215,7 +226,7 @@ void subjStudy(int analysisid){
 	// ----------------------
 	// for data weight = 1
 	// ----------------------
-	const char *str = fileName[8].c_str();
+	const char *str = fileName[6].c_str();
 	if(strstr(str,"Merged_MET")){ weight = 1.0;}
 	
 		
@@ -301,14 +312,11 @@ void subjStudy(int analysisid){
 	      if(CSV1_ < 0.605)continue;
 	      h_cutFlow ->Fill(3); //3
 	      
-	      if(TMath::Abs(dphiMin_)<0.4)continue;
+	      if(NAddBJet!=0)continue;
 	      h_cutFlow ->Fill(4); //4
 	      
-	      if(NAddBJet!=0)continue;
-	      h_cutFlow ->Fill(5); //5
-	      
 	      if((NAddMu_ + NAddEle_ + NAddTau_ )!=0)continue;
-	      h_cutFlow ->Fill(6); //6
+	      h_cutFlow ->Fill(5); //5
 	      
 	      eventControl = true;
 	    }
