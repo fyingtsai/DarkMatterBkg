@@ -124,7 +124,8 @@ void subjStudy(int analysisid){
       
       TString dirName;
       
-      TString outputdirName = "AnalysisHistograms";
+      TString outputdirName ;
+      outputdirName = Form("AnalysisHistograms_V%d",analysisid);
       gSystem->mkdir(outputdirName); 
       
       std::vector<unsigned int> numbers = {1, 6, 23, 24};
@@ -209,7 +210,7 @@ void subjStudy(int analysisid){
 	// set weight 
 	// ------------
 	float weight = 0.0;
-	weight = MCweight_ * EWKweight_ * PUweight_ ;//* BTAGSF_;
+	weight = MCweight_ * EWKweight_ * PUweight_ * BTAGSF_;
 	
 	// ----------------------
 	// for data weight = 1
