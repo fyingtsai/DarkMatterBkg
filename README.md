@@ -4,9 +4,9 @@ subjStudy.cc Usage
 MC samples are listed in the file [Sample.h](Sample.h). 
 Include [Sample.h](Sample.h) and [untuplizer.h] (untuplizer.h) when you excute the file [subjStudy.cc](subjStudy.cc).
 ```ruby
-.x subjStudy.cc+(id)
+.x subjStudy.cc++
 ```
-replace `id` by the number which corresponds to the contro region. See the table below. 
+`id` number is to correspond with the contro region. See the table below. 
 
 | id        | Contro Region     |
 | ------------- |:-------------:|

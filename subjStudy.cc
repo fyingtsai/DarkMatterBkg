@@ -32,10 +32,12 @@ vector<string> split(TString str, char delimiter) {
   return internal;
 }
 
+
 void subjStudy(int analysisid){
   time_t start, end;
   time(&start);
   
+
   for(int i=0; i<(int) Sample::fileNameFullSample().size(); i++)
     {
       const int nobjectmet=2;
@@ -122,18 +124,12 @@ void subjStudy(int analysisid){
       
       TString dirName;
       
-      TString outputdirName;
-      outputdirName = Form("AnalysisHistograms_V%d",analysisid);
+      TString outputdirName = "AnalysisHistograms";
       gSystem->mkdir(outputdirName); 
       
       std::vector<unsigned int> numbers = {1, 6, 23, 24};
       for (int idir=0; idir < (int)numbers.size(); idir++){
 	int id = numbers[idir];
-	if(id==1)dirName = "MonoHFatJetSelection_JetAndLeptonVeto";
-	if(id==6)dirName = "histfacFatJet_TTBar";
-	if(id==23)dirName = "histfacFatJet_ZLight";
-	if(id==24)dirName = "histfacFatJet_WLight";
-
 	
 	// --------------------
 	// read input file
