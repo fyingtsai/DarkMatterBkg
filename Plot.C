@@ -13,11 +13,11 @@
  system("mkdir -p  " + DirPreName+dirpathname +"/MonoHPng");
  
  ofstream mout;
- mout.open(DirPreName+dirpathname +"/histfacFatJet_ZLight"+dirpathname +"Integral.txt",std::ios::app);
+ mout.open(DirPreName+dirpathname +"/MonoHFatJetSelection_JetAndLeptonVeto"+dirpathname +"Integral.txt",std::ios::app);
  ofstream rout;
- rout.open(DirPreName+dirpathname +"/histfacFatJet_ZLight"+dirpathname +"Integral.html",std::ios::app);
+ rout.open(DirPreName+dirpathname +"/MonoHFatJetSelection_JetAndLeptonVeto"+dirpathname +"Integral.html",std::ios::app);
  ofstream tableout;
- tableout.open(DirPreName+dirpathname +"/histfacFatJet_ZLight"+dirpathname +"IntegralWithError.txt",std::ios::app);                                                                                          
+ tableout.open(DirPreName+dirpathname +"/MonoHFatJetSelection_JetAndLeptonVeto"+dirpathname +"IntegralWithError.txt",std::ios::app);                                                                                          
 
 
 gROOT->ProcessLine(".L /afs/hep.wisc.edu/cms/khurana/Monika/CMSSW_7_4_5/src/RKGlobalAnalyzer/tdrstyle.C");                                     setTDRStyle();
@@ -97,7 +97,7 @@ filenameString.push_back(filenamepath + "Merged_MET.root");
 
 //const int n_integral = (int)filenameString.size();
 
-TString histnameString("histfacFatJet_ZLight/h_MuEF0");
+TString histnameString("MonoHFatJetSelection_JetAndLeptonVeto/h_MuEF0");
 
 TFile *fIn;
 const int nfiles = (int) filenameString.size();
@@ -304,7 +304,7 @@ THStack *hs = new THStack("hs"," ");
 // For N-1 Plots only
 bool nminus = 0;
 TLatex *tt;
-if(("histfacFatJet_ZLight" == "ElectronNMinus1E") || ("histfacFatJet_ZLight" == "ElectronNMinus1B") ){
+if(("MonoHFatJetSelection_JetAndLeptonVeto" == "ElectronNMinus1E") || ("MonoHFatJetSelection_JetAndLeptonVeto" == "ElectronNMinus1B") ){
 nminus =1;
 tt  = new TLatex(0.5,0.87,"N-1");
 tt->SetTextSize(0.05);
@@ -703,7 +703,7 @@ float zh = h_mc[6]->Integral();
 float zh_error = Integral_Error[6];
 
 
-  mout << "histfacFatJet_ZLight_h_MuEF0"            <<  " a b"<<std::endl; 
+  mout << "MonoHFatJetSelection_JetAndLeptonVeto_h_MuEF0"            <<  " a b"<<std::endl; 
   mout << " DATA "    << h_data->Integral()  <<" 0"<< std::endl; 
 //  mout << " DATA 0"    <<  std::endl; 
 //  mout << " DYJETS "  << h_mc[0]->Integral() << std::endl; 
@@ -757,17 +757,17 @@ tableout<< " "<<std::endl;
  
  c12->Draw();
 if(!0){
- c12->SaveAs(DirPreName+dirpathname +"/MonoHPdf/histfacFatJet_ZLight_h_MuEF0.pdf");
- c12->SaveAs(DirPreName+dirpathname +"/MonoHPng/histfacFatJet_ZLight_h_MuEF0.png");
- c12->SaveAs(DirPreName+dirpathname +"/MonoHROOT/histfacFatJet_ZLight_h_MuEF0.root");                                                                         
+ c12->SaveAs(DirPreName+dirpathname +"/MonoHPdf/MonoHFatJetSelection_JetAndLeptonVeto_h_MuEF0.pdf");
+ c12->SaveAs(DirPreName+dirpathname +"/MonoHPng/MonoHFatJetSelection_JetAndLeptonVeto_h_MuEF0.png");
+ c12->SaveAs(DirPreName+dirpathname +"/MonoHROOT/MonoHFatJetSelection_JetAndLeptonVeto_h_MuEF0.root");                                                                         
  rout<<"<hr/>"<<std::endl;
- rout<<"<table class=\"\"> <tr><td><img src=\""<<"DYPng/histfacFatJet_ZLight_h_MuEF0.png\" height=\"400\" width=\"400\"></td>   </tr> </table>"<<std::endl;
+ rout<<"<table class=\"\"> <tr><td><img src=\""<<"DYPng/MonoHFatJetSelection_JetAndLeptonVeto_h_MuEF0.png\" height=\"400\" width=\"400\"></td>   </tr> </table>"<<std::endl;
 
 }
  
 if(0){
- c12->SaveAs(DirPreName+dirpathname +"/MonoHPdf/histfacFatJet_ZLight_h_MuEF0_log.pdf");
- c12->SaveAs(DirPreName+dirpathname +"/MonoHPng/histfacFatJet_ZLight_h_MuEF0_log.png");
- c12->SaveAs(DirPreName+dirpathname +"/MonoHROOT/histfacFatJet_ZLight_h_MuEF0_log.root");                                                                        
+ c12->SaveAs(DirPreName+dirpathname +"/MonoHPdf/MonoHFatJetSelection_JetAndLeptonVeto_h_MuEF0_log.pdf");
+ c12->SaveAs(DirPreName+dirpathname +"/MonoHPng/MonoHFatJetSelection_JetAndLeptonVeto_h_MuEF0_log.png");
+ c12->SaveAs(DirPreName+dirpathname +"/MonoHROOT/MonoHFatJetSelection_JetAndLeptonVeto_h_MuEF0_log.root");                                                                        
 }
  }
