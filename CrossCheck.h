@@ -151,9 +151,9 @@ CrossCheck::CrossCheck(TTree *tree) : fChain(0)
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
    if (tree == 0) {
-      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("Merged_MET.root");
+      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("/afs/hep.wisc.edu/cms/khurana/Script/AnalysisTuples_V48/Merged_MET.root");
       if (!f || !f->IsOpen()) {
-         f = new TFile("Merged_MET.root");
+         f = new TFile("/afs/hep.wisc.edu/cms/khurana/Script/AnalysisTuples_V48/Merged_MET.root");
       }
       f->GetObject("skimTreehistfacFatJet_ZLight",tree);
 

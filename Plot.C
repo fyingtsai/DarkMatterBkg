@@ -6,7 +6,7 @@
  tm *ltm = localtime(&now);
  TString dirpathname;
 
- TString DirPreName = "AnalysisHistograms_V3";
+ TString DirPreName = "AnalysisHistograms_V6";
  dirpathname.Form("%d%1.2d%d",ltm->tm_mday,1 + ltm->tm_mon,1900 + ltm->tm_year);
  system("mkdir -p  " + DirPreName+dirpathname +"/MonoHROOT");
  system("mkdir -p  " + DirPreName+dirpathname +"/MonoHPdf");
@@ -33,7 +33,7 @@ float lumi = 2263.5; // It will print on your plots too
 std::vector<TString> filenameString;
 //Change here Directories of the file
 
-TString filenamepath("/afs/hep.wisc.edu/cms/khurana/Script/CMSSW_7_4_1/src/DarkMatterBkg/AnalysisHistograms_V3/"); 
+TString filenamepath("/afs/hep.wisc.edu/cms/khurana/Script/CMSSW_7_4_1/src/DarkMatterBkg/AnalysisHistograms_V6/"); 
 // DYJets 1
 filenameString.push_back(filenamepath + "Merged_WW_TuneCUETP8M1_13TeV-pythia8-runallAnalysis.root");
 //WJets  1
@@ -97,7 +97,7 @@ filenameString.push_back(filenamepath + "Merged_MET.root");
 
 //const int n_integral = (int)filenameString.size();
 
-TString histnameString("histfacFatJet_ZLight/h_MET0");
+TString histnameString("histfacFatJet_ZLight/h_MuEF0");
 
 TFile *fIn;
 const int nfiles = (int) filenameString.size();
@@ -178,7 +178,7 @@ TH1F *h_data;
 for(int i =0; i<(int)filenameString.size()-1; i++){
  fIn = new TFile(filenameString[i],"READ");
  h_mc[i] = (TH1F*) fIn->Get(histnameString);
- h_mc[i]->Rebin(2); 
+ h_mc[i]->Rebin(1); 
  h_mc[i]->Sumw2();
 
 // h_total      = (TH1F*) fIn->Get("nEvents_weight");
@@ -203,7 +203,7 @@ if(Integral[i]>0) Integral_Error[i] = TMath::Sqrt(Integral[i]) * normalization[i
 
 fIn = new TFile(filenameString[nfiles-1],"READ");
 h_data = (TH1F*) fIn->Get(histnameString);
-h_data->Rebin(2);
+h_data->Rebin(1);
 //h_data->Sumw2();
 
 
@@ -494,7 +494,7 @@ c12->SetLogy(0);
 
 hs->Draw();
 
-if("h_MET0"=="h_cutFlow0"){
+if("h_MuEF0"=="h_cutFlow0"){
     hs->GetXaxis()->SetBinLabel(1,"Preselection");
     hs->GetXaxis()->SetBinLabel(2,"Mass");
     hs->GetXaxis()->SetBinLabel(3,"CSV2");
@@ -548,7 +548,7 @@ if(!0){
   hs->GetYaxis()->SetTitleFont(22);
   hs->GetYaxis()->SetLabelFont(22);
   hs->GetYaxis()->SetLabelSize(.05);
-  hs->GetXaxis()->SetTitle("MET");
+  hs->GetXaxis()->SetTitle("MuEF");
   }else{
   hs->GetXaxis()->SetLabelOffset(999);
   hs->GetXaxis()->SetLabelSize(0);  
@@ -562,7 +562,7 @@ if(!0){
   hs->GetYaxis()->SetTitleFont(22);
   hs->GetYaxis()->SetLabelFont(22);
   hs->GetYaxis()->SetLabelSize(.07);
-  hs->GetXaxis()->SetRangeUser(200,700);  
+  hs->GetXaxis()->SetRangeUser(0,1.);  
   hs->GetXaxis()->SetNdivisions(508); 
 
   legend->AddEntry(h_err,"Stats. Unc.","f");
@@ -614,7 +614,7 @@ if(!0){
   DataMC->GetYaxis()->SetTitleFont(22);
   DataMC->GetYaxis()->SetLabelSize(0.15);
   DataMC->GetYaxis()->CenterTitle();
-  DataMC->GetXaxis()->SetTitle("MET");
+  DataMC->GetXaxis()->SetTitle("MuEF");
 //DataMC->GetXaxis()->SetIndiceSize(0.1);
   DataMC->GetXaxis()->SetLabelSize(0.157);
   DataMC->GetXaxis()->SetTitleSize(0.162);
@@ -639,7 +639,7 @@ if(!0){
  c1_1->SetFrameFillStyle(0);
  c1_1->SetFrameBorderMode(0);
  c1_1->SetLogy(0);
- DataMC->GetXaxis()->SetRangeUser(200,700);
+ DataMC->GetXaxis()->SetRangeUser(0,1.);
  DataMC->Draw("PE1");
  DataMC->SetMarkerStyle(20);
  DataMC->SetMarkerColor(1);
@@ -650,7 +650,7 @@ if(!0){
  c1_1->SetGridy();
 
 
- TF1 *line0 = new TF1("line0","[0]*x",200,700);
+ TF1 *line0 = new TF1("line0","[0]*x",0,1.);
  line0->FixParameter(0,0);
 // line0->FixParameter(1,0);
  
@@ -671,8 +671,8 @@ if(0){
   //Calculating the contribution of each background in particular range
  // As Data DY(ee) diboson TTjets WWJets
  TAxis *xaxis = h_mc[0]->GetXaxis();
- Int_t binxmin = xaxis->FindBin(200);
- Int_t binxmax = xaxis->FindBin(700);
+ Int_t binxmin = xaxis->FindBin(0);
+ Int_t binxmax = xaxis->FindBin(1.);
 
   float qcdEntries =0.0, dibosonentries =0.0 , wjetentries=0.0;
 //  for(int qcd = 6; qcd < 22 ; qcd++){                                                                                   
@@ -703,7 +703,7 @@ float zh = h_mc[6]->Integral();
 float zh_error = Integral_Error[6];
 
 
-  mout << "histfacFatJet_ZLight_h_MET0"            <<  " a b"<<std::endl; 
+  mout << "histfacFatJet_ZLight_h_MuEF0"            <<  " a b"<<std::endl; 
   mout << " DATA "    << h_data->Integral()  <<" 0"<< std::endl; 
 //  mout << " DATA 0"    <<  std::endl; 
 //  mout << " DYJETS "  << h_mc[0]->Integral() << std::endl; 
@@ -757,17 +757,17 @@ tableout<< " "<<std::endl;
  
  c12->Draw();
 if(!0){
- c12->SaveAs(DirPreName+dirpathname +"/MonoHPdf/histfacFatJet_ZLight_h_MET0.pdf");
- c12->SaveAs(DirPreName+dirpathname +"/MonoHPng/histfacFatJet_ZLight_h_MET0.png");
- c12->SaveAs(DirPreName+dirpathname +"/MonoHROOT/histfacFatJet_ZLight_h_MET0.root");                                                                         
+ c12->SaveAs(DirPreName+dirpathname +"/MonoHPdf/histfacFatJet_ZLight_h_MuEF0.pdf");
+ c12->SaveAs(DirPreName+dirpathname +"/MonoHPng/histfacFatJet_ZLight_h_MuEF0.png");
+ c12->SaveAs(DirPreName+dirpathname +"/MonoHROOT/histfacFatJet_ZLight_h_MuEF0.root");                                                                         
  rout<<"<hr/>"<<std::endl;
- rout<<"<table class=\"\"> <tr><td><img src=\""<<"DYPng/histfacFatJet_ZLight_h_MET0.png\" height=\"400\" width=\"400\"></td>   </tr> </table>"<<std::endl;
+ rout<<"<table class=\"\"> <tr><td><img src=\""<<"DYPng/histfacFatJet_ZLight_h_MuEF0.png\" height=\"400\" width=\"400\"></td>   </tr> </table>"<<std::endl;
 
 }
  
 if(0){
- c12->SaveAs(DirPreName+dirpathname +"/MonoHPdf/histfacFatJet_ZLight_h_MET0_log.pdf");
- c12->SaveAs(DirPreName+dirpathname +"/MonoHPng/histfacFatJet_ZLight_h_MET0_log.png");
- c12->SaveAs(DirPreName+dirpathname +"/MonoHROOT/histfacFatJet_ZLight_h_MET0_log.root");                                                                        
+ c12->SaveAs(DirPreName+dirpathname +"/MonoHPdf/histfacFatJet_ZLight_h_MuEF0_log.pdf");
+ c12->SaveAs(DirPreName+dirpathname +"/MonoHPng/histfacFatJet_ZLight_h_MuEF0_log.png");
+ c12->SaveAs(DirPreName+dirpathname +"/MonoHROOT/histfacFatJet_ZLight_h_MuEF0_log.root");                                                                        
 }
  }
