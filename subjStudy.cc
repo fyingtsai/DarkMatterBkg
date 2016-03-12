@@ -140,7 +140,7 @@ void subjStudy(int analysisid){
     // -----------------------------------
     // Loop over the all control regions 
     // -----------------------------------
-    std::vector<unsigned int> numbers = {1, 6, 23, 24};
+    std::vector<unsigned int> numbers = {1, 6, 23, 24, 11}; // 11 for HF control region 
     for (int idir=0; idir < (int)numbers.size(); idir++){
       int id = numbers[idir];
       
@@ -303,7 +303,33 @@ void subjStudy(int analysisid){
 	    eventControl = true;
 	  }
 	}
-	
+
+
+	// -----------------------------------------
+	// signal region in one lepton region
+	// Heavy Flavor region ttbar + W+Jets
+	// -----------------------------------------
+	if(id == 11){
+	  h_cutFlow ->Fill(0.,weight);
+	  if( Mass_>30 && Mass_<250){
+	    h_cutFlow ->Fill(1.,weight); //1
+	    
+	    if(CSV2_ < 0.605)continue;
+	    h_cutFlow ->Fill(2.,weight); //2
+	    
+	    if(CSV1_ < 0.605)continue;
+	    h_cutFlow ->Fill(3.,weight); //3
+	    
+	    if(NAddBJet!=0)continue;
+	    h_cutFlow ->Fill(4.,weight); //4
+	    
+	    if( (NAddMu_ + NAddEle_ ) != 1 )continue;
+	    h_cutFlow ->Fill(5.,weight); //5
+	    
+	    eventControl = true;
+	  }
+	}
+
 	// --------------
 	// w+jets
 	// --------------
@@ -443,7 +469,12 @@ void subjStudy(int analysisid){
 	outFile->mkdir("histfacFatJet_WLight");
 	outFile->cd("histfacFatJet_WLight");
       }    
-      
+
+      if(id==11){
+	outFile->mkdir("histfacFatJet_WHeavy");
+	outFile->cd("histfacFatJet_WHeavy");
+      }    
+
       // -----------------------------------
       // Write Histograms 
       // -----------------------------------
