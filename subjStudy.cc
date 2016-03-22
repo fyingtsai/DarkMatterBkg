@@ -102,7 +102,7 @@ void subjStudy(int analysisid){
     h_Q1Q2       = new TH1F("h_Q1Q2"+postfix,"h_Q1Q2",21,-10,10);
     h_MET        = new TH1F("h_MET"+postfix,"h_MET",300,0,3000);
     h_MHT        = new TH1F("h_MHT"+postfix,"h_MHT",300,0,3000);
-    h_Mjj        = new TH1F("h_Mjj"+postfix,"",300,0,3000);
+    h_Mjj        = new TH1F("h_Mjj"+postfix,"",600,0,3000);
     h_pTjj       = new TH1F("h_pTjj"+postfix,"",300,0,3000);
     h_etajj      = new TH1F("h_etajj"+postfix,"",50,-2.5,2.5);
     h_phijj      = new TH1F("h_phijj"+postfix,"",70,-3.5,3.5);
