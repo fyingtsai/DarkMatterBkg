@@ -272,33 +272,39 @@ void subjStudy(int analysisid){
 	// ------------
 	float weight = 0.0;
 	weight = MCweight_ * EWKweight_ * PUweight_ * BTAGSF_;
+	float weightNoBTag = 0.0;
+	weightNoBTag = MCweight_ * EWKweight_ * PUweight_;
 	
 	// ----------------------
 	// for data weight = 1
 	// ----------------------
 	const char *str = fileName[7].c_str();
-	if(strstr(str,"Merged_MET")){ weight = 1.0;}
+	if(strstr(str,"Merged_MET")){ weight = 1.0;
+	  weightNoBTag = 1.0;
+	}
 	
 	
 	// ----------------
 	// signal region
 	// ----------------
 	if(id == 1){
-	  h_cutFlow ->Fill(0.,weight);
+	  h_cutFlow ->Fill(0.,weightNoBTag);
 	  if( Mass_>100 && Mass_<150){
-	    h_cutFlow ->Fill(1.,weight); //1
+	    h_cutFlow ->Fill(1.,weightNoBTag); //1
 	    
+	    if(CSV1_ < 0.605)continue;
 	    if(CSV2_ < 0.605)continue;
 	    h_cutFlow ->Fill(2.,weight); //2
 	    
-	    if(CSV1_ < 0.605)continue;
-	    h_cutFlow ->Fill(3.,weight); //3
+	    //h_cutFlow ->Fill(3.,weight); //3
+	    
+
 	    
 	    if(NAddBJet!=0)continue;
-	    h_cutFlow ->Fill(4.,weight); //4
+	    h_cutFlow ->Fill(3.,weight); //3
 	    
 	    if((NAddMu_ + NAddEle_ + NAddTau_ )!=0)continue;
-	    h_cutFlow ->Fill(5.,weight); //5
+	    h_cutFlow ->Fill(4.,weight); //4
 	    
 	    eventControl = true;
 	  }
@@ -310,21 +316,21 @@ void subjStudy(int analysisid){
 	// Heavy Flavor region ttbar + W+Jets
 	// -----------------------------------------
 	if(id == 11){
-	  h_cutFlow ->Fill(0.,weight);
+	  h_cutFlow ->Fill(0.,weightNoBTag);
 	  if( Mass_>30 && Mass_<250){
-	    h_cutFlow ->Fill(1.,weight); //1
+	    h_cutFlow ->Fill(1.,weightNoBTag); //1
 	    
+	    if(CSV1_ < 0.605)continue;
 	    if(CSV2_ < 0.605)continue;
 	    h_cutFlow ->Fill(2.,weight); //2
 	    
-	    if(CSV1_ < 0.605)continue;
-	    h_cutFlow ->Fill(3.,weight); //3
+	    //h_cutFlow ->Fill(3.,weight); //3
 	    
 	    if(NAddBJet!=0)continue;
-	    h_cutFlow ->Fill(4.,weight); //4
+	    h_cutFlow ->Fill(3.,weight); //4
 	    
 	    if( (NAddMu_ + NAddEle_ ) != 1 )continue;
-	    h_cutFlow ->Fill(5.,weight); //5
+	    h_cutFlow ->Fill(4.,weight); //5
 	    
 	    eventControl = true;
 	  }
@@ -374,21 +380,21 @@ void subjStudy(int analysisid){
 	// Z nnu + Jets
 	// --------------
 	if(id == 23){
-	  h_cutFlow ->Fill(0);
+	  h_cutFlow ->Fill(0., weightNoBTag);
 	  if((Mass_>30 && Mass_<100) || (Mass_>150 && Mass_<250)){
-	    h_cutFlow ->Fill(1); //1
-	    
-	    if(CSV2_ < 0.605)continue;
-	    h_cutFlow ->Fill(2); //2
+	    h_cutFlow ->Fill(1., weightNoBTag); //1
 	    
 	    if(CSV1_ < 0.605)continue;
-	    h_cutFlow ->Fill(3); //3
+	    if(CSV2_ < 0.605)continue;
+	    h_cutFlow ->Fill(2.,weight); //2
+	    
+	    //h_cutFlow ->Fill(3.,weight); //3
 	    
 	    if(NAddBJet!=0)continue;
-	    h_cutFlow ->Fill(4); //4
+	    h_cutFlow ->Fill(3.,weight); //4
 	    
 	    if((NAddMu_ + NAddEle_ + NAddTau_ )!=0)continue;
-	    h_cutFlow ->Fill(5); //5
+	    h_cutFlow ->Fill(4.,weight); //5
 	    
 	    eventControl = true;
 	  }

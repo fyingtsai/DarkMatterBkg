@@ -6,7 +6,7 @@
  tm *ltm = localtime(&now);
  TString dirpathname;
 
- TString DirPreName = "AnalysisHistograms_V6";
+ TString DirPreName = "AnalysisHistograms_V7";
  dirpathname.Form("%d%1.2d%d",ltm->tm_mday,1 + ltm->tm_mon,1900 + ltm->tm_year);
  system("mkdir -p  " + DirPreName+dirpathname +"/MonoHROOT");
  system("mkdir -p  " + DirPreName+dirpathname +"/MonoHPdf");
@@ -33,7 +33,7 @@ float lumi = 2263.5; // It will print on your plots too
 std::vector<TString> filenameString;
 //Change here Directories of the file
 
-TString filenamepath("/afs/hep.wisc.edu/cms/khurana/Script/CMSSW_7_4_1/src/DarkMatterBkg/AnalysisHistograms_V6/"); 
+TString filenamepath("/afs/hep.wisc.edu/cms/khurana/Script/CMSSW_7_4_1/src/DarkMatterBkg/AnalysisHistograms_V7/"); 
 // DYJets 1
 filenameString.push_back(filenamepath + "Merged_WW_TuneCUETP8M1_13TeV-pythia8-runallAnalysis.root");
 //WJets  1
@@ -97,7 +97,7 @@ filenameString.push_back(filenamepath + "Merged_MET.root");
 
 //const int n_integral = (int)filenameString.size();
 
-TString histnameString("MonoHFatJetSelection_JetAndLeptonVeto/h_MuEF0");
+TString histnameString("MonoHFatJetSelection_JetAndLeptonVeto/h_MET0");
 
 TFile *fIn;
 const int nfiles = (int) filenameString.size();
@@ -112,8 +112,8 @@ Xsec[2] = 118.7;
 Xsec[3] = 66.1;
 Xsec[4] = 15.4;
 
-//float Stt = 0.894141 ;
-float Stt = 1.01;
+float Stt = 1.0;
+//float Stt = 1.01;
 
 Xsec[5] = Stt * 831.76; // ttbar
 
@@ -129,7 +129,8 @@ Xsec[13] = scalexs * 0.00561; //2000
 Xsec[14] = scalexs * 0.00280; //2500
 
 
-float Sznunu = 0.77;
+//float Sznunu = 0.77;
+float Sznunu = 1.0;
 Xsec[15] = Sznunu *  1.626*280.47; // Znunu HT
 Xsec[16] = Sznunu *  1.617*78.36; // Znunu HT
 Xsec[17] = Sznunu *  1.459*10.94; // Znunu HT
@@ -141,7 +142,8 @@ Xsec[18] = Sznunu *  1.391*4.203;  // Znunu HT
 //Xsec[18] = 1.23*4.203;  // Znunu HT
 
 
-float Sw = 0.7;//7.8034e-01 ;
+//float Sw = 0.7;
+float Sw = 1.0;
 
 Xsec[19] = Sw  *  1.459*1347;  // WJets HT 100-200
 Xsec[20] = Sw  *  1.434*360;   // WJets HT 200-400
@@ -178,7 +180,7 @@ TH1F *h_data;
 for(int i =0; i<(int)filenameString.size()-1; i++){
  fIn = new TFile(filenameString[i],"READ");
  h_mc[i] = (TH1F*) fIn->Get(histnameString);
- h_mc[i]->Rebin(1); 
+ h_mc[i]->Rebin(2); 
  h_mc[i]->Sumw2();
 
 // h_total      = (TH1F*) fIn->Get("nEvents_weight");
@@ -203,7 +205,7 @@ if(Integral[i]>0) Integral_Error[i] = TMath::Sqrt(Integral[i]) * normalization[i
 
 fIn = new TFile(filenameString[nfiles-1],"READ");
 h_data = (TH1F*) fIn->Get(histnameString);
-h_data->Rebin(1);
+h_data->Rebin(2);
 //h_data->Sumw2();
 
 
@@ -494,7 +496,7 @@ c12->SetLogy(0);
 
 hs->Draw();
 
-if("h_MuEF0"=="h_cutFlow0"){
+if("h_MET0"=="h_cutFlow0"){
     hs->GetXaxis()->SetBinLabel(1,"Preselection");
     hs->GetXaxis()->SetBinLabel(2,"Mass");
     hs->GetXaxis()->SetBinLabel(3,"CSV2");
@@ -548,7 +550,7 @@ if(!0){
   hs->GetYaxis()->SetTitleFont(22);
   hs->GetYaxis()->SetLabelFont(22);
   hs->GetYaxis()->SetLabelSize(.05);
-  hs->GetXaxis()->SetTitle("MuEF");
+  hs->GetXaxis()->SetTitle("MET");
   }else{
   hs->GetXaxis()->SetLabelOffset(999);
   hs->GetXaxis()->SetLabelSize(0);  
@@ -562,7 +564,7 @@ if(!0){
   hs->GetYaxis()->SetTitleFont(22);
   hs->GetYaxis()->SetLabelFont(22);
   hs->GetYaxis()->SetLabelSize(.07);
-  hs->GetXaxis()->SetRangeUser(0,1.);  
+  hs->GetXaxis()->SetRangeUser(200,700);  
   hs->GetXaxis()->SetNdivisions(508); 
 
   legend->AddEntry(h_err,"Stats. Unc.","f");
@@ -614,7 +616,7 @@ if(!0){
   DataMC->GetYaxis()->SetTitleFont(22);
   DataMC->GetYaxis()->SetLabelSize(0.15);
   DataMC->GetYaxis()->CenterTitle();
-  DataMC->GetXaxis()->SetTitle("MuEF");
+  DataMC->GetXaxis()->SetTitle("MET");
 //DataMC->GetXaxis()->SetIndiceSize(0.1);
   DataMC->GetXaxis()->SetLabelSize(0.157);
   DataMC->GetXaxis()->SetTitleSize(0.162);
@@ -639,7 +641,7 @@ if(!0){
  c1_1->SetFrameFillStyle(0);
  c1_1->SetFrameBorderMode(0);
  c1_1->SetLogy(0);
- DataMC->GetXaxis()->SetRangeUser(0,1.);
+ DataMC->GetXaxis()->SetRangeUser(200,700);
  DataMC->Draw("PE1");
  DataMC->SetMarkerStyle(20);
  DataMC->SetMarkerColor(1);
@@ -650,7 +652,7 @@ if(!0){
  c1_1->SetGridy();
 
 
- TF1 *line0 = new TF1("line0","[0]*x",0,1.);
+ TF1 *line0 = new TF1("line0","[0]*x",200,700);
  line0->FixParameter(0,0);
 // line0->FixParameter(1,0);
  
@@ -671,8 +673,8 @@ if(0){
   //Calculating the contribution of each background in particular range
  // As Data DY(ee) diboson TTjets WWJets
  TAxis *xaxis = h_mc[0]->GetXaxis();
- Int_t binxmin = xaxis->FindBin(0);
- Int_t binxmax = xaxis->FindBin(1.);
+ Int_t binxmin = xaxis->FindBin(200);
+ Int_t binxmax = xaxis->FindBin(700);
 
   float qcdEntries =0.0, dibosonentries =0.0 , wjetentries=0.0;
 //  for(int qcd = 6; qcd < 22 ; qcd++){                                                                                   
@@ -703,7 +705,7 @@ float zh = h_mc[6]->Integral();
 float zh_error = Integral_Error[6];
 
 
-  mout << "MonoHFatJetSelection_JetAndLeptonVeto_h_MuEF0"            <<  " a b"<<std::endl; 
+  mout << "MonoHFatJetSelection_JetAndLeptonVeto_h_MET0"            <<  " a b"<<std::endl; 
   mout << " DATA "    << h_data->Integral()  <<" 0"<< std::endl; 
 //  mout << " DATA 0"    <<  std::endl; 
 //  mout << " DYJETS "  << h_mc[0]->Integral() << std::endl; 
@@ -757,17 +759,17 @@ tableout<< " "<<std::endl;
  
  c12->Draw();
 if(!0){
- c12->SaveAs(DirPreName+dirpathname +"/MonoHPdf/MonoHFatJetSelection_JetAndLeptonVeto_h_MuEF0.pdf");
- c12->SaveAs(DirPreName+dirpathname +"/MonoHPng/MonoHFatJetSelection_JetAndLeptonVeto_h_MuEF0.png");
- c12->SaveAs(DirPreName+dirpathname +"/MonoHROOT/MonoHFatJetSelection_JetAndLeptonVeto_h_MuEF0.root");                                                                         
+ c12->SaveAs(DirPreName+dirpathname +"/MonoHPdf/MonoHFatJetSelection_JetAndLeptonVeto_h_MET0.pdf");
+ c12->SaveAs(DirPreName+dirpathname +"/MonoHPng/MonoHFatJetSelection_JetAndLeptonVeto_h_MET0.png");
+ c12->SaveAs(DirPreName+dirpathname +"/MonoHROOT/MonoHFatJetSelection_JetAndLeptonVeto_h_MET0.root");                                                                         
  rout<<"<hr/>"<<std::endl;
- rout<<"<table class=\"\"> <tr><td><img src=\""<<"DYPng/MonoHFatJetSelection_JetAndLeptonVeto_h_MuEF0.png\" height=\"400\" width=\"400\"></td>   </tr> </table>"<<std::endl;
+ rout<<"<table class=\"\"> <tr><td><img src=\""<<"DYPng/MonoHFatJetSelection_JetAndLeptonVeto_h_MET0.png\" height=\"400\" width=\"400\"></td>   </tr> </table>"<<std::endl;
 
 }
  
 if(0){
- c12->SaveAs(DirPreName+dirpathname +"/MonoHPdf/MonoHFatJetSelection_JetAndLeptonVeto_h_MuEF0_log.pdf");
- c12->SaveAs(DirPreName+dirpathname +"/MonoHPng/MonoHFatJetSelection_JetAndLeptonVeto_h_MuEF0_log.png");
- c12->SaveAs(DirPreName+dirpathname +"/MonoHROOT/MonoHFatJetSelection_JetAndLeptonVeto_h_MuEF0_log.root");                                                                        
+ c12->SaveAs(DirPreName+dirpathname +"/MonoHPdf/MonoHFatJetSelection_JetAndLeptonVeto_h_MET0_log.pdf");
+ c12->SaveAs(DirPreName+dirpathname +"/MonoHPng/MonoHFatJetSelection_JetAndLeptonVeto_h_MET0_log.png");
+ c12->SaveAs(DirPreName+dirpathname +"/MonoHROOT/MonoHFatJetSelection_JetAndLeptonVeto_h_MET0_log.root");                                                                        
 }
  }
