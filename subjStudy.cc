@@ -384,8 +384,6 @@ void subjStudy(int analysisid){
 	    if(CSV1_ < 0.605)continue;
 	    h_cutFlow ->Fill(3); //3
 	    
-	    //if(TMath::Abs(dphiMin_)<0.4)continue;
-	    
 	    if(NAddBJet!=0)continue;
 	    h_cutFlow ->Fill(4); //4
 	    
