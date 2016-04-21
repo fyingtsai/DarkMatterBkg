@@ -11,18 +11,18 @@ public:
 
 
 std::vector<TString> Sample::fileNameFullSample() {
-  TString path_ = "/afs/hep.wisc.edu/cms/khurana/Script/AnalysisTuples_V48/";
+  TString path_ = "/afs/hep.wisc.edu/cms/khurana/Script/AnalysisTuples_76XV7/";
   std::vector<TString> nameVec;
   TString name("");
 
-  name = path_ + "Merged_MonoHToBBarMZp-600GeV_MA0-300GeV-runallAnalysis.root";  nameVec.push_back(name);
-  name = path_ + "Merged_MonoHToBBarMZp-800GeV_MA0-300GeV-runallAnalysis.root";  nameVec.push_back(name);
-  name = path_ + "Merged_MonoHToBBarMZp-1000GeV_MA0-300GeV-runallAnalysis.root";  nameVec.push_back(name);
-  name = path_ + "Merged_MonoHToBBarMZp-1200GeV_MA0-300GeV-runallAnalysis.root";  nameVec.push_back(name);
-  name = path_ + "Merged_MonoHToBBarMZp-1400GeV_MA0-300GeV-runallAnalysis.root";  nameVec.push_back(name);
-  name = path_ + "Merged_MonoHToBBarMZp-1700GeV_MA0-300GeV-runallAnalysis.root";  nameVec.push_back(name);
-  name = path_ + "Merged_MonoHToBBarMZp-2000GeV_MA0-300GeV-runallAnalysis.root";  nameVec.push_back(name);
-  name = path_ + "Merged_MonoHToBBarMZp-2500GeV_MA0-300GeV-runallAnalysis.root";  nameVec.push_back(name);
+  name = path_ + "Merged_ZprimeToA0hToA0chichihbb_2HDM_MZp-600_MA0-300_13TeV-madgraph-runallAnalysis.root";  nameVec.push_back(name);
+  name = path_ + "Merged_ZprimeToA0hToA0chichihbb_2HDM_MZp-800_MA0-300_13TeV-madgraph-runallAnalysis.root";  nameVec.push_back(name);
+  name = path_ + "Merged_ZprimeToA0hToA0chichihbb_2HDM_MZp-1000_MA0-300_13TeV-madgraph-runallAnalysis.root";  nameVec.push_back(name);
+  name = path_ + "Merged_ZprimeToA0hToA0chichihbb_2HDM_MZp-1200_MA0-300_13TeV-madgraph-runallAnalysis.root";  nameVec.push_back(name);
+  name = path_ + "Merged_ZprimeToA0hToA0chichihbb_2HDM_MZp-1400_MA0-300_13TeV-madgraph-runallAnalysis.root";  nameVec.push_back(name);
+  name = path_ + "Merged_ZprimeToA0hToA0chichihbb_2HDM_MZp-1700_MA0-300_13TeV-madgraph-runallAnalysis.root";  nameVec.push_back(name);
+  name = path_ + "Merged_ZprimeToA0hToA0chichihbb_2HDM_MZp-2000_MA0-300_13TeV-madgraph-runallAnalysis.root";  nameVec.push_back(name);
+  name = path_ + "Merged_ZprimeToA0hToA0chichihbb_2HDM_MZp-2500_MA0-300_13TeV-madgraph-runallAnalysis.root";  nameVec.push_back(name);
   
   name = path_ + "Merged_ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1-runallAnalysis.root";  nameVec.push_back(name);
   name = path_ + "Merged_ST_t-channel_antitop_4f_leptonDecays_13TeV-powheg-pythia8_TuneCUETP8M1-runallAnalysis.root";  nameVec.push_back(name);
@@ -42,7 +42,7 @@ std::vector<TString> Sample::fileNameFullSample() {
   
   name = path_ + "Merged_WW_TuneCUETP8M1_13TeV-pythia8-runallAnalysis.root";  nameVec.push_back(name);
   name = path_ + "Merged_WZ_TuneCUETP8M1_13TeV-pythia8-runallAnalysis.root";  nameVec.push_back(name);
-  name = path_ + "Merged_ZH_HToBB_ZToNuNu_M120_13TeV_amcatnloFXFX_madspin_pythia8-runallAnalysis.root";  nameVec.push_back(name);
+  name = path_ + "Merged_ZH_HToBB_ZToNuNu_M125_13TeV_amcatnloFXFX_madspin_pythia8-runallAnalysis.root";  nameVec.push_back(name);
   
   name = path_ + "Merged_ZJetsToNuNu_HT-100To200_13TeV-madgraph-runallAnalysis.root";  nameVec.push_back(name);
   name = path_ + "Merged_ZJetsToNuNu_HT-200To400_13TeV-madgraph-runallAnalysis.root";  nameVec.push_back(name);
@@ -51,11 +51,11 @@ std::vector<TString> Sample::fileNameFullSample() {
   
   name = path_ + "Merged_ZZ_TuneCUETP8M1_13TeV-pythia8-runallAnalysis.root";  nameVec.push_back(name);
   
-  name = path_ + "Merged_crab_MET-Run2015C_25ns-05Oct2015V120160203_FullDataSet_2p2FB_SkipEventsOldFile29Oct-runallAnalysis.root";  nameVec.push_back(name);
-  name = path_ + "Merged_crab_MET-Run2015D-05Oct2015V120160203_FullDataSet_2p2FB_SkipEventsOldFile29Oct-runallAnalysis.root";  nameVec.push_back(name);
-  name = path_ + "Merged_crab_MET-Run2015D-PromptReco-V420160203_FullDataSet_2p2FB_SkipEventsOldFile29Oct-runallAnalysis.root";  nameVec.push_back(name);
+  //name = path_ + "Merged_crab_MET-Run2015C_25ns-05Oct2015V120160203_FullDataSet_2p2FB_SkipEventsOldFile29Oct-runallAnalysis.root";  nameVec.push_back(name);
+  //name = path_ + "Merged_crab_MET-Run2015D-05Oct2015V120160203_FullDataSet_2p2FB_SkipEventsOldFile29Oct-runallAnalysis.root";  nameVec.push_back(name);
+  //name = path_ + "Merged_crab_MET-Run2015D-PromptReco-V420160203_FullDataSet_2p2FB_SkipEventsOldFile29Oct-runallAnalysis.root";  nameVec.push_back(name);
   
-  name = path_ + "Merged_ggZH_HToBB_ZToNuNu_M120_13TeV_powheg_pythia8-runallAnalysis.root";  nameVec.push_back(name);
+  //name = path_ + "Merged_ggZH_HToBB_ZToNuNu_M120_13TeV_powheg_pythia8-runallAnalysis.root";  nameVec.push_back(name);
   name = path_ + "Merged_MET.root";  nameVec.push_back(name);
 
  return nameVec;

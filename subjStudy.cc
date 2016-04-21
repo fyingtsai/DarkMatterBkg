@@ -34,6 +34,7 @@ vector<string> split(TString str, char delimiter) {
 
 
 void subjStudy(int analysisid){
+  bool CMSSW74 = false;
   time_t start, end;
   time(&start);
   
@@ -237,6 +238,7 @@ void subjStudy(int analysisid){
 	Int_t           NAddEle_    = data.GetInt("NAddEle_");
 	Int_t           NAddTau_    = data.GetInt("NAddTau_");
 	Int_t           NAddBJet    = data.GetInt("NAddBJet");
+	Int_t           nthinjets_  = data.GetInt("nthinjets_");
 	Float_t         MinCSV_     = data.GetFloat("MinCSV_");
 	Float_t         MaxCSV_     = data.GetFloat("MaxCSV_");
 	Float_t         CSV1_     = data.GetFloat("CSV1_");
@@ -264,16 +266,47 @@ void subjStudy(int analysisid){
 	Float_t         EWKweight_   = data.GetFloat("EWKweight_");
 	Float_t         PUweight_   = data.GetFloat("PUweight_");
 	Float_t         BTAGSF_     = data.GetFloat("BTAGSF_");
+	Float_t         BTAGSFUP_     = data.GetFloat("BTAGSFUP_");
+	Float_t         BTAGSFDOWN_     = data.GetFloat("BTAGSFDOWN_");
+	Float_t         BTAGLFSFUP_     = data.GetFloat("BTAGLFSFUP_");
+	Float_t         BTAGLFSFDOWN_     = data.GetFloat("BTAGLFSFDOWN_");
+
+	//IN MET Bins > 200 : 0  200-350:1  350-500:2  and 500:3
+        int metcat_ = 0;
+	if(MET_ > 200 && MET_ <= 350) metcat_ =1;
+        if(MET_ > 350 && MET_ <= 500) metcat_ =2;        	
+        if(MET_ > 500) metcat_ =3;        	
+	//if(metcat_ ==1 || metcat_ == 2 || metcat_ || 3) metcat_ = 0; 
+	if (analysisid == 0 ) metcat_ =0;
+	
+
+	Float_t btagcut_;
+	if(CMSSW74){
+	  btagcut_= 0.605;}
+	else
+	  {btagcut_ = 0.460;} // CMSSW_76
 	
 	bool eventControl = false;
 	
 	// ------------
 	// set weight 
 	// ------------
+	
 	float weight = 0.0;
-	weight = MCweight_ * EWKweight_ * PUweight_ * BTAGSF_;
+        float PUW =0.0;
+        if(CMSSW74){
+	  PUW = PUweight_;
+	}else{
+	  PUW = 1.0;
+	}
+	if(false) std::cout<<" metcat_ = "<<metcat_
+		 <<" PUW = "<<PUW
+		 <<" MET = "<<MET_
+		 <<" cat = "<<analysisid
+		 <<std::endl;
+	weight = MCweight_ * EWKweight_ * BTAGSF_*PUW ;//* PUweight_;
 	float weightNoBTag = 0.0;
-	weightNoBTag = MCweight_ * EWKweight_ * PUweight_;
+	weightNoBTag = MCweight_ * EWKweight_*PUW;// * PUweight_;
 	
 	// ----------------------
 	// for data weight = 1
@@ -287,13 +320,14 @@ void subjStudy(int analysisid){
 	// ----------------
 	// signal region
 	// ----------------
-	if(id == 1){
+
+	if(id == 1 && metcat_ == analysisid){
 	  h_cutFlow ->Fill(0.,weightNoBTag);
 	  if( Mass_>100 && Mass_<150){
 	    h_cutFlow ->Fill(1.,weightNoBTag); //1
 	    
-	    if(CSV1_ < 0.605)continue;
-	    if(CSV2_ < 0.605)continue;
+	    if(CSV1_ < btagcut_)continue;
+	    if(CSV2_ < btagcut_)continue;
 	    h_cutFlow ->Fill(2.,weight); //2
 	    
 	    //h_cutFlow ->Fill(3.,weight); //3
@@ -315,13 +349,13 @@ void subjStudy(int analysisid){
 	// signal region in one lepton region
 	// Heavy Flavor region ttbar + W+Jets
 	// -----------------------------------------
-	if(id == 11){
+	if(id == 11 && metcat_ == analysisid){
 	  h_cutFlow ->Fill(0.,weightNoBTag);
 	  if( Mass_>30 && Mass_<250){
 	    h_cutFlow ->Fill(1.,weightNoBTag); //1
 	    
-	    if(CSV1_ < 0.605)continue;
-	    if(CSV2_ < 0.605)continue;
+	    if(CSV1_ < btagcut_)continue;
+	    if(CSV2_ < btagcut_)continue;
 	    h_cutFlow ->Fill(2.,weight); //2
 	    
 	    //h_cutFlow ->Fill(3.,weight); //3
@@ -339,8 +373,8 @@ void subjStudy(int analysisid){
 	// --------------
 	// w+jets
 	// --------------
-	if(id == 24){
-	  if(CSV2_ < 0.605)continue;
+	if(id == 24 && metcat_ == analysisid){
+	  if(CSV2_ < btagcut_)continue;
 	  
 	  if(Mass_<30 || 250<Mass_)continue;
 	  
@@ -358,10 +392,10 @@ void subjStudy(int analysisid){
 	// ---------------
 	// ttbar 
 	// ---------------
-	if(id == 6){
-	  if(CSV2_ < 0.605)continue;
+	if(id == 6 && metcat_ == analysisid){
+	  if(CSV2_ < btagcut_)continue;
 	  
-	  if(CSV1_ < 0.605)continue;
+	  if(CSV1_ < btagcut_)continue;
 	  
 	  if(Mass_<30 || 250<Mass_)continue;
 	  
@@ -379,13 +413,13 @@ void subjStudy(int analysisid){
 	// --------------
 	// Z nnu + Jets
 	// --------------
-	if(id == 23){
+	if(id == 23 && metcat_ == analysisid){
 	  h_cutFlow ->Fill(0., weightNoBTag);
 	  if((Mass_>30 && Mass_<100) || (Mass_>150 && Mass_<250)){
 	    h_cutFlow ->Fill(1., weightNoBTag); //1
 	    
-	    if(CSV1_ < 0.605)continue;
-	    if(CSV2_ < 0.605)continue;
+	    if(CSV1_ < btagcut_)continue;
+	    if(CSV2_ < btagcut_)continue;
 	    h_cutFlow ->Fill(2.,weight); //2
 	    
 	    //h_cutFlow ->Fill(3.,weight); //3
@@ -413,7 +447,7 @@ void subjStudy(int analysisid){
 	h_nTaus ->Fill(NAddTau_,weight);
 	h_nElectrons->Fill(NAddEle_,weight);
 	h_DRSJ ->Fill(DRSJ_,weight);
-	h_NThinJets ->Fill(NAddBJet,weight);
+	h_NThinJets ->Fill(nthinjets_,weight);
 	h_dPhiThinJetMET->Fill(dphiMin_, weight);
 	h_MET ->Fill(MET_,weight);
 	h_Mjj ->Fill(Mass_,weight);
