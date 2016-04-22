@@ -11,7 +11,7 @@ public:
 
 
 std::vector<TString> Sample::fileNameFullSample() {
-  TString path_ = "/afs/hep.wisc.edu/cms/khurana/Script/AnalysisTuples_76XV7/";
+  TString path_ = "/afs/hep.wisc.edu/cms/khurana/Script/AnalysisTuples_76XV9/";
   std::vector<TString> nameVec;
   TString name("");
 
@@ -19,7 +19,9 @@ std::vector<TString> Sample::fileNameFullSample() {
   name = path_ + "Merged_ZprimeToA0hToA0chichihbb_2HDM_MZp-800_MA0-300_13TeV-madgraph-runallAnalysis.root";  nameVec.push_back(name);
   name = path_ + "Merged_ZprimeToA0hToA0chichihbb_2HDM_MZp-1000_MA0-300_13TeV-madgraph-runallAnalysis.root";  nameVec.push_back(name);
   name = path_ + "Merged_ZprimeToA0hToA0chichihbb_2HDM_MZp-1200_MA0-300_13TeV-madgraph-runallAnalysis.root";  nameVec.push_back(name);
+  
   name = path_ + "Merged_ZprimeToA0hToA0chichihbb_2HDM_MZp-1400_MA0-300_13TeV-madgraph-runallAnalysis.root";  nameVec.push_back(name);
+  
   name = path_ + "Merged_ZprimeToA0hToA0chichihbb_2HDM_MZp-1700_MA0-300_13TeV-madgraph-runallAnalysis.root";  nameVec.push_back(name);
   name = path_ + "Merged_ZprimeToA0hToA0chichihbb_2HDM_MZp-2000_MA0-300_13TeV-madgraph-runallAnalysis.root";  nameVec.push_back(name);
   name = path_ + "Merged_ZprimeToA0hToA0chichihbb_2HDM_MZp-2500_MA0-300_13TeV-madgraph-runallAnalysis.root";  nameVec.push_back(name);
@@ -57,7 +59,7 @@ std::vector<TString> Sample::fileNameFullSample() {
   
   //name = path_ + "Merged_ggZH_HToBB_ZToNuNu_M120_13TeV_powheg_pythia8-runallAnalysis.root";  nameVec.push_back(name);
   name = path_ + "Merged_MET.root";  nameVec.push_back(name);
-
+  
  return nameVec;
 
  }

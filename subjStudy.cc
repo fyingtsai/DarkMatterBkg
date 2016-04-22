@@ -299,11 +299,7 @@ void subjStudy(int analysisid){
 	}else{
 	  PUW = 1.0;
 	}
-	if(false) std::cout<<" metcat_ = "<<metcat_
-		 <<" PUW = "<<PUW
-		 <<" MET = "<<MET_
-		 <<" cat = "<<analysisid
-		 <<std::endl;
+	
 	weight = MCweight_ * EWKweight_ * BTAGSF_*PUW ;//* PUweight_;
 	float weightNoBTag = 0.0;
 	weightNoBTag = MCweight_ * EWKweight_*PUW;// * PUweight_;
@@ -323,57 +319,78 @@ void subjStudy(int analysisid){
 
 	if(id == 1 && metcat_ == analysisid){
 	  h_cutFlow ->Fill(0.,weightNoBTag);
+	  
+	  if ( dphiMin_ < 0.4) continue;
+	  if (MT_ < 450.) continue;
+	  h_cutFlow ->Fill(1.,weightNoBTag); //1
+	  
+	  
 	  if( Mass_>100 && Mass_<150){
-	    h_cutFlow ->Fill(1.,weightNoBTag); //1
+	    h_cutFlow ->Fill(2.,weightNoBTag); //2
 	    
 	    if(CSV1_ < btagcut_)continue;
 	    if(CSV2_ < btagcut_)continue;
-	    h_cutFlow ->Fill(2.,weight); //2
-	    
-	    //h_cutFlow ->Fill(3.,weight); //3
-	    
-
-	    
-	    if(NAddBJet!=0)continue;
 	    h_cutFlow ->Fill(3.,weight); //3
 	    
-	    if((NAddMu_ + NAddEle_ + NAddTau_ )!=0)continue;
+	    if(NAddBJet!=0)continue;
 	    h_cutFlow ->Fill(4.,weight); //4
 	    
+	    if((NAddMu_ + NAddEle_ + NAddTau_ )!=0)continue;
+	    h_cutFlow ->Fill(5.,weight); //5
+	    
+	    if(nthinjets_>1) continue;
+	    h_cutFlow ->Fill(6.,weight); //5
+	    
+	    if(false) std::cout<<" metcat_ = "<<metcat_
+			       <<" PUW = "<<PUW
+			       <<" MET = "<<MET_
+			       <<" cat = "<<analysisid
+			       <<" MCweight_ "<< MCweight_
+			       <<" EWKweight_ "<< EWKweight_
+			       <<" BTAGSF_ "<< BTAGSF_
+			       <<" weight "<<weight
+			       <<std::endl;
 	    eventControl = true;
 	  }
 	}
-
-
+	
+	
 	// -----------------------------------------
 	// signal region in one lepton region
 	// Heavy Flavor region ttbar + W+Jets
 	// -----------------------------------------
 	if(id == 11 && metcat_ == analysisid){
 	  h_cutFlow ->Fill(0.,weightNoBTag);
+	  
+	  if ( dphiMin_ < 0.4) continue;
+          if (MT_ < 450.) continue;
+          h_cutFlow ->Fill(1.,weightNoBTag); //1                                                                                                                                     
+	  
 	  if( Mass_>30 && Mass_<250){
-	    h_cutFlow ->Fill(1.,weightNoBTag); //1
+	    h_cutFlow ->Fill(2.,weightNoBTag); //2
 	    
 	    if(CSV1_ < btagcut_)continue;
 	    if(CSV2_ < btagcut_)continue;
-	    h_cutFlow ->Fill(2.,weight); //2
+	    h_cutFlow ->Fill(3.,weight); //3
 	    
-	    //h_cutFlow ->Fill(3.,weight); //3
 	    
 	    if(NAddBJet!=0)continue;
-	    h_cutFlow ->Fill(3.,weight); //4
+	    h_cutFlow ->Fill(4.,weight); //4
 	    
 	    if( (NAddMu_ + NAddEle_ ) != 1 )continue;
-	    h_cutFlow ->Fill(4.,weight); //5
+	    h_cutFlow ->Fill(5.,weight); //5
 	    
 	    eventControl = true;
 	  }
 	}
-
+	
 	// --------------
 	// w+jets
 	// --------------
 	if(id == 24 && metcat_ == analysisid){
+	  if ( dphiMin_ < 0.4) continue;
+          if (MT_ < 450.) continue;
+          //h_cutFlow ->Fill(1.,weightNoBTag); //1                                                                                                                                     
 	  if(CSV2_ < btagcut_)continue;
 	  
 	  if(Mass_<30 || 250<Mass_)continue;
@@ -393,6 +410,9 @@ void subjStudy(int analysisid){
 	// ttbar 
 	// ---------------
 	if(id == 6 && metcat_ == analysisid){
+	  if ( dphiMin_ < 0.4) continue;
+          if (MT_ < 450.) continue;
+          //h_cutFlow ->Fill(1.,weightNoBTag); //1                                                                                                                                     	  
 	  if(CSV2_ < btagcut_)continue;
 	  
 	  if(CSV1_ < btagcut_)continue;
@@ -415,20 +435,23 @@ void subjStudy(int analysisid){
 	// --------------
 	if(id == 23 && metcat_ == analysisid){
 	  h_cutFlow ->Fill(0., weightNoBTag);
+	  
+	  if ( dphiMin_ < 0.4) continue;
+          if (MT_ < 450.) continue;
+          h_cutFlow ->Fill(1.,weightNoBTag); //1
+	  
 	  if((Mass_>30 && Mass_<100) || (Mass_>150 && Mass_<250)){
-	    h_cutFlow ->Fill(1., weightNoBTag); //1
+	    h_cutFlow ->Fill(2., weightNoBTag); //2
 	    
 	    if(CSV1_ < btagcut_)continue;
 	    if(CSV2_ < btagcut_)continue;
-	    h_cutFlow ->Fill(2.,weight); //2
-	    
-	    //h_cutFlow ->Fill(3.,weight); //3
+	    h_cutFlow ->Fill(3.,weight); //3
 	    
 	    if(NAddBJet!=0)continue;
-	    h_cutFlow ->Fill(3.,weight); //4
+	    h_cutFlow ->Fill(4.,weight); //4
 	    
 	    if((NAddMu_ + NAddEle_ + NAddTau_ )!=0)continue;
-	    h_cutFlow ->Fill(4.,weight); //5
+	    h_cutFlow ->Fill(5.,weight); //5
 	    
 	    eventControl = true;
 	  }
